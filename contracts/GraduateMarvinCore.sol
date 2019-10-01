@@ -51,9 +51,14 @@ contract GraduateMarvinCore is GraduateMarvinBase {
 	) {
 		uint256 id = loginToId[_loginToGet];
 		Graduate memory graduate = graduates[id];
-		return (
-			graduate.login, graduate.firstName, graduate.lastName, graduate.intraLevel, graduate.birthDate, graduate.birthCity,
-			graduate.birthCountry, graduate.promoYears, graduate.graduateYears
-		);
+		_login = graduate.login;
+		_firstName = graduate.firstName;
+		_lastName = graduate.lastName;
+		_intraLevel = graduate.intraLevel;
+		_birthDate = graduate.birthDate;
+		_birthCity = graduate.birthCity;
+		_birthCountry = graduate.birthCountry;
+		_promoYears = graduate.promoYears;
+		_graduateYears = graduate.graduateYears;
 	}
 }
