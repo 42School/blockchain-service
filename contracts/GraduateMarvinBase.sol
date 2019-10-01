@@ -4,23 +4,23 @@ import "./lib/tools/Ownable.sol";
 
 contract GraduateMarvinBase is Ownable {
 
-	event CreateGraduate(string login, string intraLevel, uint256 graduateId);
-	event DeleteGraduate(string login);
+	event CreateGraduate(bytes32 login, bytes32 intraLevel, uint256 graduateId);
+	event DeleteGraduate(bytes32 login);
 
 	struct Graduate {
-		string login;
-		string firstName;
-		string lastName;
-		string intraLevel;
-		string birthDate;
-		string birthCity;
-		string birthCountry;
+		bytes32 login;
+		bytes32 firstName;
+		bytes32 lastName;
+		bytes32 intraLevel;
+		bytes32 birthDate;
+		bytes32 birthCity;
+		bytes32 birthCountry;
 		uint256 promoYears;
 		uint256 graduateYears;
 	}
 
 	Graduate[] graduates;
-	mapping(string => uint256) public loginToId;
+	mapping(bytes32 => uint256) public loginToId;
 
 	function _createGraduate(Graduate memory _newGraduate) internal onlyOwner {
 		uint256 newGraduateId = graduates.push(_newGraduate) - 1;
@@ -28,7 +28,7 @@ contract GraduateMarvinBase is Ownable {
 		emit CreateGraduate(_newGraduate.login, _newGraduate.intraLevel, newGraduateId);
 	}
 
-	function _deleteGraduate(string memory _loginToDelete) internal {
+	function _deleteGraduate(bytes32 _loginToDelete) internal {
 		uint256 idToDelete = loginToId[_loginToDelete];
 		delete graduates[idToDelete];
 		delete loginToId[_loginToDelete];

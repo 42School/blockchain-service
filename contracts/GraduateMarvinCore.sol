@@ -10,13 +10,13 @@ contract GraduateMarvinCore is GraduateMarvinBase {
 	address public newContractAddress;
 
 	function createGraduate(
-		string calldata _login,
-		string calldata _firstName,
-		string calldata _lastName,
-		string calldata _intraLevel,
-		string calldata _birthDate,
-		string calldata _birthCity,
-		string calldata _birthCountry,
+		bytes32 _login,
+		bytes32 _firstName,
+		bytes32 _lastName,
+		bytes32 _intraLevel,
+		bytes32 _birthDate,
+		bytes32 _birthCity,
+		bytes32 _birthCountry,
 		uint256 _promoYears,
 		uint256 _graduateYears
 	) external onlyOwner {
@@ -34,11 +34,11 @@ contract GraduateMarvinCore is GraduateMarvinBase {
 			_createGraduate(newGraduate);
 		}
 
-	function deleteGraduate(string calldata _login) external onlyOwner {
+	function deleteGraduate(bytes32 _login) external onlyOwner {
 		_deleteGraduate(_login);
 	}
 
-	function getGraduate(string calldata _loginToGet) external view returns (
+	function getGraduate(bytes32 _loginToGet) external view returns (
 		bytes32 _login,
 		bytes32 _firstName,
 		bytes32 _lastName,
