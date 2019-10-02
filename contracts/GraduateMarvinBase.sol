@@ -21,10 +21,12 @@ contract GraduateMarvinBase is Ownable {
 
 	Graduate[] graduates;
 	mapping(bytes32 => uint256) public loginToId;
+	mapping(uint256 => string) public idToSignature;
 
-	function _createGraduate(Graduate memory _newGraduate) internal onlyOwner {
+	function _createGraduate(Graduate memory _newGraduate, string memory _signature) internal onlyOwner {
 		uint256 newGraduateId = graduates.push(_newGraduate) - 1;
 		loginToId[_newGraduate.login] = newGraduateId;
+		idToSignature[newGraduateId] = _signature;
 		emit CreateGraduate(_newGraduate.login, _newGraduate.intraLevel, newGraduateId);
 	}
 
