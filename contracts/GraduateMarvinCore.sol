@@ -18,8 +18,9 @@ contract GraduateMarvinCore is GraduateMarvinBase {
 		_deleteGraduate(_login);
 	}
 
-	function getGraduate(bytes32 _loginToGet) external view returns (Graduate memory graduate) {
+	function getGraduate(bytes32 _loginToGet) external view returns (Graduate memory graduate, string memory signature) {
 		uint256 id = loginToId[_loginToGet];
 		graduate = graduates[id];
+		signature = idToSignature[id];
 	}
 }
