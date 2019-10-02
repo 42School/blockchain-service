@@ -1,4 +1,5 @@
 const	GraduateMarvin = artifacts.require("GraduateMarvinCore");
+const	helpers = require('./helpers/helpers');
 const	assert = require('assert');
 const	crypto = require('crypto');
 
@@ -44,6 +45,10 @@ contract("GraduateMarvinCore", async (accounts) => {
 		let deleteGraduate = await instance.deleteGraduate(loginToDelete);
 		let loginDeleted = login = deleteGraduate.logs[0].args.login;
 		assert.equal(web3.utils.hexToUtf8(loginDeleted), 'Login', 'The data is not valid !');
+	})
+
+	it("Create random russe graduate", async () => {
+		helpers.getRandomUser('Russia', 1);
 	})
 
 })
