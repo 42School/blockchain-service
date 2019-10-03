@@ -149,7 +149,7 @@ contract("GraduateMarvinCore", async (accounts) => {
 			const message = web3.utils.toHex(graduate);
 			assert.equal(web3.utils.sha3(message), web3.utils.sha3(dataHex), 'The data insert into the blockchain it\'s not the same than input');
 		};
-		fs.writeFileSync('UsersCreationGasUsed.json', JSON.stringify(gasUsed));
+		fs.writeFileSync('./gasCalculator/gasUsed.json', JSON.stringify(gasUsed));
 	})
 
 })
