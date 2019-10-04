@@ -8,7 +8,7 @@ var		web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:7545'));
 
 web3.eth.defaultAccount = web3.eth.accounts[0];
 const	GraduateMarvinCore = require("../build/contracts/GraduateMarvinCore.json");
-const	contractInstance = new web3.eth.Contract(GraduateMarvinCore.abi, '0x08B96A9d38E8cd2d8F450A27a759c8499f7214E3');
+const	contractInstance = new web3.eth.Contract(GraduateMarvinCore.abi, '0x4727f3efAE5EfF5166F0ECDc383772BdbEd827a4');
 
 const	account42 = {
 	address: '0x2CC70d29a7F00C0e04A3B0E78074AB523b7056af',
@@ -19,8 +19,8 @@ router.use(bodyParser.json());
 
 router.post('/create/:login', (req, res) => {
 	const	login = req.params.login;
-	request({url: `https://api.intra.42.fr/v2/users/${login}`, auth: {'bearer': process.env.ACCESS_TOKEN}}, async (err, res) => {
-		const	apiData = JSON.parse(res.body);
+	request({url: `https://api.intra.42.fr/v2/users/${login}`, auth: {'bearer': process.env.ACCESS_TOKEN}}, async (err, res2) => {
+		const	apiData = JSON.parse(res2.body);
 		let		data = {
 			login: login,
 			firstName: apiData.first_name,
@@ -35,10 +35,19 @@ router.post('/create/:login', (req, res) => {
 		data = helpers.str2bytes32(data);
 		dataBytes = web3.utils.toHex(data);
 		signature = web3.eth.accounts.sign(dataBytes, account42.privateKey);
-		event = await contractInstance.methods.createGraduate(data, signature.signature).send({from: '0xB963cE471fF79792123635fc5242e76b3E85485D', gas:6721975});
-		const	graduateId = event.events.CreateGraduate.returnValues.graduateId;
-		const	gasUsed = event.gasUsed;
-		console.log(graduateId, gasUsed);
+		contractInstance.methods.createGraduate(data, signature.signature)
+		.send({from: '0xf8f9CBFd9DCc907A141a51384e92FB499b5D889a', gas:6721975})
+		.then((event) => {
+			const	graduateId = event.events.CreateGraduate.returnValues.graduateId;
+			const	gasUsed = event.gasUsed;
+			if (event) {
+				console.log(graduateId, gasUsed);
+				return res.status(201).json({message: `Graduate creation success, the cost is ${gasUsed}`});
+			}
+		})
+		.catch((err) => {
+			return res.status(500).json({message: `Graduate creation failed`});
+		});
 	});
 })
 
