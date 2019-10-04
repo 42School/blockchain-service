@@ -33,6 +33,7 @@ contract GraduateMarvinBase is Ownable {
 	function _deleteGraduate(bytes32 _loginToDelete) internal {
 		uint256 idToDelete = loginToId[_loginToDelete];
 		delete graduates[idToDelete];
+		delete idToSignature[idToDelete];
 		delete loginToId[_loginToDelete];
 		emit DeleteGraduate(_loginToDelete);
 	}

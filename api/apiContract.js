@@ -8,7 +8,7 @@ var		web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:7545'));
 
 web3.eth.defaultAccount = web3.eth.accounts[0];
 const	GraduateMarvinCore = require("../build/contracts/GraduateMarvinCore.json");
-const	contractInstance = new web3.eth.Contract(GraduateMarvinCore.abi, '0x4727f3efAE5EfF5166F0ECDc383772BdbEd827a4');
+const	contractInstance = new web3.eth.Contract(GraduateMarvinCore.abi, '0xF3e2fd69bf9cC2f012C88005c07CfAABc8558375');
 
 const	account42 = {
 	address: '0x2CC70d29a7F00C0e04A3B0E78074AB523b7056af',
@@ -36,7 +36,7 @@ router.post('/create/:login', (req, res) => {
 		dataBytes = web3.utils.toHex(data);
 		signature = web3.eth.accounts.sign(dataBytes, account42.privateKey);
 		contractInstance.methods.createGraduate(data, signature.signature)
-		.send({from: '0xf8f9CBFd9DCc907A141a51384e92FB499b5D889a', gas:6721975})
+		.send({from: '0xF05660e7075Fc97CA42625ADDD802D03C9c81d1a', gas:6721975})
 		.then((event) => {
 			const	graduateId = event.events.CreateGraduate.returnValues.graduateId;
 			const	gasUsed = event.gasUsed;
@@ -46,9 +46,44 @@ router.post('/create/:login', (req, res) => {
 			}
 		})
 		.catch((err) => {
-			return res.status(500).json({message: `Graduate creation failed`});
+			return res.status(500).json({message: `Graduate creation failed !`});
 		});
 	});
+})
+
+router.delete('/delete/:login', (req, res) => {
+	const	login = req.params.login;
+	const	loginBytes32 = web3.utils.padRight(web3.utils.utf8ToHex(login), 64);
+	contractInstance.methods.deleteGraduate(loginBytes32)
+	.send({from: '0xF05660e7075Fc97CA42625ADDD802D03C9c81d1a', gas:6721975})
+	.then((event) => {
+		const	login = event.events.DeleteGraduate.returnValues.login;
+		const	gasUsed = event.gasUsed;
+		if (event) {
+			console.log(web3.utils.toUtf8(login), gasUsed);
+			return res.status(201).json({message: `Graduate delete success, the cost is ${gasUsed}`});
+		}
+	})
+	.catch((err) => {
+		return res.status(500).json({message: `Graduation delete failed !`});
+	})
+})
+
+router.get('/get/:login', async (req, res) => {
+	const	login = req.params.login;
+	const	loginBytes32 = web3.utils.padRight(web3.utils.utf8ToHex(login), 64);
+	const	test = await contractInstance.methods.getGraduate(loginBytes32).call({from: '0xF05660e7075Fc97CA42625ADDD802D03C9c81d1a', gas:6721975});
+	if (test) {
+		
+	}
+	// contractInstance.methods.getGraduate(loginBytes32);
+	// .send({from: '0xF05660e7075Fc97CA42625ADDD802D03C9c81d1a', gas:6721975})
+	// .then((graduate) => {
+	// 	console.log(graduate);
+	// })
+	// .catch((err) => {
+	// 	return res.status(500).json({message: `Graduation delete failed !`});
+	// })
 })
 
 module.exports = router
