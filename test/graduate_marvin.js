@@ -14,9 +14,6 @@ contract("GraduateMarvinCore", async (accounts) => {
 			firstName: web3.utils.padRight(web3.utils.utf8ToHex('FirstName'), 64),
 			lastName: web3.utils.padRight(web3.utils.utf8ToHex('LastName'), 64),
 			intraLevel: web3.utils.padRight(web3.utils.utf8ToHex('IntraLevel'), 64),
-			birthDate: web3.utils.padRight(web3.utils.utf8ToHex('BirthDate'), 64),
-			birthCity: web3.utils.padRight(web3.utils.utf8ToHex('BirthCity'), 64),
-			birthCountry: web3.utils.padRight(web3.utils.utf8ToHex('BirthCountry'), 64),
 			promoYears: '2017',
 			graduateYears: '2020',
 		}
@@ -40,20 +37,12 @@ contract("GraduateMarvinCore", async (accounts) => {
 		assert.equal(add42, acc42.address, 'The data return by the smart contract is altered');
 	})
 
-	it("Testing function deleteGraduate", async () => {
-		let loginToDelete = web3.utils.utf8ToHex('Login');
-		let instance = await GraduateMarvin.deployed();
-		let deleteGraduate = await instance.deleteGraduate(loginToDelete);
-		let loginDeleted = login = deleteGraduate.logs[0].args.login;
-		assert.equal(web3.utils.hexToUtf8(loginDeleted), 'Login', 'The data is not valid !');
-	})
-
 	it("Create 1 random Russe graduate", async () => {
 		const data = await helpers.getRandomUser('Russia');
 		const dataHex = web3.utils.toHex(data);
 		const signature = web3.eth.accounts.sign(dataHex, acc42.privateKey);
 		let instance = await GraduateMarvin.deployed();
-		let new_graduate = await instance.createGraduate(data, signature.signature);
+		await instance.createGraduate(data, signature.signature);
 		let ret = await instance.getGraduate(data.login);
 		let graduate = ret.graduate;
 		graduate.splice(0, 9);
@@ -67,7 +56,7 @@ contract("GraduateMarvinCore", async (accounts) => {
 		const dataHex = web3.utils.toHex(data);
 		const signature = web3.eth.accounts.sign(dataHex, acc42.privateKey);
 		let instance = await GraduateMarvin.deployed();
-		let new_graduate = await instance.createGraduate(data, signature.signature);
+		await instance.createGraduate(data, signature.signature);
 		let ret = await instance.getGraduate(data.login);
 		let graduate = ret.graduate;
 		graduate.splice(0, 9);
@@ -81,7 +70,7 @@ contract("GraduateMarvinCore", async (accounts) => {
 		const dataHex = web3.utils.toHex(data);
 		const signature = web3.eth.accounts.sign(dataHex, acc42.privateKey);
 		let instance = await GraduateMarvin.deployed();
-		let new_graduate = await instance.createGraduate(data, signature.signature);
+		await instance.createGraduate(data, signature.signature);
 		let ret = await instance.getGraduate(data.login);
 		let graduate = ret.graduate;
 		graduate.splice(0, 9);
@@ -95,7 +84,7 @@ contract("GraduateMarvinCore", async (accounts) => {
 		const dataHex = web3.utils.toHex(data);
 		const signature = web3.eth.accounts.sign(dataHex, acc42.privateKey);
 		let instance = await GraduateMarvin.deployed();
-		let new_graduate = await instance.createGraduate(data, signature.signature);
+		await instance.createGraduate(data, signature.signature);
 		let ret = await instance.getGraduate(data.login);
 		let graduate = ret.graduate;
 		graduate.splice(0, 9);
@@ -109,7 +98,7 @@ contract("GraduateMarvinCore", async (accounts) => {
 		const dataHex = web3.utils.toHex(data);
 		const signature = web3.eth.accounts.sign(dataHex, acc42.privateKey);
 		let instance = await GraduateMarvin.deployed();
-		let new_graduate = await instance.createGraduate(data, signature.signature);
+		await instance.createGraduate(data, signature.signature);
 		let ret = await instance.getGraduate(data.login);
 		let graduate = ret.graduate;
 		graduate.splice(0, 9);
@@ -123,7 +112,7 @@ contract("GraduateMarvinCore", async (accounts) => {
 		const dataHex = web3.utils.toHex(data);
 		const signature = web3.eth.accounts.sign(dataHex, acc42.privateKey);
 		let instance = await GraduateMarvin.deployed();
-		let new_graduate = await instance.createGraduate(data, signature.signature);
+		await instance.createGraduate(data, signature.signature);
 		let ret = await instance.getGraduate(data.login);
 		let graduate = ret.graduate;
 		graduate.splice(0, 9);

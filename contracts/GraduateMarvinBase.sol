@@ -12,9 +12,6 @@ contract GraduateMarvinBase is Ownable {
 		bytes32 firstName;
 		bytes32 lastName;
 		bytes32 intraLevel;
-		bytes32 birthDate;
-		bytes32 birthCity;
-		bytes32 birthCountry;
 		uint256 promoYears;
 		uint256 graduateYears;
 	}
@@ -30,12 +27,5 @@ contract GraduateMarvinBase is Ownable {
 		emit CreateGraduate(_newGraduate.login, _newGraduate.intraLevel, newGraduateId);
 	}
 
-	function _deleteGraduate(bytes32 _loginToDelete) internal {
-		uint256 idToDelete = loginToId[_loginToDelete];
-		delete graduates[idToDelete];
-		delete idToSignature[idToDelete];
-		delete loginToId[_loginToDelete];
-		emit DeleteGraduate(_loginToDelete);
-	}
 
 }

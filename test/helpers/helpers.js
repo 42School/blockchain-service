@@ -15,9 +15,6 @@ async function getRandomUser(country) {
 		firstName: web3.utils.padRight(web3.utils.utf8ToHex(data.name), 64),
 		lastName: web3.utils.padRight(web3.utils.utf8ToHex(data.surname), 64),
 		intraLevel: web3.utils.padRight(web3.utils.utf8ToHex(randomInt(7, 21)), 64),
-		birthDate: web3.utils.padRight(web3.utils.utf8ToHex(data.birthday.dmy), 64),
-		birthCity: web3.utils.padRight(web3.utils.utf8ToHex(''), 64),
-		birthCountry: web3.utils.padRight(web3.utils.utf8ToHex(data.region), 64),
 		promoYears: '2013',
 		graduateYears: '2020',
 	}
@@ -41,9 +38,6 @@ function getRandomUsers() {
 			firstName: web3.utils.padRight(web3.utils.utf8ToHex(data[i].name), 64),
 			lastName: web3.utils.padRight(web3.utils.utf8ToHex(data[i].surname), 64),
 			intraLevel: web3.utils.padRight(web3.utils.utf8ToHex(randomInt(7, 21)), 64),
-			birthDate: web3.utils.padRight(web3.utils.utf8ToHex(data[i].birthday.dmy), 64),
-			birthCity: web3.utils.padRight(web3.utils.utf8ToHex(''), 64),
-			birthCountry: web3.utils.padRight(web3.utils.utf8ToHex(data[i].region), 64),
 			promoYears: '2013',
 			graduateYears: '2020',
 		});

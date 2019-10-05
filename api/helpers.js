@@ -6,9 +6,6 @@ function str2bytes32(data) {
 		firstName: web3.utils.padRight(web3.utils.utf8ToHex(data.firstName), 64),
 		lastName: web3.utils.padRight(web3.utils.utf8ToHex(data.lastName), 64),
 		intraLevel: web3.utils.padRight(web3.utils.utf8ToHex(data.intraLevel), 64),
-		birthDate: web3.utils.padRight(web3.utils.utf8ToHex(data.birthDate), 64),
-		birthCity: web3.utils.padRight(web3.utils.utf8ToHex(data.birthCity), 64),
-		birthCountry: web3.utils.padRight(web3.utils.utf8ToHex(data.birthCountry), 64),
 		promoYears: data.promoYears,
 		graduateYears: data.graduateYears,
 	}
