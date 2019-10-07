@@ -11,9 +11,9 @@ async function getRandomUser(country) {
 	const res = request('GET', url).getBody();
 	const data = JSON.parse(res)
 	const ret_data = {
-		login: web3.utils.padRight(web3.utils.utf8ToHex(`${data.name.charAt(0)}${data.surname}`.toLowerCase()), 64),
-		firstName: web3.utils.padRight(web3.utils.utf8ToHex(data.name), 64),
-		lastName: web3.utils.padRight(web3.utils.utf8ToHex(data.surname), 64),
+		login: web3.utils.sha3(`${data.name.charAt(0)}${data.surname}`.toLowerCase()),
+		firstName: web3.utils.sha3(data.name),
+		lastName: web3.utils.sha3(data.surname),
 		intraLevel: web3.utils.padRight(web3.utils.utf8ToHex(randomInt(7, 21)), 64),
 		promoYears: '2013',
 		graduateYears: '2020',
@@ -33,10 +33,11 @@ function getRandomUsers() {
 	const data = JSON.parse(res);// + JSON.parse(res2);
 	let ret_data = new Array();
 	for (let i = 0; i < data.length; i++) {
+		console.log(data[i].name, data[i].surname);
 		ret_data.push({
-			login: web3.utils.padRight(web3.utils.utf8ToHex(`${data[i].name.charAt(0)}${data[i].surname.substring(0,8)}`.toLowerCase()), 64),
-			firstName: web3.utils.padRight(web3.utils.utf8ToHex(data[i].name), 64),
-			lastName: web3.utils.padRight(web3.utils.utf8ToHex(data[i].surname), 64),
+			login: web3.utils.sha3(`${data[i].name.charAt(0)}${data[i].surname.substring(0,8)}`.toLowerCase()),
+			firstName: web3.utils.sha3(data[i].name),
+			lastName: web3.utils.sha3(data[i].surname),
 			intraLevel: web3.utils.padRight(web3.utils.utf8ToHex(randomInt(7, 21)), 64),
 			promoYears: '2013',
 			graduateYears: '2020',

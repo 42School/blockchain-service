@@ -27,5 +27,4 @@ contract GraduateMarvinBase is Ownable {
 		emit CreateGraduate(_newGraduate.login, _newGraduate.intraLevel, newGraduateId);
 	}
 
-
 }

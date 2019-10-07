@@ -10,9 +10,9 @@ contract("GraduateMarvinCore", async (accounts) => {
 
 	it("Testing function createGraduate", async () => {
 		let data_new_graduate = {
-			login: web3.utils.padRight(web3.utils.utf8ToHex('Login'), 64),
-			firstName: web3.utils.padRight(web3.utils.utf8ToHex('FirstName'), 64),
-			lastName: web3.utils.padRight(web3.utils.utf8ToHex('LastName'), 64),
+			login: web3.utils.sha3('Login'),
+			firstName: web3.utils.sha3('FirstName'),
+			lastName: web3.utils.sha3('LastName'),
 			intraLevel: web3.utils.padRight(web3.utils.utf8ToHex('IntraLevel'), 64),
 			promoYears: '2017',
 			graduateYears: '2020',
@@ -22,7 +22,7 @@ contract("GraduateMarvinCore", async (accounts) => {
 		let instance = await GraduateMarvin.deployed();
 		let new_graduate = await instance.createGraduate(data_new_graduate, signature.signature);
 		let login = new_graduate.logs[0].args.login;
-		assert.equal(web3.utils.hexToUtf8(login), 'Login', 'The data is not valid !');
+		assert.equal(login, web3.utils.sha3('Login'), 'The data is not valid !');
 	})
 
 	it("Testing function getGraduate", async () => {
