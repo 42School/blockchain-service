@@ -31,7 +31,6 @@ router.post('/create/:login', (req, res) => {
 		};
 		data = helpers.str2bytes32(data);
 		const signature = helpers.multiSig(apiData.login, accs);
-		console.log(signature);
 		contractInstance.methods.createGraduate(data, signature)
 		.send({from: contractOwner, gas: gasLimit})
 		.then((tx) => {
@@ -58,15 +57,18 @@ router.post('/create/:login', (req, res) => {
 
 router.get('/get/:login', async (req, res) => {
 	const	login = req.params.login;
-	const findDb = await models.intraLink.find({ login: login });
-	const graduateId = findDb[0].graduateId;
-	const graduate = await contractInstance.methods.getGraduate(graduateId).call({from: contractOwner, gas: gasLimit});
-	if (graduate.signature === '') {
-		return res.status(200).json({message: `This person is not certify by 42 !`});
-	} else {
-		helpers.createPdf(graduate);
-		return res.status(200).json({message: 'Succes'})
-	}
+	request({url: `https://api.intra.42.fr/v2/users/${login}`, auth: {'bearer': process.env.ACCESS_TOKEN}}, async (err, res2) => {
+		const apiData = JSON.parse(res2.body);
+		const findDb = await models.intraLink.find({ login: login });
+		const graduateId = findDb[0].graduateId;
+		const graduate = await contractInstance.methods.getGraduate(graduateId).call({from: contractOwner, gas: gasLimit});
+		if (graduate.signature === '') {
+			return res.status(200).json({message: `This person is not certify by 42 !`});
+		} else {
+			helpers.createPdf(graduate, apiData.displayname, apiData.login);
+			return res.status(200).json({message: 'Succes'})
+		}
+	});
 })
 
 module.exports = router

@@ -18,19 +18,27 @@ function multiSig(data, accounts) {
 		const sign = accounts[i].sign(data);
 		signatures[i] = sign.signature;
 	}
-	const hash = web3.utils.sha3(signatures);
+	const hash = web3.utils.sha3(`${signatures[0]},${signatures[1]},${signatures[2]}`);
 	return (hash);
 }
 
-function createPdf(graduateData) {
-	const	doc = new pdfkit;
-
-	doc.pipe(fs.createWriteStream('output.pdf'));
-
-	doc.image('./assets/graduate_marvin_test.jpg', {
+function createPdf(graduateData, name, login) {
+	const	promoYears = graduateData[0].promoYears;
+	const	levelIntra = web3.utils.toUtf8(graduateData[0].intraLevel);
+	const	doc = new pdfkit({layout: 'landscape', size: 'A4', margins: {top: 0, bottom: 0, left: 0, right: 0}});
+	doc.pipe(fs.createWriteStream(`./graduate/${login}.pdf`));
+	doc.image('./assets/graduate_marvin_test.jpg', 0, 0, {
 		align: 'center',
 		valign: 'center'
 	 });
+	doc.registerFont('Futura', './assets/futura.ttf');
+	doc.font('Futura').fontSize(42).text(name, 0, 224, {align: 'center'});
+	doc.font('Futura').fontSize(21).text(promoYears, 367, 405);
+	doc.font('Futura').fontSize(21).text(levelIntra.split('.')[0], 486, 405);
+	doc.font('Futura').fontSize(21).text(levelIntra.split('.')[1], 515, 405);
+	doc.font('Futura').fontSize(21).text('21', 115, 528);
+	doc.font('Futura').fontSize(21).text('12', 146, 528);
+	doc.font('Futura').fontSize(21).text('2020', 181, 528);
 	doc.end()
 }
 
