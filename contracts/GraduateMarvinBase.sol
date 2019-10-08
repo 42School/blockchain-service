@@ -4,27 +4,22 @@ import "./lib/tools/Ownable.sol";
 
 contract GraduateMarvinBase is Ownable {
 
-	event CreateGraduate(bytes32 login, bytes32 intraLevel, uint256 graduateId);
-	event DeleteGraduate(bytes32 login);
+	event CreateGraduate(bytes32 intraLevel, uint256 graduateId);
 
 	struct Graduate {
-		bytes32 login;
-		bytes32 firstName;
-		bytes32 lastName;
 		bytes32 intraLevel;
 		uint256 promoYears;
 		uint256 graduateYears;
+		uint64	flags;
 	}
 
 	Graduate[] graduates;
-	mapping(bytes32 => uint256) public loginToId;
-	mapping(uint256 => string) public idToSignature;
+	mapping(uint256 => bytes32) public idToSignature;
 
-	function _createGraduate(Graduate memory _newGraduate, string memory _signature) internal onlyOwner {
+	function _createGraduate(Graduate memory _newGraduate, bytes32 _signature) internal onlyOwner {
 		uint256 newGraduateId = graduates.push(_newGraduate) - 1;
-		loginToId[_newGraduate.login] = newGraduateId;
 		idToSignature[newGraduateId] = _signature;
-		emit CreateGraduate(_newGraduate.login, _newGraduate.intraLevel, newGraduateId);
+		emit CreateGraduate(_newGraduate.intraLevel, newGraduateId);
 	}
 
 }

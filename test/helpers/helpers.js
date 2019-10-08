@@ -11,14 +11,12 @@ async function getRandomUser(country) {
 	const res = request('GET', url).getBody();
 	const data = JSON.parse(res)
 	const ret_data = {
-		login: web3.utils.sha3(`${data.name.charAt(0)}${data.surname}`.toLowerCase()),
-		firstName: web3.utils.sha3(data.name),
-		lastName: web3.utils.sha3(data.surname),
 		intraLevel: web3.utils.padRight(web3.utils.utf8ToHex(randomInt(7, 21)), 64),
 		promoYears: '2013',
 		graduateYears: '2020',
+		flags: '0'
 	}
-	return (ret_data);
+	return ({data: ret_data, name: `${data.name} ${data.surname}`});
 };
 
 function getRandomRegion() {
@@ -29,26 +27,33 @@ function getRandomRegion() {
 function getRandomUsers() {
 	const url = `https://uinames.com/api/?amount=500&ext`
 	const res = request('GET', url).getBody();
-	// const res2 = request('GET', url).getBody();
-	const data = JSON.parse(res);// + JSON.parse(res2);
+	const data = JSON.parse(res);
 	let ret_data = new Array();
 	for (let i = 0; i < data.length; i++) {
-		console.log(data[i].name, data[i].surname);
-		ret_data.push({
-			login: web3.utils.sha3(`${data[i].name.charAt(0)}${data[i].surname.substring(0,8)}`.toLowerCase()),
-			firstName: web3.utils.sha3(data[i].name),
-			lastName: web3.utils.sha3(data[i].surname),
+		ret_data.push({data: {
 			intraLevel: web3.utils.padRight(web3.utils.utf8ToHex(randomInt(7, 21)), 64),
 			promoYears: '2013',
 			graduateYears: '2020',
-		});
+			flags: '0'
+		}, name: `${data[i].name} ${data[i].surname}`});
 	}
 	return (ret_data);
+}
+
+function multiSig(data, accounts) {
+	let		signatures = [];
+	for (let i = 0; i < accounts.length; i++) {
+		const sign = web3.eth.accounts.sign(data, accounts[i].privateKey);
+		signatures[i] = sign.signature;
+	}
+	const hash = web3.utils.sha3(signatures);
+	return (hash);
 }
 
 module.exports = {
 	randomInt: randomInt,
 	getRandomUser: getRandomUser,
 	getRandomRegion: getRandomRegion,
-	getRandomUsers: getRandomUsers
+	getRandomUsers: getRandomUsers,
+	multiSig: multiSig
 }

@@ -10,14 +10,12 @@ contract GraduateMarvinCore is GraduateMarvinBase {
 
 	address public newContractAddress;
 
-	function createGraduate(Graduate calldata newGraduate, string calldata signature) external onlyOwner {
-		require(loginToId[newGraduate.login] == 0, 'The student graduate already exists');
+	function createGraduate(Graduate calldata newGraduate, bytes32 signature) external onlyOwner {
 		_createGraduate(newGraduate, signature);
 	}
 
-	function getGraduate(bytes32 _loginToGet) external view returns (Graduate memory graduate, string memory signature) {
-		uint256 id = loginToId[_loginToGet];
-		graduate = graduates[id];
-		signature = idToSignature[id];
+	function getGraduate(uint256 _idToGet) external view returns (Graduate memory graduate, bytes32 signature) {
+		graduate = graduates[_idToGet];
+		signature = idToSignature[_idToGet];
 	}
 }
