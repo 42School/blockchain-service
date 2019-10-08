@@ -58,15 +58,15 @@ router.post('/create/:login', (req, res) => {
 
 router.get('/get/:login', async (req, res) => {
 	const	login = req.params.login;
-	request({url: `https://api.intra.42.fr/v2/users/${login}`, auth: {'bearer': process.env.ACCESS_TOKEN}}, async (err, res2) => {
-		const	apiData = JSON.parse(res2.body);
-		const	data = await contractInstance.methods.getGraduate(apiData.id).call({from: contractOwner, gas: gasLimit});
-		if (data.signature === '') {
-			return res.status(200).json({message: `This person is not certify by 42 !`});
-		} else {
-			return res.status(200).json({message: 'Succes'})
-		}
-	});
+	const findDb = await models.intraLink.find({ login: login });
+	const graduateId = findDb[0].graduateId;
+	const graduate = await contractInstance.methods.getGraduate(graduateId).call({from: contractOwner, gas: gasLimit});
+	if (graduate.signature === '') {
+		return res.status(200).json({message: `This person is not certify by 42 !`});
+	} else {
+		helpers.createPdf(graduate);
+		return res.status(200).json({message: 'Succes'})
+	}
 })
 
 module.exports = router

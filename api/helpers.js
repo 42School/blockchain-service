@@ -1,4 +1,6 @@
 const	web3 = require('web3');
+const	fs = require('fs');
+const	pdfkit = require('pdfkit');
 
 function str2bytes32(data) {
 	const	new_data = {
@@ -20,7 +22,20 @@ function multiSig(data, accounts) {
 	return (hash);
 }
 
+function createPdf(graduateData) {
+	const	doc = new pdfkit;
+
+	doc.pipe(fs.createWriteStream('output.pdf'));
+
+	doc.image('./assets/graduate_marvin_test.jpg', {
+		align: 'center',
+		valign: 'center'
+	 });
+	doc.end()
+}
+
 module.exports = {
 	str2bytes32: str2bytes32,
-	multiSig: multiSig
+	multiSig: multiSig,
+	createPdf: createPdf
 }
