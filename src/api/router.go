@@ -1,10 +1,13 @@
 package api
 
 import (
-	"controllers"
+	"github.com/gorilla/mux"
 )
+
+// control := controllers.new()
 
 func InitRouter() *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
-	router.Methods("POST").Path("/diplomas").Name("Create").HandlerFunc(controllers.DiplomasCreate)
+	// router.Methods("GET").Path("/diplomas").Name("Create").HandlerFunc(control.test)
+	return router
 }
