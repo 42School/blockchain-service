@@ -6,12 +6,17 @@ import (
 	"net/http"
 )
 
-func test() {
-	log.Println("test import controllers")
-}
 
-func Print(w http.ResponseWriter, r *http.Request) {
+func CreateDiploma(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type", "application/json;charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode("Coucou toi je suis dans controllers !")
+	log.Print(r.Body)
+	json.NewEncoder(w).Encode("In CreateDiploma")
+}
+
+func CheckHash(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-type", "application/json;charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+	log.Print(r.Body)
+	json.NewEncoder(w).Encode("In CheckHash")
 }
