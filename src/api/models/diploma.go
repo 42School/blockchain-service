@@ -1,12 +1,25 @@
 package models
 
-import "time"
+import (
+	"log"
+	"time"
+)
 
 type Diploma struct {
-	firstName   string `json:"first_name"`
-	lastName   string `json:"last_name"`
-	birthDate  time.Time `json:"birth_date"`
-	alumniDate time.Time `json:"alumni_date"`
-	level       float32 `json:"level"`
-	skills      []float32 `json:"skills"`
+	FirstName	string		`json:"first_name"`
+	LastName	string		`json:"last_name"`
+	BirthDate	time.Time	`json:"birth_date"`
+	AlumniDate	time.Time	`json:"alumni_date"`
+	Level		float64		`json:"level"`
+	Skills		[]float64	`json:"skills"`
+}
+
+func NewDiploma(new Diploma) {
+	log.Print("Enter in NewDiploma")
+	log.Println("First Name:", new.FirstName)
+	log.Println("Last Name:", new.LastName)
+	log.Println("Birth Date:", new.BirthDate)
+	log.Println("Alumni Date:", new.AlumniDate)
+	log.Println("Level:", new.Level)
+	log.Println("Skills:", new.Skills)
 }

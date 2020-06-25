@@ -7,7 +7,7 @@ import (
 
 func InitRouter() *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
-	router.Methods("GET").Path("/diplomas").Name("Create").HandlerFunc(controllers.CreateDiploma)
+	router.Methods("POST").Path("/diploma").Name("Create").HandlerFunc(controllers.CreateDiploma)
 	router.Methods("GET").Path("/check").Name("Check").HandlerFunc(controllers.CheckHash)
 	return router
 }
