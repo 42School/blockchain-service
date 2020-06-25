@@ -13,7 +13,8 @@ func CreateDiploma(w http.ResponseWriter, r *http.Request) {
 	var newDiploma models.Diploma
 	jsonData, readErr := ioutil.ReadAll(r.Body)
 	jsonErr := json.Unmarshal(jsonData, &newDiploma)
-	if r.ContentLength == 0 || readErr != nil || jsonErr != nil {
+	if r.ContentLength == 0 || readErr != nil || jsonErr != nil || models.CheckDiploma(newDiploma) == false {
+		log.Println("Request Fail !!")
 		w.Header().Set("Content-type", "application/json;charset=UTF-8")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode("In CreateDiploma but fail")

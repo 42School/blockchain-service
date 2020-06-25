@@ -15,11 +15,27 @@ type Diploma struct {
 }
 
 func NewDiploma(new Diploma) {
+	PrintDiploma(new)
+}
+
+func CheckDiploma(dp Diploma) bool {
+	if dp.FirstName == "" || dp.LastName == "" || dp.Level <= 6 || len(dp.Skills) != 30 || dp.AlumniDate.IsZero() || dp.BirthDate.IsZero() {
+		return false
+	}
+	for i := 0; i < len(dp.Skills); i++ {
+		if dp.Skills[i] < 0.0 {
+			return false
+		}
+	}
+	return true
+}
+
+func PrintDiploma(dp Diploma) {
 	log.Print("Enter in NewDiploma")
-	log.Println("First Name:", new.FirstName)
-	log.Println("Last Name:", new.LastName)
-	log.Println("Birth Date:", new.BirthDate)
-	log.Println("Alumni Date:", new.AlumniDate)
-	log.Println("Level:", new.Level)
-	log.Println("Skills:", new.Skills)
+	log.Println("First Name:", dp.FirstName)
+	log.Println("Last Name:", dp.LastName)
+	log.Println("Birth Date:", dp.BirthDate)
+	log.Println("Alumni Date:", dp.AlumniDate)
+	log.Println("Level:", dp.Level)
+	log.Println("Skills:", dp.Skills)
 }
