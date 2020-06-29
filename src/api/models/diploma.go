@@ -18,7 +18,8 @@ type Diploma struct {
 func NewDiploma(new Diploma) {
 	PrintDiploma(new)
 	log.Println("Enter in NewDiploma")
-	newHash := crypgo.Keccak256Hash([]byte(new.FirstName))
+	dataToHash := new.FirstName + ", " + new.LastName + ", " + new.BirthDate.String()[:10] + ", " + new.AlumniDate.String()[:10]
+	newHash := crypgo.Keccak256Hash([]byte(dataToHash))
 	log.Println(newHash.Hex())
 }
 
