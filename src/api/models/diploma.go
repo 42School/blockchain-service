@@ -2,7 +2,9 @@ package models
 
 import (
 	"log"
+	"os"
 	"time"
+	account "github.com/lpieri/42-Diploma/src/account"
 	crypgo "github.com/ethereum/go-ethereum/crypto"
 )
 
@@ -15,12 +17,21 @@ type Diploma struct {
 	Skills		[]float64	`json:"skills"`
 }
 
-func NewDiploma(new Diploma) {
+var passwordAccount string = os.Getenv("KEYPASSWD")
+
+func NewDiploma(new Diploma) bool {
 	PrintDiploma(new)
 	log.Println("Enter in NewDiploma")
+	account.CreateAccountsManager()
 	dataToHash := new.FirstName + ", " + new.LastName + ", " + new.BirthDate.String()[:10] + ", " + new.AlumniDate.String()[:10]
 	newHash := crypgo.Keccak256Hash([]byte(dataToHash))
 	log.Println(newHash.Hex())
+	sign, err := account.KeyStore.SignHashWithPassphrase(account.GetAccount(), passwordAccount, newHash.Bytes())
+	if err != nil {
+		return false
+	}
+	log.Println(sign, err)
+	return true
 }
 
 func CheckDiploma(dp Diploma) bool {

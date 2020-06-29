@@ -20,7 +20,13 @@ func CreateDiploma(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode("In CreateDiploma but fail")
 		return
 	}
-	models.NewDiploma(newDiploma)
+	if models.NewDiploma(newDiploma) != true {
+		log.Println("Request Fail !!")
+		w.Header().Set("Content-type", "application/json;charset=UTF-8")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode("In CreateDiploma but fail")
+		return
+	}
 	w.Header().Set("Content-type", "application/json;charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode("In CreateDiploma but success")
