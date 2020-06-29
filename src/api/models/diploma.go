@@ -3,6 +3,7 @@ package models
 import (
 	"log"
 	"time"
+	crypgo "github.com/ethereum/go-ethereum/crypto"
 )
 
 type Diploma struct {
@@ -16,6 +17,9 @@ type Diploma struct {
 
 func NewDiploma(new Diploma) {
 	PrintDiploma(new)
+	log.Println("Enter in NewDiploma")
+	newHash := crypgo.Keccak256Hash([]byte(new.FirstName))
+	log.Println(newHash.Hex())
 }
 
 func CheckDiploma(dp Diploma) bool {
