@@ -8,10 +8,10 @@ contract	FtDiplomaBase {
 
 	string public constant name = "42 Diploma";
 	string public constant symbol = "42D";
-	address public ftPubAddress;
-	string public linkOfRepo;
+	string public constant linkOfRepo = "github.com/lpieri/42-Diploma";
+	address public constant ftPubAddress = 0x8A21Dc0aeC762cD85de81B2bcd396a9d5676cFD7;
 
-	event Publish42Diploma(address ftPubAddress, string linkOfRepo);
+	event Publish42Diploma(address ftPubAddress, string _link);
 	// event CreateDiploma(address student, uint256 diplomaId);
 	// event Transfer(address sender, address recipient, uint256 diplomaId);
 
@@ -24,11 +24,7 @@ contract	FtDiplomaBase {
 	Diploma[] private diplomas;
 	mapping (address => uint256) private hashToDiploma;
 
-	constructor (address _ftAddress, string memory _linkOfRepo) internal {
-		require(_ftAddress != address(0), "42-Diploma: The _ftAddress is equal to zero.");
-
-		ftPubAddress = _ftAddress;
-		linkOfRepo = _linkOfRepo;
+	constructor () public {
 		emit Publish42Diploma(ftPubAddress, linkOfRepo);
 	}
 
