@@ -16,4 +16,13 @@ contract("FtDiplomaBase", async (accounts) => {
 		const tx = await instance.createDiploma(1517, skills, sign.v, sign.r, sign.s, sign.messageHash);
 		console.log(tx)
 	})
+
+	it("Testing the get of diploma", async () => {
+		let instance = await FtDiploma.deployed();
+		let dataToHash = "Louise, Pieri, 1998-12-27, 2020-06-25"
+		let hash = web3.utils.sha3(dataToHash);
+		let sign = account.sign(hash)
+		const tx = await instance.getDiploma(sign.messageHash);
+		console.log(tx)
+	})
 })

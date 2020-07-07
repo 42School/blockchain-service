@@ -27,7 +27,7 @@ contract	FtDiplomaBase {
 	}
 
 	Diploma[] private diplomas;
-	mapping (bytes32 => uint256) private hashToDiploma;
+	mapping (bytes32 => uint256) public hashToDiploma;
 
 	constructor () public {
 		emit Publish42Diploma(ftPubAddress, linkOfRepo);
@@ -42,7 +42,8 @@ contract	FtDiplomaBase {
 	}
 
 	function getDiploma(bytes32 _studentHash) public view returns (uint64 level, uint64[30] memory skills) {
-		Diploma memory _getDiploma = diplomas[hashToDiploma[_studentHash]];
+		uint256 id = hashToDiploma[_studentHash];
+		Diploma memory _getDiploma = diplomas[id];
 		uint64 levelDiploma = _getDiploma.level;
 		uint64[30] memory skillsDiploma = _getDiploma.skills;
 		return (levelDiploma, skillsDiploma);

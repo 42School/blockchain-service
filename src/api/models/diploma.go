@@ -1,11 +1,12 @@
 package models
 
 import (
+	crypgo "github.com/ethereum/go-ethereum/crypto"
+	account "github.com/lpieri/42-Diploma/src/account"
+	"github.com/lpieri/42-Diploma/src/contracts"
 	"log"
 	"os"
 	"time"
-	account "github.com/lpieri/42-Diploma/src/account"
-	crypgo "github.com/ethereum/go-ethereum/crypto"
 )
 
 type Diploma struct {
@@ -31,6 +32,7 @@ func NewDiploma(new Diploma) bool {
 		return false
 	}
 	log.Println(sign, err)
+	contracts.CallGetDiploma(newHash.Bytes())
 	return true
 }
 
