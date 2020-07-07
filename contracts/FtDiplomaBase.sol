@@ -2,7 +2,7 @@
 **	Autor: Louise Pieri
 */
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.4.22 <0.7.0;
+pragma solidity >=0.5.8 <0.7.0;
 
 contract	FtDiplomaBase {
 
@@ -14,10 +14,16 @@ contract	FtDiplomaBase {
 	event Publish42Diploma(address ftPubAddress, string _link);
 	event CreateDiploma(bytes32 student, uint256 diplomaId);
 
+	struct	Sign {
+		uint8		v;
+		bytes32		r;
+		bytes32		s;
+	}
+
 	struct	Diploma {
-		bytes32		level;
-		bytes32[30]	skills;
-		bytes32		signature;
+		uint64		level;
+		uint64[30]	skills;
+		Sign		signature;
 	}
 
 	Diploma[] private diplomas;
@@ -27,17 +33,18 @@ contract	FtDiplomaBase {
 		emit Publish42Diploma(ftPubAddress, linkOfRepo);
 	}
 
-	function createDiploma(bytes32 _level, bytes32[30] memory _skills, bytes32 _signature, bytes32 _studentHash) public {
-		diplomas.push(Diploma(_level, _skills, _signature));
+	function createDiploma(uint64 _level, uint64[30] memory _skills, uint8 _v, bytes32 _r, bytes32 _s, bytes32 _studentHash) public {
+		require(ecrecover(_studentHash, _v, _r, _s) == ftPubAddress, "FtDiplomaBase: Is not 42 sign this diploma");
+		diplomas.push(Diploma(_level, _skills, Sign(_v, _r, _s)));
 		uint256 newID = diplomas.length - 1;
 		hashToDiploma[_studentHash] = newID;
 		emit CreateDiploma(_studentHash, newID);
 	}
 
-	function getDiploma(bytes32 _studentHash) public view returns (bytes32 level, bytes32[30] memory skills) {
+	function getDiploma(bytes32 _studentHash) public view returns (uint64 level, uint64[30] memory skills) {
 		Diploma memory _getDiploma = diplomas[hashToDiploma[_studentHash]];
-		bytes32 levelDiploma = _getDiploma.level;
-		bytes32[30] memory skillsDiploma = _getDiploma.skills;
+		uint64 levelDiploma = _getDiploma.level;
+		uint64[30] memory skillsDiploma = _getDiploma.skills;
 		return (levelDiploma, skillsDiploma);
 	}
 }
