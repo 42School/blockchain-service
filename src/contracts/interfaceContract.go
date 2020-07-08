@@ -1,52 +1,98 @@
 package contracts
 
 import (
+	"context"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
+	//accounts "github.com/lpieri/42-Diploma/src/account"
 	"log"
+	"math/big"
 	"os"
 )
 
 var networkLink string = os.Getenv("NETWORKLINK")
 var addressOfContract string = os.Getenv("ADDRESSCONTRACT")
 
-func connectEthGetInstance() (*Diploma, error) {
+func connectEthGetInstance() (*Diploma, *ethclient.Client, error) {
 	client, errConnection := ethclient.Dial(networkLink)
 	if errConnection != nil {
-		return nil, errConnection
+		return nil, nil, errConnection
 	}
 	log.Println(client)
 	addressOfAddress := common.HexToAddress(addressOfContract)
 	instance, errInstance := NewDiploma(addressOfAddress, client)
 	if errInstance != nil {
-		return nil, errInstance
+		return nil, nil, errInstance
 	}
 	log.Println("after get instance", instance)
-	return instance, nil
+	return instance, client, nil
 }
 
-func CallCreateDiploma() bool {
-	instance, err := connectEthGetInstance()
+func getAuth() (*bind.TransactOpts, error) {
+	log.Println("enter in getauth...")
+	client, errConnection := ethclient.Dial(networkLink)
+	if errConnection != nil {
+		return nil, errConnection
+	}
+	//account := accounts.GetAccount()
+	//key, errKey := accounts.GetKey()
+	//if errKey != nil  {
+	//	return nil, errKey
+	//}
+	address := common.HexToAddress("0x0673979A0B91cB581d829304e9e1b0FD1048500a")
+	pk, _ := crypto.HexToECDSA("da2c995f6bb2b4ba5888fd752440d903e191bc4c38338276df3652935654d16f")
+	nonce, errNonce := client.PendingNonceAt(context.Background(), address)
+	//nonce, errNonce := client.PendingNonceAt(context.Background(), account.Address)
+	if errNonce != nil  {
+		return nil, errNonce
+	}
+	gasPrice, errGas := client.SuggestGasPrice(context.Background())
+	if errGas != nil {
+		return nil, errGas
+	}
+	//auth := bind.NewKeyedTransactor(key.PrivateKey)
+	auth := bind.NewKeyedTransactor(pk)
+	auth.Nonce = big.NewInt(int64(nonce))
+	auth.Value = big.NewInt(0)
+	auth.GasLimit = uint64(600000)
+	auth.GasPrice = gasPrice
+	return auth, nil
+}
+
+func CallCreateDiploma(level uint64, skills [30]uint64, v uint8, r [32]byte, s [32]byte, hash [32]byte) bool {
+	instance, client, err := connectEthGetInstance()
 	if err != nil {
 		return false
 	}
-	log.Println(instance)
+	log.Println("in call-create-diploma", instance, client)
+	auth, errAuth := getAuth()
+	if errAuth != nil {
+		log.Println("auth", errAuth)
+		return false
+	}
+	tx, errCreate := instance.CreateDiploma(auth, level, skills, v, r, s, hash)
+	if errCreate != nil {
+		log.Println(errCreate)
+		return false
+	}
+	log.Println("tx", tx)
 	return true
 }
 
 func CallGetDiploma(hash []byte) bool {
-	instance, err := connectEthGetInstance()
+	instance, client, err := connectEthGetInstance()
 	if err != nil {
 		return false
 	}
-	log.Println(instance)
+	log.Println(instance, client)
 	hash32 := [32]byte{}
 	copy(hash32[:], hash)
 	result, errGet := instance.GetDiploma(&bind.CallOpts{}, hash32)
 	if errGet != nil {
 		return false
 	}
-	log.Print(result)
+	log.Print("result of get:", result)
 	return true
 }

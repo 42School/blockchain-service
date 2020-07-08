@@ -20,6 +20,14 @@ type Diploma struct {
 
 var passwordAccount string = os.Getenv("KEYPASSWD")
 
+func convertSkillToInt(skills []float64) [30]uint64 {
+	newSkills := [30]uint64{}
+	for i := 0; i < 30; i++ {
+		newSkills[i] = uint64(skills[i] * 100)
+	}
+	return newSkills
+}
+
 func NewDiploma(new Diploma) bool {
 	PrintDiploma(new)
 	log.Println("Enter in NewDiploma")
@@ -32,7 +40,18 @@ func NewDiploma(new Diploma) bool {
 		return false
 	}
 	log.Println(sign, err)
-	contracts.CallGetDiploma(newHash.Bytes())
+	level := uint64(new.Level * 100)
+	skills := convertSkillToInt(new.Skills)
+	hash := [32]byte{}
+	r := [32]byte{}
+	s := [32]byte{}
+	copy(hash[:], newHash.Bytes())
+	copy(r[:], sign[:32])
+	copy(s[:], sign[32:64])
+	v := uint8(int(sign[64])) + 27
+	if contracts.CallCreateDiploma(level, skills, v, r, s, hash) == false {
+		return false
+	}
 	return true
 }
 
