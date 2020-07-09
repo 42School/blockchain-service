@@ -31,7 +31,7 @@ func connectEthGetInstance() (*Diploma, *ethclient.Client, error) {
 }
 
 func getAuth() (*bind.TransactOpts, error) {
-	log.Println("enter in getauth...")
+	//log.Println("enter in getauth...")
 	client, errConnection := ethclient.Dial(networkLink)
 	if errConnection != nil {
 		return nil, errConnection
@@ -62,22 +62,22 @@ func getAuth() (*bind.TransactOpts, error) {
 }
 
 func CallCreateDiploma(level uint64, skills [30]uint64, v uint8, r [32]byte, s [32]byte, hash [32]byte) bool {
-	instance, client, err := connectEthGetInstance()
+	instance, _, err := connectEthGetInstance()
 	if err != nil {
 		return false
 	}
-	log.Println("in call-create-diploma", instance, client)
+	//log.Println("in call-create-diploma", instance, client)
 	auth, errAuth := getAuth()
 	if errAuth != nil {
-		log.Println("auth", errAuth)
+		//log.Println("auth", errAuth)
 		return false
 	}
-	tx, errCreate := instance.CreateDiploma(auth, level, skills, v, r, s, hash)
+	_, errCreate := instance.CreateDiploma(auth, level, skills, v, r, s, hash)
 	if errCreate != nil {
-		log.Println(errCreate)
+		//log.Println(errCreate)
 		return false
 	}
-	log.Println("tx", tx)
+	//log.Println("tx", tx)
 	return true
 }
 

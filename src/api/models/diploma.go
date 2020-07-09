@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/ethereum/go-ethereum/common"
 	crypgo "github.com/ethereum/go-ethereum/crypto"
 	account "github.com/lpieri/42-Diploma/src/account"
 	"github.com/lpieri/42-Diploma/src/contracts"
@@ -28,28 +29,33 @@ func convertSkillToInt(skills []float64) [30]uint64 {
 	return newSkills
 }
 
+func convertDpToData(_dp Diploma, _sign []byte, _hash common.Hash) (uint64, [30]uint64, uint8, [32]byte, [32]byte, [32]byte) {
+	level := uint64(_dp.Level * 100)
+	skills := convertSkillToInt(_dp.Skills)
+	v := uint8(int(_sign[64])) + 27
+	r := [32]byte{}
+	s := [32]byte{}
+	hash := [32]byte{}
+	copy(r[:], _sign[:32])
+	copy(s[:], _sign[32:64])
+	copy(hash[:], _hash.Bytes())
+	return level, skills, v, r, s, hash
+}
+
 func NewDiploma(new Diploma) bool {
-	PrintDiploma(new)
-	log.Println("Enter in NewDiploma")
-	account.CreateAccountsManager()
+	//PrintDiploma(new)
+	//log.Println("Enter in NewDiploma")
+	account.CreateAccountsManager() // à mettre dans le main ?!
 	dataToHash := new.FirstName + ", " + new.LastName + ", " + new.BirthDate.String()[:10] + ", " + new.AlumniDate.String()[:10]
 	newHash := crypgo.Keccak256Hash([]byte(dataToHash))
-	log.Println(newHash.Hex())
+	//log.Println(newHash.Hex())
 	sign, err := account.KeyStore.SignHashWithPassphrase(account.GetAccount(), passwordAccount, newHash.Bytes())
 	if err != nil {
 		return false
 	}
-	log.Println(sign, err)
-	level := uint64(new.Level * 100)
-	skills := convertSkillToInt(new.Skills)
-	hash := [32]byte{}
-	r := [32]byte{}
-	s := [32]byte{}
-	copy(hash[:], newHash.Bytes())
-	copy(r[:], sign[:32])
-	copy(s[:], sign[32:64])
-	v := uint8(int(sign[64])) + 27
-	if contracts.CallCreateDiploma(level, skills, v, r, s, hash) == false {
+	//log.Println(sign, err)
+	if contracts.CallCreateDiploma(convertDpToData(new, sign, newHash)) == false {
+		// mettre le diplome dans la queue de retry !
 		return false
 	}
 	return true
