@@ -81,18 +81,18 @@ func CallCreateDiploma(level uint64, skills [30]uint64, v uint8, r [32]byte, s [
 	return true
 }
 
-func CallGetDiploma(hash []byte) bool {
+func CallGetDiploma(hash []byte) (uint64, [30]uint64, error) {
 	instance, client, err := connectEthGetInstance()
 	if err != nil {
-		return false
+		return 0, [30]uint64{}, err
 	}
 	log.Println(instance, client)
 	hash32 := [32]byte{}
 	copy(hash32[:], hash)
 	result, errGet := instance.GetDiploma(&bind.CallOpts{}, hash32)
 	if errGet != nil {
-		return false
+		return 0, [30]uint64{}, errGet
 	}
 	log.Print("result of get:", result)
-	return true
+	return result.Level, result.Skills, nil
 }

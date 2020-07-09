@@ -29,6 +29,14 @@ func convertSkillToInt(skills []float64) [30]uint64 {
 	return newSkills
 }
 
+func convertSkillToFloat(skills [30]uint64) [30]float64 {
+	newSkills := [30]float64{}
+	for i := 0; i < 30; i++ {
+		newSkills[i] = float64(skills[i]) / 100
+	}
+	return newSkills
+}
+
 func convertDpToData(_dp Diploma, _sign []byte, _hash common.Hash) (uint64, [30]uint64, uint8, [32]byte, [32]byte, [32]byte) {
 	level := uint64(_dp.Level * 100)
 	skills := convertSkillToInt(_dp.Skills)
@@ -59,6 +67,19 @@ func NewDiploma(new Diploma) bool {
 		return false
 	}
 	return true
+}
+
+func GetDiploma(_dp Diploma) (float64, [30]float64, error) {
+	dataToHash := _dp.FirstName + ", " + _dp.LastName + ", " + _dp.BirthDate.String()[:10] + ", " + _dp.AlumniDate.String()[:10]
+	hash := crypgo.Keccak256Hash([]byte(dataToHash))
+	levelInt, skillsInt, err := contracts.CallGetDiploma(hash.Bytes())
+	if err != nil {
+		return 0, [30]float64{}, err
+	}
+	level := float64(levelInt / 100)
+	skills := convertSkillToFloat(skillsInt)
+	log.Print(levelInt, skillsInt)
+	return level, skills, nil
 }
 
 func CheckDiploma(dp Diploma) bool {
