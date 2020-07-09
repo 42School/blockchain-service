@@ -7,22 +7,22 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/lpieri/42-Diploma/src/global"
+
 	//accounts "github.com/lpieri/42-Diploma/src/account"
 	"log"
 	"math/big"
-	"os"
 )
 
-var networkLink string = os.Getenv("NETWORKLINK")
-var addressOfContract string = os.Getenv("ADDRESSCONTRACT")
+
 
 func connectEthGetInstance() (*Diploma, *ethclient.Client, error) {
-	client, errConnection := ethclient.Dial(networkLink)
+	client, errConnection := ethclient.Dial(global.NetworkLink)
 	if errConnection != nil {
 		return nil, nil, errConnection
 	}
 	log.Println(client)
-	addressOfAddress := common.HexToAddress(addressOfContract)
+	addressOfAddress := common.HexToAddress(global.AddressOfContract)
 	instance, errInstance := NewDiploma(addressOfAddress, client)
 	if errInstance != nil {
 		return nil, nil, errInstance
@@ -33,7 +33,7 @@ func connectEthGetInstance() (*Diploma, *ethclient.Client, error) {
 
 func getAuth() (*bind.TransactOpts, error) {
 	//log.Println("enter in getauth...")
-	client, errConnection := ethclient.Dial(networkLink)
+	client, errConnection := ethclient.Dial(global.NetworkLink)
 	if errConnection != nil {
 		return nil, errConnection
 	}
@@ -73,12 +73,12 @@ func CallCreateDiploma(level uint64, skills [30]uint64, v uint8, r [32]byte, s [
 		//log.Println("auth", errAuth)
 		return false
 	}
-	_, errCreate := instance.CreateDiploma(auth, level, skills, v, r, s, hash)
+	tx, errCreate := instance.CreateDiploma(auth, level, skills, v, r, s, hash)
 	if errCreate != nil {
 		log.Println(errCreate)
 		return false
 	}
-	//log.Println("tx", tx)
+	log.Println("tx", tx)
 	return true
 }
 

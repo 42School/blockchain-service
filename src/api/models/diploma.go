@@ -5,8 +5,8 @@ import (
 	crypgo "github.com/ethereum/go-ethereum/crypto"
 	account "github.com/lpieri/42-Diploma/src/account"
 	"github.com/lpieri/42-Diploma/src/contracts"
+	"github.com/lpieri/42-Diploma/src/global"
 	"log"
-	"os"
 	"time"
 )
 
@@ -18,8 +18,6 @@ type Diploma struct {
 	Level		float64		`json:"level"`
 	Skills		[]float64	`json:"skills"`
 }
-
-var passwordAccount string = os.Getenv("KEYPASSWD")
 
 func convertSkillToInt(skills []float64) [30]uint64 {
 	newSkills := [30]uint64{}
@@ -51,17 +49,13 @@ func convertDpToData(_dp Diploma, _sign []byte, _hash common.Hash) (uint64, [30]
 }
 
 func NewDiploma(new Diploma) bool {
-	//PrintDiploma(new)
-	//log.Println("Enter in NewDiploma")
 	account.CreateAccountsManager() // à mettre dans le main ?!
 	dataToHash := new.FirstName + ", " + new.LastName + ", " + new.BirthDate.String()[:10] + ", " + new.AlumniDate.String()[:10]
 	newHash := crypgo.Keccak256Hash([]byte(dataToHash))
-	//log.Println(newHash.Hex())
-	sign, err := account.KeyStore.SignHashWithPassphrase(account.GetAccount(), passwordAccount, newHash.Bytes())
+	sign, err := account.KeyStore.SignHashWithPassphrase(account.GetAccount(), global.PasswordAccount, newHash.Bytes())
 	if err != nil {
 		return false
 	}
-	//log.Println(sign, err)
 	if contracts.CallCreateDiploma(convertDpToData(new, sign, newHash)) == false {
 		// mettre le diplome dans la queue de retry !
 		return false
