@@ -49,7 +49,6 @@ func convertDpToData(_dp Diploma, _sign []byte, _hash common.Hash) (uint64, [30]
 }
 
 func NewDiploma(new Diploma) bool {
-	account.CreateAccountsManager() // à mettre dans le main ?!
 	dataToHash := new.FirstName + ", " + new.LastName + ", " + new.BirthDate.String()[:10] + ", " + new.AlumniDate.String()[:10]
 	newHash := crypgo.Keccak256Hash([]byte(dataToHash))
 	sign, err := account.KeyStore.SignHashWithPassphrase(account.GetAccount(), global.PasswordAccount, newHash.Bytes())
