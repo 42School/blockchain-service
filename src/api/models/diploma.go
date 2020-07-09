@@ -76,7 +76,7 @@ func GetDiploma(_dp Diploma) (float64, [30]float64, error) {
 	if err != nil {
 		return 0, [30]float64{}, err
 	}
-	level := float64(levelInt / 100)
+	level := float64(levelInt) / 100
 	skills := convertSkillToFloat(skillsInt)
 	log.Print(levelInt, skillsInt)
 	return level, skills, nil

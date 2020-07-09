@@ -30,8 +30,8 @@ func CreateDiploma(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode("In CreateDiploma but fail")
 		return
 	}
-	if models.NewDiploma(newDiploma) != true {
-		//log.Println("Request Fail !!")
+	if models.NewDiploma(newDiploma) == false {
+		log.Println("Request Fail !!")
 		w.Header().Set("Content-type", "application/json;charset=UTF-8")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode("In CreateDiploma but fail")
@@ -50,7 +50,7 @@ func GetDiploma(w http.ResponseWriter, r *http.Request) {
 	level, skills, errGet := models.GetDiploma(diploma)
 	if r.ContentLength == 0 || readErr != nil || jsonErr != nil || errGet != nil {
 		log.Println("Request Fail !!")
-		response := ResponseJson{false, "The request is fail, please retry & check the data", nil}
+		response := ResponseJson{false, "The request is fail, please retry & check the data", ResponseData{}}
 		res, _ := json.Marshal(response)
 		w.Header().Set("Content-type", "application/json;charset=UTF-8")
 		w.WriteHeader(http.StatusBadRequest)

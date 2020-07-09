@@ -2,6 +2,7 @@ package contracts
 
 import (
 	"context"
+	"fmt"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -41,8 +42,8 @@ func getAuth() (*bind.TransactOpts, error) {
 	//if errKey != nil  {
 	//	return nil, errKey
 	//}
-	address := common.HexToAddress("0x0673979A0B91cB581d829304e9e1b0FD1048500a")
-	pk, _ := crypto.HexToECDSA("da2c995f6bb2b4ba5888fd752440d903e191bc4c38338276df3652935654d16f")
+	address := common.HexToAddress("0x4397c7Bfbc55d7dDFce2d2e7821ee4f3611F9F06")
+	pk, _ := crypto.HexToECDSA("3571c6386a503ea0b0d8c7c510db64eb354d13aef6f72baca77f95d25caeb18c")
 	nonce, errNonce := client.PendingNonceAt(context.Background(), address)
 	//nonce, errNonce := client.PendingNonceAt(context.Background(), account.Address)
 	if errNonce != nil  {
@@ -74,7 +75,7 @@ func CallCreateDiploma(level uint64, skills [30]uint64, v uint8, r [32]byte, s [
 	}
 	_, errCreate := instance.CreateDiploma(auth, level, skills, v, r, s, hash)
 	if errCreate != nil {
-		//log.Println(errCreate)
+		log.Println(errCreate)
 		return false
 	}
 	//log.Println("tx", tx)
@@ -91,7 +92,11 @@ func CallGetDiploma(hash []byte) (uint64, [30]uint64, error) {
 	copy(hash32[:], hash)
 	result, errGet := instance.GetDiploma(&bind.CallOpts{}, hash32)
 	if errGet != nil {
+		log.Println(errGet)
 		return 0, [30]uint64{}, errGet
+	}
+	if result.Level == 0 {
+		return 0, [30]uint64{}, fmt.Errorf("the diploma doesnt exist")
 	}
 	log.Print("result of get:", result)
 	return result.Level, result.Skills, nil

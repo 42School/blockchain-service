@@ -27,7 +27,7 @@ var (
 )
 
 // DiplomaABI is the input ABI used to generate the binding from.
-const DiplomaABI = "[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"student\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"diplomaId\",\"type\":\"uint256\"}],\"name\":\"CreateDiploma\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"ftPubAddress\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"_link\",\"type\":\"string\"}],\"name\":\"Publish42Diploma\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint64\",\"name\":\"_level\",\"type\":\"uint64\"},{\"internalType\":\"uint64[30]\",\"name\":\"_skills\",\"type\":\"uint64[30]\"},{\"internalType\":\"uint8\",\"name\":\"_v\",\"type\":\"uint8\"},{\"internalType\":\"bytes32\",\"name\":\"_r\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"_s\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"_studentHash\",\"type\":\"bytes32\"}],\"name\":\"createDiploma\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"ftPubAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"_studentHash\",\"type\":\"bytes32\"}],\"name\":\"getDiploma\",\"outputs\":[{\"internalType\":\"uint64\",\"name\":\"level\",\"type\":\"uint64\"},{\"internalType\":\"uint64[30]\",\"name\":\"skills\",\"type\":\"uint64[30]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"hashToDiploma\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"linkOfRepo\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"name\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"symbol\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]"
+const DiplomaABI = "[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"student\",\"type\":\"bytes32\"}],\"name\":\"CreateDiploma\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"ftPubAddress\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"_link\",\"type\":\"string\"}],\"name\":\"Publish42Diploma\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint64\",\"name\":\"_level\",\"type\":\"uint64\"},{\"internalType\":\"uint64[30]\",\"name\":\"_skills\",\"type\":\"uint64[30]\"},{\"internalType\":\"uint8\",\"name\":\"_v\",\"type\":\"uint8\"},{\"internalType\":\"bytes32\",\"name\":\"_r\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"_s\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"_studentHash\",\"type\":\"bytes32\"}],\"name\":\"createDiploma\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"ftPubAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"_studentHash\",\"type\":\"bytes32\"}],\"name\":\"getDiploma\",\"outputs\":[{\"internalType\":\"uint64\",\"name\":\"level\",\"type\":\"uint64\"},{\"internalType\":\"uint64[30]\",\"name\":\"skills\",\"type\":\"uint64[30]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"linkOfRepo\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"name\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"symbol\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]"
 
 // Diploma is an auto generated Go binding around an Ethereum contract.
 type Diploma struct {
@@ -233,32 +233,6 @@ func (_Diploma *DiplomaCallerSession) GetDiploma(_studentHash [32]byte) (struct 
 	return _Diploma.Contract.GetDiploma(&_Diploma.CallOpts, _studentHash)
 }
 
-// HashToDiploma is a free data retrieval call binding the contract method 0x61262f77.
-//
-// Solidity: function hashToDiploma(bytes32 ) view returns(uint256)
-func (_Diploma *DiplomaCaller) HashToDiploma(opts *bind.CallOpts, arg0 [32]byte) (*big.Int, error) {
-	var (
-		ret0 = new(*big.Int)
-	)
-	out := ret0
-	err := _Diploma.contract.Call(opts, out, "hashToDiploma", arg0)
-	return *ret0, err
-}
-
-// HashToDiploma is a free data retrieval call binding the contract method 0x61262f77.
-//
-// Solidity: function hashToDiploma(bytes32 ) view returns(uint256)
-func (_Diploma *DiplomaSession) HashToDiploma(arg0 [32]byte) (*big.Int, error) {
-	return _Diploma.Contract.HashToDiploma(&_Diploma.CallOpts, arg0)
-}
-
-// HashToDiploma is a free data retrieval call binding the contract method 0x61262f77.
-//
-// Solidity: function hashToDiploma(bytes32 ) view returns(uint256)
-func (_Diploma *DiplomaCallerSession) HashToDiploma(arg0 [32]byte) (*big.Int, error) {
-	return _Diploma.Contract.HashToDiploma(&_Diploma.CallOpts, arg0)
-}
-
 // LinkOfRepo is a free data retrieval call binding the contract method 0x8ebc72c1.
 //
 // Solidity: function linkOfRepo() view returns(string)
@@ -427,14 +401,13 @@ func (it *DiplomaCreateDiplomaIterator) Close() error {
 
 // DiplomaCreateDiploma represents a CreateDiploma event raised by the Diploma contract.
 type DiplomaCreateDiploma struct {
-	Student   [32]byte
-	DiplomaId *big.Int
-	Raw       types.Log // Blockchain specific contextual infos
+	Student [32]byte
+	Raw     types.Log // Blockchain specific contextual infos
 }
 
-// FilterCreateDiploma is a free log retrieval operation binding the contract event 0xb0883e564de552c164f168e24578da0ae7e189df9cb6e8634e5d81948f80b0e4.
+// FilterCreateDiploma is a free log retrieval operation binding the contract event 0x0b638557d56f5cb5f2923ac2d36850a0c1c0a1944c628abb24fd73fabeeee600.
 //
-// Solidity: event CreateDiploma(bytes32 student, uint256 diplomaId)
+// Solidity: event CreateDiploma(bytes32 student)
 func (_Diploma *DiplomaFilterer) FilterCreateDiploma(opts *bind.FilterOpts) (*DiplomaCreateDiplomaIterator, error) {
 
 	logs, sub, err := _Diploma.contract.FilterLogs(opts, "CreateDiploma")
@@ -444,9 +417,9 @@ func (_Diploma *DiplomaFilterer) FilterCreateDiploma(opts *bind.FilterOpts) (*Di
 	return &DiplomaCreateDiplomaIterator{contract: _Diploma.contract, event: "CreateDiploma", logs: logs, sub: sub}, nil
 }
 
-// WatchCreateDiploma is a free log subscription operation binding the contract event 0xb0883e564de552c164f168e24578da0ae7e189df9cb6e8634e5d81948f80b0e4.
+// WatchCreateDiploma is a free log subscription operation binding the contract event 0x0b638557d56f5cb5f2923ac2d36850a0c1c0a1944c628abb24fd73fabeeee600.
 //
-// Solidity: event CreateDiploma(bytes32 student, uint256 diplomaId)
+// Solidity: event CreateDiploma(bytes32 student)
 func (_Diploma *DiplomaFilterer) WatchCreateDiploma(opts *bind.WatchOpts, sink chan<- *DiplomaCreateDiploma) (event.Subscription, error) {
 
 	logs, sub, err := _Diploma.contract.WatchLogs(opts, "CreateDiploma")
@@ -481,9 +454,9 @@ func (_Diploma *DiplomaFilterer) WatchCreateDiploma(opts *bind.WatchOpts, sink c
 	}), nil
 }
 
-// ParseCreateDiploma is a log parse operation binding the contract event 0xb0883e564de552c164f168e24578da0ae7e189df9cb6e8634e5d81948f80b0e4.
+// ParseCreateDiploma is a log parse operation binding the contract event 0x0b638557d56f5cb5f2923ac2d36850a0c1c0a1944c628abb24fd73fabeeee600.
 //
-// Solidity: event CreateDiploma(bytes32 student, uint256 diplomaId)
+// Solidity: event CreateDiploma(bytes32 student)
 func (_Diploma *DiplomaFilterer) ParseCreateDiploma(log types.Log) (*DiplomaCreateDiploma, error) {
 	event := new(DiplomaCreateDiploma)
 	if err := _Diploma.contract.UnpackLog(event, "CreateDiploma", log); err != nil {
