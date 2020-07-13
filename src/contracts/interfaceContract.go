@@ -14,8 +14,6 @@ import (
 	"math/big"
 )
 
-
-
 func connectEthGetInstance() (*Diploma, *ethclient.Client, error) {
 	client, errConnection := ethclient.Dial(global.NetworkLink)
 	if errConnection != nil {

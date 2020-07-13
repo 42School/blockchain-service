@@ -56,8 +56,6 @@ func NewDiploma(new Diploma) (string, bool) {
 		return "", false
 	}
 	if contracts.CallCreateDiploma(convertDpToData(new, sign, newHash)) == false {
-		// mettre le diplome dans la queue de retry !
-		//global.RetryQueue.CustomPushBack(42)
 		return "", false
 	}
 	global.ToCheckHash.PushBack(newHash.Bytes())
