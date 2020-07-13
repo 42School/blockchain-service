@@ -42,8 +42,8 @@ func getAuth() (*bind.TransactOpts, error) {
 	//if errKey != nil  {
 	//	return nil, errKey
 	//}
-	address := common.HexToAddress("0x4397c7Bfbc55d7dDFce2d2e7821ee4f3611F9F06")
-	pk, _ := crypto.HexToECDSA("3571c6386a503ea0b0d8c7c510db64eb354d13aef6f72baca77f95d25caeb18c")
+	address := common.HexToAddress("0xa0A6AC7843BF9E9A1bb86F5391a2BF5fB1Bd8C78")
+	pk, _ := crypto.HexToECDSA("10865bedc583c8c667980202e5918e22ae1fb4c98f64cb1ecbe2381cbdcee27f")
 	nonce, errNonce := client.PendingNonceAt(context.Background(), address)
 	//nonce, errNonce := client.PendingNonceAt(context.Background(), account.Address)
 	if errNonce != nil  {
@@ -67,7 +67,6 @@ func CallCreateDiploma(level uint64, skills [30]uint64, v uint8, r [32]byte, s [
 	if err != nil {
 		return false
 	}
-	//log.Println("in call-create-diploma", instance, client)
 	auth, errAuth := getAuth()
 	if errAuth != nil {
 		//log.Println("auth", errAuth)

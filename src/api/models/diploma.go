@@ -48,19 +48,20 @@ func convertDpToData(_dp Diploma, _sign []byte, _hash common.Hash) (uint64, [30]
 	return level, skills, v, r, s, hash
 }
 
-func NewDiploma(new Diploma) bool {
+func NewDiploma(new Diploma) (string, bool) {
 	dataToHash := new.FirstName + ", " + new.LastName + ", " + new.BirthDate.String()[:10] + ", " + new.AlumniDate.String()[:10]
 	newHash := crypgo.Keccak256Hash([]byte(dataToHash))
 	sign, err := account.KeyStore.SignHashWithPassphrase(account.GetAccount(), global.PasswordAccount, newHash.Bytes())
 	if err != nil {
-		return false
+		return "", false
 	}
 	if contracts.CallCreateDiploma(convertDpToData(new, sign, newHash)) == false {
 		// mettre le diplome dans la queue de retry !
-		global.RetryQueue.CustomPushBack(42)
-		return false
+		//global.RetryQueue.CustomPushBack(42)
+		return "", false
 	}
-	return true
+	global.ToCheckHash.PushBack(newHash.Bytes())
+	return newHash.Hex(), true
 }
 
 func GetDiploma(_dp Diploma) (float64, [30]float64, error) {

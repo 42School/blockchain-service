@@ -15,7 +15,7 @@ type Queue struct {
 func New() *Queue {
 	log.Println("Enter in New Queue")
 	q := Queue{List: list.New()}
-	_, err := os.OpenFile(nameFileRetryQueue, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0744)
+	f, err := os.OpenFile(nameFileRetryQueue, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0744)
 	if err != nil {
 		log.Println(err)
 	}
