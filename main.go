@@ -8,21 +8,23 @@ import (
 	"github.com/lpieri/42-Diploma/src/global"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 )
 
 func ValidedHash() {
 	for {
-		time.Sleep(600000 * time.Millisecond)
+		time.Sleep(6000 * time.Millisecond)
 		copyList := global.ToCheckHash
 		for e := copyList.Front(); e != nil; e = copyList.Front() {
 			if e != nil {
 				hash, _ := e.Value.([]byte)
 				_, _, err := contracts.CallGetDiploma(hash)
 				if err == nil {
-					// Send http request
 					strHash := hexutil.Encode(hash)
-					log.Println("Valide write.", strHash)
+					data := "{'Status': true, 'Message': 'The " + strHash + " diploma is definitely inscribed on Ethereum.', 'Data': {" + strHash + "}}"
+					res, _ := http.Post("http://end-point.42.fr/path", "Content-Type: application/json", strings.NewReader(data))
+					log.Println(res)
 					global.ToCheckHash.Remove(e)
 				}
 			}
