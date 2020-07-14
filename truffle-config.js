@@ -79,7 +79,8 @@ module.exports = {
 
   // Set default mocha options here, use special reporters etc.
   mocha: {
-    timeout: 4200000
+	  useColors: false,
+	//   'allowUncaught': true
   },
 
   // Configure your compilers

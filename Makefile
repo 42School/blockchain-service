@@ -12,11 +12,14 @@ CYAN = \033[36m
 
 .PHONY:	all install compile clean re
 
-all:		install compile
+all:		install test compile
 
 install:
 			npm install -g truffle solc
 			go mod download
+
+test:
+			truffle test
 
 compile:
 			@echo "$(YELLOW)Compiling the smart-contract in solidity!$(NONE)"
