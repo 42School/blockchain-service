@@ -1,4 +1,4 @@
-const FtDiploma = artifacts.require("FtDiplomaBase")
+const FtDiploma = artifacts.require("FtDiploma")
 
 let skills = [
 	857, 542, 62, 942, 661, 416, 902, 902, 902, 36, 222, 55, 145,
@@ -6,7 +6,10 @@ let skills = [
 	2126, 328, 423, 203, 416
 ]
 
-contract("FtDiplomaBase", async (accounts) => {
+const keystore = "Contents of keystore file";
+const account = web3.eth.accounts.decrypt(keystore, 'PASSWORD');
+
+contract("FtDiploma", async (accounts) => {
 
 	it("Testing the creation of new diploma", async () => {
 		let instance = await FtDiploma.deployed();
