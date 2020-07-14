@@ -2,11 +2,13 @@ package contracts
 
 import (
 	"context"
+	"crypto/ecdsa"
 	"fmt"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
+	accounts "github.com/lpieri/42-Diploma/src/account"
 	"github.com/lpieri/42-Diploma/src/global"
 
 	"math/big"
@@ -26,19 +28,27 @@ func connectEthGetInstance() (*Diploma, *ethclient.Client, error) {
 }
 
 func getAuth() (*bind.TransactOpts, error) {
+	var address common.Address
+	var privateKey *ecdsa.PrivateKey
+	var nonce uint64
+	var errNonce error
 	client, errConnection := ethclient.Dial(global.NetworkLink)
 	if errConnection != nil {
 		return nil, errConnection
 	}
-	//account := accounts.GetAccount()
-	//key, errKey := accounts.GetKey()
-	//if errKey != nil  {
-	//	return nil, errKey
-	//}
-	address := common.HexToAddress("0xa0A6AC7843BF9E9A1bb86F5391a2BF5fB1Bd8C78")
-	pk, _ := crypto.HexToECDSA("10865bedc583c8c667980202e5918e22ae1fb4c98f64cb1ecbe2381cbdcee27f")
-	nonce, errNonce := client.PendingNonceAt(context.Background(), address)
-	//nonce, errNonce := client.PendingNonceAt(context.Background(), account.Address)
+	if global.Env == "Dev" {
+		address = common.HexToAddress(global.DevAddress)
+		privateKey, _ = crypto.HexToECDSA(global.DevPrivateKey)
+	} else {
+		account := accounts.GetAccount()
+		address = account.Address
+		ks, errKey := accounts.GetKey()
+		if errKey != nil  {
+			return nil, errKey
+		}
+		privateKey = ks.PrivateKey
+	}
+	nonce, errNonce = client.PendingNonceAt(context.Background(), address)
 	if errNonce != nil  {
 		return nil, errNonce
 	}
@@ -46,8 +56,7 @@ func getAuth() (*bind.TransactOpts, error) {
 	if errGas != nil {
 		return nil, errGas
 	}
-	//auth := bind.NewKeyedTransactor(key.PrivateKey)
-	auth := bind.NewKeyedTransactor(pk)
+	auth := bind.NewKeyedTransactor(privateKey)
 	auth.Nonce = big.NewInt(int64(nonce))
 	auth.Value = big.NewInt(0)
 	auth.GasLimit = uint64(600000)
