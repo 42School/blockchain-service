@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"github.com/lpieri/42-Diploma/src/api/models"
 	"io/ioutil"
-	"log"
 	"net/http"
 )
 
