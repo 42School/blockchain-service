@@ -52,7 +52,6 @@ func GetDiploma(w http.ResponseWriter, r *http.Request) {
 	jsonErr := json.Unmarshal(jsonData, &diploma)
 	level, skills, errGet := models.GetDiploma(diploma)
 	if r.ContentLength == 0 || readErr != nil || jsonErr != nil || errGet != nil {
-		log.Println("Request Fail !!")
 		res, _ = json.Marshal(ResponseJson{false, "The request is fail, please retry & check the data", ResponseData{}})
 		w.WriteHeader(http.StatusBadRequest)
 	} else {

@@ -88,7 +88,7 @@ func CheckDiploma(dp Diploma) bool {
 }
 
 func PrintDiploma(dp Diploma) {
-	log.Print("Enter in NewDiploma")
+	log.Print("Print one new Diploma:")
 	log.Println("First Name:", dp.FirstName)
 	log.Println("Last Name:", dp.LastName)
 	log.Println("Birth Date:", dp.BirthDate)

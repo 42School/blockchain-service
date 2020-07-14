@@ -9,8 +9,6 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/lpieri/42-Diploma/src/global"
 
-	//accounts "github.com/lpieri/42-Diploma/src/account"
-	"log"
 	"math/big"
 )
 
@@ -19,18 +17,15 @@ func connectEthGetInstance() (*Diploma, *ethclient.Client, error) {
 	if errConnection != nil {
 		return nil, nil, errConnection
 	}
-	log.Println(client)
 	addressOfAddress := common.HexToAddress(global.AddressOfContract)
 	instance, errInstance := NewDiploma(addressOfAddress, client)
 	if errInstance != nil {
 		return nil, nil, errInstance
 	}
-	log.Println("after get instance", instance)
 	return instance, client, nil
 }
 
 func getAuth() (*bind.TransactOpts, error) {
-	//log.Println("enter in getauth...")
 	client, errConnection := ethclient.Dial(global.NetworkLink)
 	if errConnection != nil {
 		return nil, errConnection
@@ -67,34 +62,28 @@ func CallCreateDiploma(level uint64, skills [30]uint64, v uint8, r [32]byte, s [
 	}
 	auth, errAuth := getAuth()
 	if errAuth != nil {
-		//log.Println("auth", errAuth)
 		return false
 	}
-	tx, errCreate := instance.CreateDiploma(auth, level, skills, v, r, s, hash)
+	_, errCreate := instance.CreateDiploma(auth, level, skills, v, r, s, hash)
 	if errCreate != nil {
-		log.Println(errCreate)
 		return false
 	}
-	log.Println("tx", tx)
 	return true
 }
 
 func CallGetDiploma(hash []byte) (uint64, [30]uint64, error) {
-	instance, client, err := connectEthGetInstance()
+	instance, _, err := connectEthGetInstance()
 	if err != nil {
 		return 0, [30]uint64{}, err
 	}
-	log.Println(instance, client)
 	hash32 := [32]byte{}
 	copy(hash32[:], hash)
 	result, errGet := instance.GetDiploma(&bind.CallOpts{}, hash32)
 	if errGet != nil {
-		log.Println(errGet)
 		return 0, [30]uint64{}, errGet
 	}
 	if result.Level == 0 {
 		return 0, [30]uint64{}, fmt.Errorf("the diploma doesnt exist")
 	}
-	log.Print("result of get:", result)
 	return result.Level, result.Skills, nil
 }
