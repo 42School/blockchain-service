@@ -12,19 +12,22 @@ CYAN = \033[36m
 
 .PHONY:	all install compile clean re
 
-all:		install compile
+all:		install test compile
 
 install:
 			npm install -g truffle solc
 			go mod download
 
+test:
+			truffle test
+
 compile:
 			@echo "$(YELLOW)Compiling the smart-contract in solidity!$(NONE)"
 			truffle compile
 			@echo "$(YELLOW)Compiling the smart-contract in golang!$(NONE)"
-			solcjs --abi contracts/FtDiplomaBase.sol > $(NAME).abi
-			solcjs --bin contracts/FtDiplomaBase.sol > $(NAME).bin
-			abigen --bin=$(NAME).bin --abi=contracts_FtDiplomaBase_sol_FtDiplomaBase.abi --pkg=diploma --out=$(NAME).go
+			solcjs --abi contracts/$(NAME).sol > $(NAME).abi
+			solcjs --bin contracts/$(NAME).sol > $(NAME).bin
+			abigen --bin=$(NAME).bin --abi=contracts_$(NAME)_sol_$(NAME).abi --pkg=diploma --out=$(NAME).go
 			sed -i "" 's/diploma/contracts/' $(NAME).go
 			mv $(NAME).go ./src/contracts/$(NAME).go
 			@echo "$(YELLOW)Compiling $(NAME) in golang!$(NONE)"
@@ -33,6 +36,6 @@ compile:
 
 clean:
 			@echo "$(YELLOW)Cleaning...$(NONE)"
-			@rm $(NAME) $(NAME).bin $(NAME).abi contracts_FtDiplomaBase_sol_FtDiplomaBase.abi contracts_FtDiplomaBase_sol_FtDiplomaBase.bin
+			@rm $(NAME) $(NAME).bin $(NAME).abi contracts_$(NAME)_sol_$(NAME).abi contracts_$(NAME)_sol_$(NAME).bin
 
 re:			clean all

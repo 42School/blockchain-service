@@ -14,7 +14,7 @@ import (
 
 func ValidedHash() {
 	for {
-		time.Sleep(6000 * time.Millisecond)
+		time.Sleep(6000/*00*/ * time.Millisecond)
 		copyList := global.ToCheckHash
 		for e := copyList.Front(); e != nil; e = copyList.Front() {
 			if e != nil {
@@ -23,9 +23,10 @@ func ValidedHash() {
 				if err == nil {
 					strHash := hexutil.Encode(hash)
 					data := "{'Status': true, 'Message': 'The " + strHash + " diploma is definitely inscribed on Ethereum.', 'Data': {" + strHash + "}}"
-					res, _ := http.Post("http://end-point.42.fr/path", "Content-Type: application/json", strings.NewReader(data))
-					log.Println(res)
-					global.ToCheckHash.Remove(e)
+					_, err := http.Post("http://end-point.42.fr/path", "Content-Type: application/json", strings.NewReader(data))
+					if err == nil {
+						global.ToCheckHash.Remove(e)
+					}
 				}
 			}
 		}
