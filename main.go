@@ -14,7 +14,7 @@ import (
 
 func ValidedHash() {
 	for {
-		time.Sleep(6000 * time.Millisecond)
+		time.Sleep(6000/*00*/ * time.Millisecond)
 		copyList := global.ToCheckHash
 		for e := copyList.Front(); e != nil; e = copyList.Front() {
 			if e != nil {

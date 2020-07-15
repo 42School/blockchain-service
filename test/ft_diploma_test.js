@@ -1,3 +1,5 @@
+const truffleConfig = require("../truffle-config");
+
 const FtDiploma = artifacts.require("FtDiploma");
 
 let skills = [
@@ -6,10 +8,8 @@ let skills = [
 	2126, 328, 423, 203, 416
 ]
 
-const keystore = "Contents of keystore file";
-const account = web3.eth.accounts.decrypt(keystore, 'PASSWORD');
-
-web3.eth.handleRevert = true;
+const keystore = `{"address":"8a21dc0aec762cd85de81b2bcd396a9d5676cfd7","crypto":{"cipher":"aes-128-ctr","ciphertext":"ce9faf40419c176d70a2da4d3ce9aaeff5d07a0aaf4b22d01ec901fd534cc835","cipherparams":{"iv":"48627618eae022f6015c8526655dfed6"},"kdf":"scrypt","kdfparams":{"dklen":32,"n":262144,"p":1,"r":8,"salt":"ebc90ec75f99258f745d56c4e76ac57b87e04e8a98ff61e3940b0cd190da7362"},"mac":"9f5b8782b97557ae98713f94a3d940209d291f0f6cc34cdafdc3a9ca4e0c78a9"},"id":"897b76fc-835e-4f25-b4e8-4eb58e95b510","version":3}`;
+const account = web3.eth.accounts.decrypt(keystore, 'password');
 
 contract("FtDiploma", async (accounts) => {
 
@@ -33,16 +33,18 @@ contract("FtDiploma", async (accounts) => {
 		assert.equal(level, 1517, `Error: The diploma couldn't be gotten, or doesn't exist.`);
 	})
 
-	// it("Testing writing not valid diploma", async () => {
-	// 	let instance = await FtDiploma.deployed();
-	// 	instance.handleRevert = true;
-	// 	let dataToHash = "FirstName, LastName, AAAA-MM-JJ, AAAA-MM-JJ";
-	// 	let hash = web3.utils.sha3(dataToHash);
-	// 	let sign = account.sign(hash);
-	// 	const tx = await instance.createDiploma(1517, skills, sign.v, sign.r, sign.s, hash).handleRevert;
-	// 	await expectThrow(tx);
-	// 	assert.equal(tx, undefined, `Error: It is possible to write a diploma not signed by 42.`);
-	// })
+	it("Testing writing not valid diploma", async () => {
+		let instance = await FtDiploma.deployed();
+		// instance.handleRevert = true;
+		let dataToHash = "FirstName, LastName, AAAA-MM-JJ, AAAA-MM-JJ";
+		let hash = web3.utils.sha3(dataToHash);
+		let sign = account.sign(hash);
+		try {
+			await instance.createDiploma(1517, skills, sign.v, sign.r, sign.s, hash);
+		} catch (error) {
+			assert.equal(error.reason, 'FtDiploma: Is not 42 sign this diploma', `Error: It is possible to write a diploma not signed by 42.`);
+		}
+	})
 
 	it("Testing double same writing of new diploma", async () => {
 		let instance = await FtDiploma.deployed();
@@ -51,7 +53,10 @@ contract("FtDiploma", async (accounts) => {
 		let hash = web3.utils.sha3(dataToHash);
 		let sign = account.sign(hash);
 		const firstTx = await instance.createDiploma(1517, skills, sign.v, sign.r, sign.s, sign.messageHash);
-		const secondeTx = instance.createDiploma(1517, skills, sign.v, sign.r, sign.s, sign.messageHash).handleRevert;
-		assert.equal(secondeTx, undefined, `Error: The double insertion of a diploma is possible.`);
+		try {
+			await instance.createDiploma(1517, skills, sign.v, sign.r, sign.s, sign.messageHash);
+		} catch (error) {
+			assert.equal(error.reason, "FtDiploma: The diploma already exists.", `Error: The double insertion of a diploma is possible.`);
+		}
 	})
 })
