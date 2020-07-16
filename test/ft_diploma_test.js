@@ -35,7 +35,6 @@ contract("FtDiploma", async (accounts) => {
 
 	it("Testing writing not valid diploma", async () => {
 		let instance = await FtDiploma.deployed();
-		// instance.handleRevert = true;
 		let dataToHash = "FirstName, LastName, AAAA-MM-JJ, AAAA-MM-JJ";
 		let hash = web3.utils.sha3(dataToHash);
 		let sign = account.sign(hash);
@@ -48,7 +47,6 @@ contract("FtDiploma", async (accounts) => {
 
 	it("Testing double same writing of new diploma", async () => {
 		let instance = await FtDiploma.deployed();
-		instance.handleRevert = true;
 		let dataToHash = "Prenom, Nom, AAAA-MM-JJ, AAAA-MM-JJ";
 		let hash = web3.utils.sha3(dataToHash);
 		let sign = account.sign(hash);
