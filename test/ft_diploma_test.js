@@ -8,7 +8,7 @@ let skills = [
 	2126, 328, 423, 203, 416
 ]
 
-const keystore = `{"address":"8a21dc0aec762cd85de81b2bcd396a9d5676cfd7","crypto":{"cipher":"aes-128-ctr","ciphertext":"ce9faf40419c176d70a2da4d3ce9aaeff5d07a0aaf4b22d01ec901fd534cc835","cipherparams":{"iv":"48627618eae022f6015c8526655dfed6"},"kdf":"scrypt","kdfparams":{"dklen":32,"n":262144,"p":1,"r":8,"salt":"ebc90ec75f99258f745d56c4e76ac57b87e04e8a98ff61e3940b0cd190da7362"},"mac":"9f5b8782b97557ae98713f94a3d940209d291f0f6cc34cdafdc3a9ca4e0c78a9"},"id":"897b76fc-835e-4f25-b4e8-4eb58e95b510","version":3}`;
+const keystore = `cat of keystore`;
 const account = web3.eth.accounts.decrypt(keystore, 'password');
 
 contract("FtDiploma", async (accounts) => {
