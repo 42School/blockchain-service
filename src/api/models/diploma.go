@@ -19,6 +19,29 @@ type Diploma struct {
 	Skills		[]float64	`json:"skills"`
 }
 
+func (_dp Diploma) CheckDiploma() bool {
+	if _dp.FirstName == "" || _dp.LastName == "" || _dp.Level <= 6 || len(_dp.Skills) != 30 || _dp.AlumniDate.IsZero() || _dp.BirthDate.IsZero() {
+		return false
+	}
+	for i := 0; i < len(_dp.Skills); i++ {
+		if _dp.Skills[i] < 0.0 {
+			return false
+		}
+	}
+	return true
+}
+
+func (_dp Diploma) PrintDiploma() {
+	log.Print("Print one new Diploma:")
+	log.Println("First Name:", _dp.FirstName)
+	log.Println("Last Name:", _dp.LastName)
+	log.Println("Birth Date:", _dp.BirthDate)
+	log.Println("Alumni Date:", _dp.AlumniDate)
+	log.Println("Level:", _dp.Level)
+	log.Println("Skills:", _dp.Skills)
+}
+
+
 func convertSkillToInt(skills []float64) [30]uint64 {
 	newSkills := [30]uint64{}
 	for i := 0; i < 30; i++ {
@@ -35,7 +58,7 @@ func convertSkillToFloat(skills [30]uint64) [30]float64 {
 	return newSkills
 }
 
-func convertDpToData(_dp Diploma, _sign []byte, _hash common.Hash) (uint64, [30]uint64, uint8, [32]byte, [32]byte, [32]byte) {
+func (_dp Diploma) convertDpToData(_sign []byte, _hash common.Hash) (uint64, [30]uint64, uint8, [32]byte, [32]byte, [32]byte) {
 	level := uint64(_dp.Level * 100)
 	skills := convertSkillToInt(_dp.Skills)
 	v := uint8(int(_sign[64])) + 27
@@ -55,7 +78,7 @@ func NewDiploma(new Diploma) (string, bool) {
 	if err != nil {
 		return "", false
 	}
-	if contracts.CallCreateDiploma(convertDpToData(new, sign, newHash)) == false {
+	if contracts.CallCreateDiploma(new.convertDpToData(sign, newHash)) == false {
 		return "", false
 	}
 	global.ToCheckHash.PushBack(newHash.Bytes())
@@ -73,26 +96,4 @@ func GetDiploma(_dp Diploma) (float64, [30]float64, error) {
 	skills := convertSkillToFloat(skillsInt)
 	log.Print(levelInt, skillsInt)
 	return level, skills, nil
-}
-
-func CheckDiploma(dp Diploma) bool {
-	if dp.FirstName == "" || dp.LastName == "" || dp.Level <= 6 || len(dp.Skills) != 30 || dp.AlumniDate.IsZero() || dp.BirthDate.IsZero() {
-		return false
-	}
-	for i := 0; i < len(dp.Skills); i++ {
-		if dp.Skills[i] < 0.0 {
-			return false
-		}
-	}
-	return true
-}
-
-func PrintDiploma(dp Diploma) {
-	log.Print("Print one new Diploma:")
-	log.Println("First Name:", dp.FirstName)
-	log.Println("Last Name:", dp.LastName)
-	log.Println("Birth Date:", dp.BirthDate)
-	log.Println("Alumni Date:", dp.AlumniDate)
-	log.Println("Level:", dp.Level)
-	log.Println("Skills:", dp.Skills)
 }
