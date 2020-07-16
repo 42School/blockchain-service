@@ -11,13 +11,13 @@ BLUE = \033[34m
 MAGENTA = \033[35m
 CYAN = \033[36m
 
-.PHONY:	all install testing server compile clean re
+.PHONY:	all install testing server compile clean fclean re
 
 all:		install testing compile
 
 install:
-			# sudo npm install -g truffle solc
-			#go mod download
+			sudo npm install -g truffle solc
+			go mod download
 			docker build -t $(DOCKERNAME) .
 
 testing: server
@@ -42,9 +42,15 @@ compile:
 
 clean:
 			@echo "$(YELLOW)Cleaning...$(NONE)"
-			@rm $(NAME) $(NAME).bin $(NAME).abi contracts_$(NAME)_sol_$(NAME).abi contracts_$(NAME)_sol_$(NAME).bin
+			rm $(NAME)
+			rm $(NAME).bin
+			rm $(NAME).abi
+			rm contracts_$(NAME)_sol_$(NAME).abi
+			rm contracts_$(NAME)_sol_$(NAME).bin
 			docker stop $(DOCKERNAME)
 			docker rm $(DOCKERNAME)
-            #docker image rm $(DOCKERNAME)
+
+fclean: clean
+			docker image rm $(DOCKERNAME)
 
 re:			clean all
