@@ -96,5 +96,5 @@ re: Appelle les règles clean et all
 
 ## Lancement en mode Dev
 
-wipgst
+wip
 
