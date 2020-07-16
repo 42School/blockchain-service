@@ -93,3 +93,8 @@ clean: Supprime le binaire go et tous autres fichiers utiles à la compile et su
 fclean: Supprime l'image docker
 re: Appelle les règles clean et all
 ```
+
+## Lancement en mode Dev
+
+wipgst
+
