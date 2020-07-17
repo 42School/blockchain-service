@@ -16,9 +16,10 @@ CYAN = \033[36m
 all:		install testing compile
 
 install:
-			sudo npm install -g truffle solc
+			# sudo npm install -g truffle solc
 			go mod download
-			docker build -t $(DOCKERNAME) .
+			docker build -f Dockerfile.server -t $(DOCKERNAME) .
+			# docker build -f Dockerfile.server -t $(DOCKERNAME) .
 
 testing: server
 			$(shell sleep 10)

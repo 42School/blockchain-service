@@ -1,0 +1,43 @@
+FROM debian:buster
+
+RUN apt-get update -y && apt-get upgrade -y
+
+RUN apt-get install -y golang-go git make grep nodejs npm software-properties-common
+
+RUN add-apt-repository -y ppa:ethereum/ethereum
+
+RUN apt-get update
+
+RUN apt install -y ethereum
+
+# RUN go get -d github.com/ethereum/go-ethereum
+
+# RUN go install github.com/ethereum/go-ethereum/cmd/geth
+
+RUN npm install -g npm@latest
+
+RUN npm install -g truffle solc
+
+COPY . /blockchain-service
+
+ENV KEYPASSWD="password"
+
+ENV KEYSTOREFILE="UTC--2020-07-16T13-52-10.535505000Z--7e12234e994384a757e2689addb2a463ccd3b47d"
+
+ENV OFFICIALADDRESS="0x7e12234E994384A757E2689aDdB2A463ccD3B47d"
+
+ENV KEYSTOREPATH="./keystore"
+
+ENV NETWORKLINK="http://127.0.0.1:9545"
+
+ENV RUNENV="Dev"
+
+ENV DEVADDRESS="0x8718F961628D97f8d20e23Ec0e264Fd51bfD6451"
+
+ENV DEVPRIVATEKEY="2a5c20b8657e52644b994b71d451b1a5f40188cec559e288475750710d1c54a7"
+
+RUN make compile -C /blockchain-service
+
+RUN CONTRACTADDRESS=$(truffle migrate | grep "contract address" | cut -c27-)
+
+ENV ADDRESSCONTRACT=${CONTRACTADDRESS}
