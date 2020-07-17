@@ -1,4 +1,5 @@
 NAME	=	FtDiploma
+DOCKERNAME = ftdiploma
 
 DEPS	=	Makefile
 
@@ -10,16 +11,21 @@ BLUE = \033[34m
 MAGENTA = \033[35m
 CYAN = \033[36m
 
-.PHONY:	all install compile clean re
+.PHONY:	all install testing server compile clean fclean re
 
-all:		install test compile
+all:		install testing compile
 
 install:
-			npm install -g truffle solc
+			sudo npm install -g truffle solc
 			go mod download
+			docker build -t $(DOCKERNAME) .
 
-test:
+testing: server
+			$(shell sleep 10)
 			truffle test
+
+server:
+			docker run --name $(DOCKERNAME) -ti -p 9545:9545 -d $(DOCKERNAME)
 
 compile:
 			@echo "$(YELLOW)Compiling the smart-contract in solidity!$(NONE)"
@@ -36,6 +42,15 @@ compile:
 
 clean:
 			@echo "$(YELLOW)Cleaning...$(NONE)"
-			@rm $(NAME) $(NAME).bin $(NAME).abi contracts_$(NAME)_sol_$(NAME).abi contracts_$(NAME)_sol_$(NAME).bin
+			rm $(NAME)
+			rm $(NAME).bin
+			rm $(NAME).abi
+			rm contracts_$(NAME)_sol_$(NAME).abi
+			rm contracts_$(NAME)_sol_$(NAME).bin
+			docker stop $(DOCKERNAME)
+			docker rm $(DOCKERNAME)
+
+fclean: clean
+			docker image rm $(DOCKERNAME)
 
 re:			clean all

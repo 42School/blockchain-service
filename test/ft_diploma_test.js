@@ -8,7 +8,7 @@ let skills = [
 	2126, 328, 423, 203, 416
 ]
 
-const keystore = `{"address":"8a21dc0aec762cd85de81b2bcd396a9d5676cfd7","crypto":{"cipher":"aes-128-ctr","ciphertext":"ce9faf40419c176d70a2da4d3ce9aaeff5d07a0aaf4b22d01ec901fd534cc835","cipherparams":{"iv":"48627618eae022f6015c8526655dfed6"},"kdf":"scrypt","kdfparams":{"dklen":32,"n":262144,"p":1,"r":8,"salt":"ebc90ec75f99258f745d56c4e76ac57b87e04e8a98ff61e3940b0cd190da7362"},"mac":"9f5b8782b97557ae98713f94a3d940209d291f0f6cc34cdafdc3a9ca4e0c78a9"},"id":"897b76fc-835e-4f25-b4e8-4eb58e95b510","version":3}`;
+const keystore = `{"address":"7e12234e994384a757e2689addb2a463ccd3b47d","crypto":{"cipher":"aes-128-ctr","ciphertext":"6d9f85fc277cbbd66f01f15358a62fff3a1cef9c7a96a8024043d8b3c9adeaf6","cipherparams":{"iv":"39516f9f12fe7cccfbdaa11dab569cb9"},"kdf":"scrypt","kdfparams":{"dklen":32,"n":262144,"p":1,"r":8,"salt":"56bb6dac014acbb558e2cb6c533d73d25dc3fe7fa2b1653e664ce32fa72347d5"},"mac":"7d69e74114b8529df420adb173d62a97ef12f631272253c8ce69416c2234245d"},"id":"3ae16ea0-ef89-4b2c-b527-ad1259a53b4d","version":3}`;
 const account = web3.eth.accounts.decrypt(keystore, 'password');
 
 contract("FtDiploma", async (accounts) => {
@@ -35,7 +35,6 @@ contract("FtDiploma", async (accounts) => {
 
 	it("Testing writing not valid diploma", async () => {
 		let instance = await FtDiploma.deployed();
-		// instance.handleRevert = true;
 		let dataToHash = "FirstName, LastName, AAAA-MM-JJ, AAAA-MM-JJ";
 		let hash = web3.utils.sha3(dataToHash);
 		let sign = account.sign(hash);
@@ -48,7 +47,6 @@ contract("FtDiploma", async (accounts) => {
 
 	it("Testing double same writing of new diploma", async () => {
 		let instance = await FtDiploma.deployed();
-		instance.handleRevert = true;
 		let dataToHash = "Prenom, Nom, AAAA-MM-JJ, AAAA-MM-JJ";
 		let hash = web3.utils.sha3(dataToHash);
 		let sign = account.sign(hash);

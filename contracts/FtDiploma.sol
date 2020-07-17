@@ -9,7 +9,7 @@ contract	FtDiploma {
 	string public constant name = "42 Alumni";
 	string public constant symbol = "42A";
 	string public constant linkOfRepo = "github.com/lpieri/42-Alumni";
-	address public constant ftPubAddress = 0x8A21Dc0aeC762cD85de81B2bcd396a9d5676cFD7;
+	address public constant ftPubAddress = 0x7e12234E994384A757E2689aDdB2A463ccD3B47d;
 
 	event Publish42Diploma(address ftPubAddress, string _link);
 	event CreateDiploma(bytes32 student);

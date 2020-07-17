@@ -24,7 +24,7 @@ func CreateDiploma(w http.ResponseWriter, r *http.Request) {
 	var newDiploma models.Diploma
 	jsonData, readErr := ioutil.ReadAll(r.Body)
 	jsonErr := json.Unmarshal(jsonData, &newDiploma)
-	if r.ContentLength == 0 || readErr != nil || jsonErr != nil || models.CheckDiploma(newDiploma) == false {
+	if r.ContentLength == 0 || readErr != nil || jsonErr != nil || newDiploma.CheckDiploma() == false {
 		res, _ := json.Marshal(ResponseJson{false, "The data sent are not valid, to be written in blockchain please try again!", ResponseData{}})
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write(res)
@@ -33,7 +33,7 @@ func CreateDiploma(w http.ResponseWriter, r *http.Request) {
 	var res []byte
 	hash, bool := models.NewDiploma(newDiploma)
 	if bool == false {
-		res, _ = json.Marshal(ResponseJson{true, "Blockchain writing had a problem, please try again.", ResponseData{"", 0, []float64{}}})
+		res, _ = json.Marshal(ResponseJson{false, "Blockchain writing had a problem, please try again.", ResponseData{"", 0, []float64{}}})
 		w.WriteHeader(http.StatusBadRequest)
 	} else {
 		res, _ = json.Marshal(ResponseJson{true, "The writing in blockchain has been done, it will be confirmed in 10 min.", ResponseData{hash, 0, []float64{}}})
