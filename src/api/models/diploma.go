@@ -3,9 +3,9 @@ package models
 import (
 	"github.com/ethereum/go-ethereum/common"
 	crypgo "github.com/ethereum/go-ethereum/crypto"
-	account "github.com/lpieri/42-Diploma/src/account"
-	"github.com/lpieri/42-Diploma/src/contracts"
-	"github.com/lpieri/42-Diploma/src/global"
+	account "github.com/42School/blockchain-service/src/account"
+	"github.com/42School/blockchain-service/src/contracts"
+	"github.com/42School/blockchain-service/src/global"
 	"log"
 	"time"
 )

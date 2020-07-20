@@ -1,4 +1,4 @@
-NAME	=	FtDiploma
+NAME	=	blockchain-service
 ETHSERV =	eth-server
 APICLIENT = blockchain-service
 
@@ -12,7 +12,7 @@ BLUE = \033[34m
 MAGENTA = \033[35m
 CYAN = \033[36m
 
-.PHONY:	all install testing server compile clean fclean re
+.PHONY:	all install testing server dev compile clean docker-stop docker-clean re
 
 all:		install testing dev
 
@@ -22,7 +22,7 @@ install:
 
 testing: server
 			$(shell sleep 10)
-			truffle test
+			truffle test --network localhost
 
 server:
 			docker run --add-host=$(ETHSERV):172.17.0.1 --name $(ETHSERV) -ti -p 9545:9545 -d $(ETHSERV)
@@ -53,12 +53,12 @@ clean:
 
 docker-stop:
 			docker stop $(ETHSERV)
-			docker stop $(APICLIENT)
 			docker rm $(ETHSERV)
+			docker stop $(APICLIENT)
 			docker rm $(APICLIENT)
 
 docker-clean: docker-stop
 			docker image rm $(ETHSERV)
 			docker image rm $(APICLIENT)
 
-re:			fclean all
+re:			docker-clean all

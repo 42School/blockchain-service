@@ -1,4 +1,4 @@
-module github.com/lpieri/42-Diploma
+module github.com/42School/blockchain-service
 
 go 1.13
 

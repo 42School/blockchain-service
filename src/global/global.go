@@ -13,6 +13,8 @@ var OfficialAddress common.Address = common.HexToAddress(os.Getenv("OFFICIALADDR
 var NetworkLink string = os.Getenv("NETWORKLINK")
 var AddressOfContract string = os.Getenv("ADDRESSCONTRACT")
 
+var FtEndPoint string = os.Getenv("FTENDPOINT")
+
 var Env string = os.Getenv("RUNENV")
 
 var DevAddress string = os.Getenv("DEVADDRESS")

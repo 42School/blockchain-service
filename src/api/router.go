@@ -2,7 +2,7 @@ package api
 
 import (
 	"github.com/gorilla/mux"
-	controllers "github.com/lpieri/42-Diploma/src/api/controllers"
+	controllers "github.com/42School/blockchain-service/src/api/controllers"
 )
 
 func InitRouter() *mux.Router {

@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
-	"github.com/lpieri/42-Diploma/src/api/models"
+	"github.com/42School/blockchain-service/src/api/models"
 	"io/ioutil"
 	"net/http"
 )

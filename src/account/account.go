@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/accounts/keystore"
-	"github.com/lpieri/42-Diploma/src/global"
+	"github.com/42School/blockchain-service/src/global"
 	"io/ioutil"
 )
 
