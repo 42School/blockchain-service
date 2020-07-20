@@ -12,23 +12,16 @@ La branche dev en cours est [dev/go/eth](https://github.com/lpieri/42-Alumni/tre
 
 ## Installation
 
-Pour lancé le projet il faut intaller `nodejs` `npm` `geth` `docker`
-
-### Pour MACOS
+Pour lancé le projet il faut intaller `docker`
 
 ```sh
-brew tap ethereum/ethereum
-brew install ethereum
-brew install node npm
+make install
 ```
 
-### Pour Linux
+## Lancement en mode Dev
 
 ```sh
-apt-get install -y nodejs npm
-sudo add-apt-repository -y ppa:ethereum/ethereum
-sudo apt-get update
-sudo apt-get install ethereum
+make dev
 ```
 
 ## Route de l'API
@@ -66,100 +59,16 @@ Un makefile est fourni avec les règles suivantes:
 
 ```
 all: Appelle les règles install, testing, compile
-install: Install truffle solcjs, les modules golang et build le Dockerfile
+install: Build les Dockerfile
 testing: Appel la règle server et lance la commande truffle test (utilise un serveur eth local ref: Dockerfile) pour tester le smart-contract
 server: Lance un conteneur Docker d'un simulateur blockchain
+dev: Lance le projet en mode dev dans un container docker (commande un peu lente)
 compile: Compile le smart-contract, convertie le smart-contract solidity en golang et compile la partie golang
-dev: Lance le projet en mode dev
-clean: Supprime le binaire go et tous autres fichiers utiles à la compile et supprime le contenaire docker
+clean: Supprime le binaire go et tous autres fichiers utiles à la compilation
+docker-stop: Stop les containers docker et les supprimes
+docker-clean: Appel la règle docker-stop et supprime les images docker
 fclean: Supprime l'image docker
 re: Appelle les règles clean et all
-```
-
-## Lancement en mode Dev
-
-### Lancement automatique
-
-```sh
-make dev
-```
-
-### Lancement manuel
-
-Executé la commande `make` & `truffle migrate`
-
-```sh
-~ make
-[...]
-~ truffle migrate
-
-Compiling your contracts...
-===========================
-> Everything is up to date, there is nothing to compile.
-
-
-
-Starting migrations...
-======================
-> Network name:    'development'
-> Network id:      5777
-> Block gas limit: 6721975 (0x6691b7)
-
-
-2_deploy_contracts.js
-=====================
-
-   Deploying 'FtDiploma'
-   ---------------------
-   > transaction hash:    0xa0361fdb669d2a937545c814e1ce60c1315827360f201634976b597c86b32604
-   > Blocks: 0            Seconds: 0
-   > contract address:    0x5df4E5590ae16ad1aC0B9A9f02A263A4C30e4d85
-   > block number:        6
-   > block timestamp:     1594972621
-   > account:             0x3cC18ca8225c41c7ceF5CEd11AeFC1DC047f6D5D
-   > balance:             99.96081982
-   > gas used:            619233 (0x972e1)
-   > gas price:           20 gwei
-   > value sent:          0 ETH
-   > total cost:          0.01238466 ETH
-
-   > Saving artifacts
-   -------------------------------------
-   > Total cost:          0.01238466 ETH
-
-
-Summary
-=======
-> Total deployments:   1
-> Final cost:          0.01238466 ETH
-```
-
-Récupérer l'adresse `contract address` ici `0x5df4E5590ae16ad1aC0B9A9f02A263A4C30e4d85` et l'écrire dans le fichier `.env` à la variable `ADDRESSCONTRACT` (à la place des `...`)
-
-```sh
-#Env File Template
-KEYPASSWD="password" # password of file keystore
-KEYSTOREFILE="UTC--2020-07-16T13-52-10.535505000Z--7e12234e994384a757e2689addb2a463ccd3b47d" # name of principale keystore file (account of signature the diploma)
-OFFICIALADDRESS="0x7e12234E994384A757E2689aDdB2A463ccD3B47d" # The address official of 42 store in the keystore
-KEYSTOREPATH="./keystore" # path of dir keystore
-
-# Network Variable
-NETWORKLINK="http://127.0.0.1:9545" # truffle network
-ADDRESSCONTRACT="..." # truffle migration address
-RUNENV="Dev" # Dev or Prod
-
-# Developpement variable
-DEVADDRESS="0x8718F961628D97f8d20e23Ec0e264Fd51bfD6451" # truffle address
-DEVPRIVATEKEY="2a5c20b8657e52644b994b71d451b1a5f40188cec559e288475750710d1c54a7" # truffle private key
-```
-
-Les variables de `developpement` n'ont pas à être modifier car le serveur docker est fait de tel sorte à que ce compte soit importé avec `500 Eth` par défaut.
-
-Il ne reste plus qu'a lancé la commande `source .env.dev` et `./FtDiploma`
-
-```sh
-~ source .env.dev
-~ ./FtDiploma
 ```
 
 ## Création d'un fichier Keystore
