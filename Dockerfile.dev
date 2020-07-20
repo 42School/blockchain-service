@@ -2,17 +2,15 @@ FROM debian:buster
 
 RUN apt-get update -y && apt-get upgrade -y
 
-RUN apt-get install -y golang-go git make grep nodejs npm software-properties-common
+RUN apt-get install -y software-properties-common python3-gpg
 
-RUN add-apt-repository -y ppa:ethereum/ethereum
+RUN add-apt-repository "deb http://ppa.launchpad.net/ethereum/ethereum/ubuntu xenial main"
 
-RUN apt-get update
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 0x2A518C819BE37D2C2031944D1C52189C923F6CA9
 
-RUN apt install -y ethereum
+RUN apt update -y && apt upgrade -y
 
-# RUN go get -d github.com/ethereum/go-ethereum
-
-# RUN go install github.com/ethereum/go-ethereum/cmd/geth
+RUN apt-get install -y golang-go ethereum git make grep nodejs npm sed
 
 RUN npm install -g npm@latest
 
@@ -41,3 +39,7 @@ RUN make compile -C /blockchain-service
 RUN CONTRACTADDRESS=$(truffle migrate | grep "contract address" | cut -c27-)
 
 ENV ADDRESSCONTRACT=${CONTRACTADDRESS}
+
+EXPOSE 8080:8080
+
+CMD cd /blockchain-service && ./FtDiploma

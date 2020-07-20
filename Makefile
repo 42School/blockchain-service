@@ -35,7 +35,7 @@ compile:
 			solcjs --abi contracts/$(NAME).sol > $(NAME).abi
 			solcjs --bin contracts/$(NAME).sol > $(NAME).bin
 			abigen --bin=$(NAME).bin --abi=contracts_$(NAME)_sol_$(NAME).abi --pkg=diploma --out=$(NAME).go
-			sed -i "" 's/diploma/contracts/' $(NAME).go
+			sed -i 's/diploma/contracts/' $(NAME).go
 			mv $(NAME).go ./src/contracts/$(NAME).go
 			@echo "$(YELLOW)Compiling $(NAME) in golang!$(NONE)"
 			go build -o $(NAME)

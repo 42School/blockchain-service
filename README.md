@@ -1,8 +1,8 @@
-# 42-Alumni
+# Blockchain-service
 
 ## Description
 
-42 Alumni est un project blockchain pour 42.
+Blockchain-service est un project blockchain de 42.
 
 42 veut créer des diplômes stockés dans la blockchain, pour que si un jour 42 disparaît, les étudiants puissent toujours avoir un moyen de montrer leurs certifications aux entreprises.
 
@@ -12,7 +12,7 @@ La branche dev en cours est [dev/go/eth](https://github.com/lpieri/42-Alumni/tre
 
 ## Installation
 
-Pour lancé le projet il faut intaller `nodejs` `npm` `geth` (`docker` uniquement en dev)
+Pour lancé le projet il faut intaller `nodejs` `npm` `geth` `docker`
 
 ### Pour MACOS
 
@@ -31,53 +31,34 @@ sudo apt-get update
 sudo apt-get install ethereum
 ```
 
-## Création d'un fichier Keystore
+## Route de l'API
 
-Le fichier keystore est un fichier contenant votre compte eth chiffré.
+Le port par défaut de l'API est `8080`.
 
-Ce fichier est utilisé dans le code pour signer les diplômes. Il a pour but à terme d'être l'adresse officielle avec laquelle 42 signe les diplômes.
+L'API `FtDiploma` contains à ce jour 2 routes différentes:
 
-Pour créer un fichier keystore, il faut exécuter la commande `geth account new` 
+- `/create-diploma` qui permet de crée un nouveau diplôme dans la blockchain. C'est une route `POST` qui prend comme donnée un json.
+- `/get-diploma` pour vérifier si un diplôme existe en blockchain. C'est une route `POST` qui prend comme donnée un json.
 
-```sh
-~ geth account new
-INFO [07-16|15:51:50.836] Maximum peer count                       ETH=50 LES=0 total=50
-Your new account is locked with a password. Please give a password. Do not forget this password.
-Password: [password]
-Repeat password: [password]
+Le json accepté par les deux routes est le même, voici comment il doit être formaté (un fichier template existe dans `/test/datas/template.json`):
 
-Your new key was generated
+Il doit contenir 30 skills en float ainsi que le level en float arrondie au centième.
 
-Public address of the key:   [public address]
-Path of the secret key file: ~/Library/Ethereum/keystore/[Nom du fichier]
-
-- You can share your public address with anyone. Others need it to interact with you.
-- You must NEVER share the secret key with anyone! The key controls access to your funds!
-- You must BACKUP your key file! Without the key, it's impossible to access account funds!
-- You must REMEMBER your password! Without the password, it's impossible to decrypt the key!
-```
-
-### Exemple
-
-L'adresse publique renvoyée par la commande **doit être impérativement écrite dans le smart-contract** sinon des erreurs auronts lieu. 
-
-Par exemple l'adresse publique renvoyée par `geth account new` est `0x7e12234E994384A757E2689aDdB2A463ccD3B47d`, elle devra être assigné à la variable `ftPubAddress` du contract, comme ici:
-
-```js
-pragma solidity >=0.5.8 <0.7.0;
-
-contract	FtDiploma {
-
-	string public constant name = "42 Alumni";
-	string public constant symbol = "42A";
-	string public constant linkOfRepo = "github.com/lpieri/42-Alumni";
-	address public constant ftPubAddress = 0x7e12234E994384A757E2689aDdB2A463ccD3B47d;
-  
-  [...]
+```json
+{
+  "first_name": "Louise",
+  "last_name": "Pieri",
+  "birth_date": "1998-12-27T00:00:00Z",
+  "alumni_date": "2020-06-25T00:00:00Z",
+  "level": 15.17,
+  "skills": [
+    8.57,
+    5.42,
+    ...,
+    4.16
+  ] // (30 Skills)
 }
 ```
-
-Un fichier keystore est fournie par défaut `UTC--2020-07-16T13-52-10.535505000Z--7e12234e994384a757e2689addb2a463ccd3b47d` dont le mot de passe est `password` il sert **uniquement** à faire des tests et n'as pas vocation à aller en production.
 
 ## Makefile
 
@@ -89,12 +70,21 @@ install: Install truffle solcjs, les modules golang et build le Dockerfile
 testing: Appel la règle server et lance la commande truffle test (utilise un serveur eth local ref: Dockerfile) pour tester le smart-contract
 server: Lance un conteneur Docker d'un simulateur blockchain
 compile: Compile le smart-contract, convertie le smart-contract solidity en golang et compile la partie golang
+dev: Lance le projet en mode dev
 clean: Supprime le binaire go et tous autres fichiers utiles à la compile et supprime le contenaire docker
 fclean: Supprime l'image docker
 re: Appelle les règles clean et all
 ```
 
 ## Lancement en mode Dev
+
+### Lancement automatique
+
+```sh
+make dev
+```
+
+### Lancement manuel
 
 Executé la commande `make` & `truffle migrate`
 
@@ -172,58 +162,50 @@ Il ne reste plus qu'a lancé la commande `source .env.dev` et `./FtDiploma`
 ~ ./FtDiploma
 ```
 
-## Route de l'API
+## Création d'un fichier Keystore
 
-Le port par défaut de l'API est `8080`.
+Le fichier keystore est un fichier contenant votre compte eth chiffré.
 
-L'API `FtDiploma` contains à ce jour 2 routes différentes: 
+Ce fichier est utilisé dans le code pour signer les diplômes. Il a pour but à terme d'être l'adresse officielle avec laquelle 42 signe les diplômes.
 
-- `/create-diploma` qui permet de crée un nouveau diplôme dans la blockchain. C'est une route `POST` qui prend comme donnée un json.
-- `/get-diploma` pour vérifier si un diplôme existe en blockchain. C'est une route `POST` qui prend comme donnée un json.
+Pour créer un fichier keystore, il faut exécuter la commande `geth account new`
 
-Le json accepté par les deux routes est le même, voici comment il doit être formaté (un fichier template existe dans `/test/datas/template.json`): 
+```sh
+~ geth account new
+INFO [07-16|15:51:50.836] Maximum peer count                       ETH=50 LES=0 total=50
+Your new account is locked with a password. Please give a password. Do not forget this password.
+Password: [password]
+Repeat password: [password]
 
-Il doit contenir 30 skills en float ainsi que le level en float arrondie au centième.
+Your new key was generated
 
-```json
-{
-  "first_name": "Louise",
-  "last_name": "Pieri",
-  "birth_date": "1998-12-27T00:00:00Z",
-  "alumni_date": "2020-06-25T00:00:00Z",
-  "level": 15.17,
-  "skills": [
-    8.57,
-    5.42,
-    6.2,
-    9.42,
-    6.61,
-    4.16,
-    9.02,
-    9.02,
-    9.02,
-    3.6,
-    2.22,
-    5.5,
-    1.45,
-    4.35,
-    2.67,
-    11.22,
-    7.3,
-    20.6,
-    10.3,
-    8.17,
-    11.6,
-    28.28,
-    9.20,
-    15.7,
-    11.12,
-    21.26,
-    3.28,
-    4.23,
-    20.3,
-    4.16
-  ]
+Public address of the key:   [public address]
+Path of the secret key file: ~/Library/Ethereum/keystore/[Nom du fichier]
+
+- You can share your public address with anyone. Others need it to interact with you.
+- You must NEVER share the secret key with anyone! The key controls access to your funds!
+- You must BACKUP your key file! Without the key, it's impossible to access account funds!
+- You must REMEMBER your password! Without the password, it's impossible to decrypt the key!
+```
+
+### Exemple
+
+L'adresse publique renvoyée par la commande **doit être impérativement écrite dans le smart-contract** sinon des erreurs auronts lieu.
+
+Par exemple l'adresse publique renvoyée par `geth account new` est `0x7e12234E994384A757E2689aDdB2A463ccD3B47d`, elle devra être assigné à la variable `ftPubAddress` du contract, comme ici:
+
+```js
+pragma solidity >=0.5.8 <0.7.0;
+
+contract	FtDiploma {
+
+	string public constant name = "42 Alumni";
+	string public constant symbol = "42A";
+	string public constant linkOfRepo = "github.com/lpieri/42-Alumni";
+	address public constant ftPubAddress = 0x7e12234E994384A757E2689aDdB2A463ccD3B47d;
+
+  [...]
 }
 ```
 
+Un fichier keystore est fournie par défaut `UTC--2020-07-16T13-52-10.535505000Z--7e12234e994384a757e2689addb2a463ccd3b47d` dont le mot de passe est `password` il sert **uniquement** à faire des tests et n'as pas vocation à aller en production.
