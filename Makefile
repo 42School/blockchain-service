@@ -22,7 +22,7 @@ install:
 
 testing: server
 			$(shell sleep 10)
-			truffle test
+			truffle test --network localhost
 
 server:
 			docker run --add-host=$(ETHSERV):172.17.0.1 --name $(ETHSERV) -ti -p 9545:9545 -d $(ETHSERV)
@@ -53,8 +53,8 @@ clean:
 
 docker-stop:
 			docker stop $(ETHSERV)
-			docker stop $(APICLIENT)
 			docker rm $(ETHSERV)
+			docker stop $(APICLIENT)
 			docker rm $(APICLIENT)
 
 docker-clean: docker-stop

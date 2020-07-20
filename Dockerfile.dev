@@ -40,4 +40,4 @@ ENV DEVPRIVATEKEY="2a5c20b8657e52644b994b71d451b1a5f40188cec559e288475750710d1c5
 
 EXPOSE 8080:8080
 
-CMD cd /blockchain-service && make compile && export ADDRESSCONTRACT=$(truffle migrate | grep "contract address" | cut -c27-) && echo $ADDRESSCONTRACT && ./FtDiploma
+CMD cd /blockchain-service && make compile && export ADDRESSCONTRACT=$(truffle migrate --network development | grep "contract address" | cut -c27-) && echo $ADDRESSCONTRACT && ./FtDiploma
