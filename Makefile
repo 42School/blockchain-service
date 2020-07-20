@@ -12,7 +12,7 @@ BLUE = \033[34m
 MAGENTA = \033[35m
 CYAN = \033[36m
 
-.PHONY:	all install testing server compile clean fclean re
+.PHONY:	all install testing server dev compile clean docker-stop docker-clean re
 
 all:		install testing dev
 

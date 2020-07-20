@@ -12,6 +12,14 @@ La branche dev en cours est [dev/go/eth](https://github.com/lpieri/42-Alumni/tre
 
 ## Installation
 
+**Petite modification importante** - Avant de lancer `make install` veuillez modifier dans le Dockerfile `Dockerfile.dev` la variable `FTENDPOINT` avec l'ip du service d'alumnisation:
+
+```dockerfile
+ENV FTENDPOINT="http://[ip-42]/confirmed-alumni"
+```
+
+L'API enverra toutes les 10 minutes des requêtes confirmant les diplômes en blockchain à cette adresse.
+
 Pour lancé le projet il faut intaller `docker`
 
 ```sh
@@ -110,7 +118,7 @@ contract	FtDiploma {
 
 	string public constant name = "42 Alumni";
 	string public constant symbol = "42A";
-	string public constant linkOfRepo = "github.com/lpieri/42-Alumni";
+	string public constant linkOfRepo = "github.com/42School/blockchain-service";
 	address public constant ftPubAddress = 0x7e12234E994384A757E2689aDdB2A463ccD3B47d;
 
   [...]
