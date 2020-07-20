@@ -1,4 +1,4 @@
-FROM debian:buster
+FROM debian:buster-backports
 
 RUN apt-get update -y && apt-get upgrade -y
 
@@ -10,13 +10,17 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 0x2A518C819BE37D2C2
 
 RUN apt update -y && apt upgrade -y
 
-RUN apt-get install -y golang-go ethereum git make grep nodejs npm sed
+RUN apt-get install -y golang-1.13 ethereum git make grep nodejs npm sed
 
 RUN npm install -g npm@latest
 
 RUN npm install -g truffle solc
 
 COPY . /blockchain-service
+
+ENV PATH=/usr/lib/go-1.13/bin:$PATH
+
+RUN cd /blockchain-service && go mod download
 
 ENV KEYPASSWD="password"
 
@@ -26,7 +30,7 @@ ENV OFFICIALADDRESS="0x7e12234E994384A757E2689aDdB2A463ccD3B47d"
 
 ENV KEYSTOREPATH="./keystore"
 
-ENV NETWORKLINK="http://127.0.0.1:9545"
+ENV NETWORKLINK="http://172.17.0.1:9545"
 
 ENV RUNENV="Dev"
 
@@ -34,12 +38,6 @@ ENV DEVADDRESS="0x8718F961628D97f8d20e23Ec0e264Fd51bfD6451"
 
 ENV DEVPRIVATEKEY="2a5c20b8657e52644b994b71d451b1a5f40188cec559e288475750710d1c54a7"
 
-RUN make compile -C /blockchain-service
-
-RUN CONTRACTADDRESS=$(truffle migrate | grep "contract address" | cut -c27-)
-
-ENV ADDRESSCONTRACT=${CONTRACTADDRESS}
-
 EXPOSE 8080:8080
 
-CMD cd /blockchain-service && ./FtDiploma
+CMD cd /blockchain-service && make compile && export ADDRESSCONTRACT=$(truffle migrate | grep "contract address" | cut -c27-) && echo $ADDRESSCONTRACT && ./FtDiploma

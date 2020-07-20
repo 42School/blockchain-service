@@ -1,5 +1,6 @@
 NAME	=	FtDiploma
-DOCKERNAME = ftdiploma
+ETHSERV =	eth-server
+APICLIENT = blockchain-service
 
 DEPS	=	Makefile
 
@@ -13,20 +14,21 @@ CYAN = \033[36m
 
 .PHONY:	all install testing server compile clean fclean re
 
-all:		install testing compile
+all:		install testing dev
 
 install:
-			# sudo npm install -g truffle solc
-			go mod download
-			docker build -f Dockerfile.server -t $(DOCKERNAME) .
-			# docker build -f Dockerfile.server -t $(DOCKERNAME) .
+			docker build -f Dockerfile.server -t $(ETHSERV) .
+			docker build -f Dockerfile.dev -t $(APICLIENT) .
 
 testing: server
 			$(shell sleep 10)
 			truffle test
 
 server:
-			docker run --name $(DOCKERNAME) -ti -p 9545:9545 -d $(DOCKERNAME)
+			docker run --add-host=$(ETHSERV):172.17.0.1 --name $(ETHSERV) -ti -p 9545:9545 -d $(ETHSERV)
+
+dev: server
+			docker run --name $(APICLIENT) -ti -p 8080:8080 -d $(APICLIENT)
 
 compile:
 			@echo "$(YELLOW)Compiling the smart-contract in solidity!$(NONE)"
@@ -48,10 +50,15 @@ clean:
 			rm $(NAME).abi
 			rm contracts_$(NAME)_sol_$(NAME).abi
 			rm contracts_$(NAME)_sol_$(NAME).bin
-			docker stop $(DOCKERNAME)
-			docker rm $(DOCKERNAME)
 
-fclean: clean
-			docker image rm $(DOCKERNAME)
+docker-stop:
+			docker stop $(ETHSERV)
+			docker stop $(APICLIENT)
+			docker rm $(ETHSERV)
+			docker rm $(APICLIENT)
 
-re:			clean all
+docker-clean: docker-stop
+			docker image rm $(ETHSERV)
+			docker image rm $(APICLIENT)
+
+re:			fclean all
