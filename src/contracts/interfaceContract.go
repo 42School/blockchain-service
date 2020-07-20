@@ -8,8 +8,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
-	accounts "github.com/lpieri/42-Diploma/src/account"
-	"github.com/lpieri/42-Diploma/src/global"
+	accounts "github.com/42School/blockchain-service/src/account"
+	"github.com/42School/blockchain-service/src/global"
 
 	"math/big"
 )

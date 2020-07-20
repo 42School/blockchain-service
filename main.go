@@ -2,10 +2,10 @@ package main
 
 import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/lpieri/42-Diploma/src/account"
-	"github.com/lpieri/42-Diploma/src/api"
-	"github.com/lpieri/42-Diploma/src/contracts"
-	"github.com/lpieri/42-Diploma/src/global"
+	"github.com/42School/blockchain-service/src/account"
+	"github.com/42School/blockchain-service/src/api"
+	"github.com/42School/blockchain-service/src/contracts"
+	"github.com/42School/blockchain-service/src/global"
 	"log"
 	"net/http"
 	"strings"
@@ -23,7 +23,7 @@ func ValidedHash() {
 				if err == nil {
 					strHash := hexutil.Encode(hash)
 					data := "{'Status': true, 'Message': 'The " + strHash + " diploma is definitely inscribed on Ethereum.', 'Data': {" + strHash + "}}"
-					_, err := http.Post("http://end-point.42.fr/path", "Content-Type: application/json", strings.NewReader(data))
+					_, err := http.Post(global.FtEndPoint, "Content-Type: application/json", strings.NewReader(data))
 					if err == nil {
 						global.ToCheckHash.Remove(e)
 					}

@@ -1,4 +1,4 @@
-NAME	=	FtDiploma
+NAME	=	blockchain-service
 ETHSERV =	eth-server
 APICLIENT = blockchain-service
 
@@ -61,4 +61,4 @@ docker-clean: docker-stop
 			docker image rm $(ETHSERV)
 			docker image rm $(APICLIENT)
 
-re:			fclean all
+re:			docker-clean all
