@@ -4,13 +4,14 @@ import (
 	"context"
 	"crypto/ecdsa"
 	"fmt"
+	accounts "github.com/42School/blockchain-service/src/account"
+	"github.com/42School/blockchain-service/src/global"
 	"github.com/42School/blockchain-service/src/tools"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
-	accounts "github.com/42School/blockchain-service/src/account"
-	"github.com/42School/blockchain-service/src/global"
+	"log"
 
 	"math/big"
 )
@@ -76,7 +77,8 @@ func CallCreateDiploma(level uint64, skills [30]uint64, v uint8, r [32]byte, s [
 		tools.LogsError(errAuth)
 		return false
 	}
-	_, errCreate := instance.CreateDiploma(auth, level, skills, v, r, s, hash)
+	tx, errCreate := instance.CreateDiploma(auth, level, skills, v, r, s, hash)
+	log.Println(tx.Data(), string(tx.Data()))
 	if errCreate != nil {
 		tools.LogsError(errCreate)
 		return false
