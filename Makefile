@@ -1,4 +1,5 @@
 NAME	=	blockchain-service
+CONTRACTNAME	=	FtDiploma
 ETHSERV =	eth-server
 APICLIENT = blockchain-service
 
@@ -34,11 +35,11 @@ compile:
 			@echo "$(YELLOW)Compiling the smart-contract in solidity!$(NONE)"
 			truffle compile
 			@echo "$(YELLOW)Compiling the smart-contract in golang!$(NONE)"
-			solcjs --abi contracts/FtDiploma.sol > FtDiploma.abi
-			solcjs --bin contracts/FtDiploma.sol > FtDiploma.bin
-			abigen --bin=FtDiploma.bin --abi=contracts_FtDiploma_sol_FtDiploma.abi --pkg=diploma --out=FtDiploma.go
-			sed -i 's/diploma/contracts/' $(NAME).go
-			mv $(NAME).go ./src/contracts/$(NAME).go
+			solcjs --abi contracts/$(CONTRACTNAME).sol > $(CONTRACTNAME).abi
+			solcjs --bin contracts/$(CONTRACTNAME).sol > $(CONTRACTNAME).bin
+			abigen --bin=$(CONTRACTNAME).bin --abi=contracts_$(CONTRACTNAME)_sol_$(CONTRACTNAME).abi --pkg=diploma --out=$(CONTRACTNAME).go
+			sed -i 's/diploma/contracts/' $(CONTRACTNAME).go
+			mv $(CONTRACTNAME).go ./src/contracts/$(CONTRACTNAME).go
 			@echo "$(YELLOW)Compiling $(NAME) in golang!$(NONE)"
 			go build -o $(NAME)
 			@echo "$(GREEN)$(NAME) ready!$(NONE)"
@@ -56,9 +57,10 @@ docker-stop:
 			docker rm $(ETHSERV)
 			docker stop $(APICLIENT)
 			docker rm $(APICLIENT)
-
-docker-clean: docker-stop
+docker-rm:
 			docker image rm $(ETHSERV)
 			docker image rm $(APICLIENT)
+
+docker-clean: docker-stop docker-rm
 
 re:			docker-clean all
