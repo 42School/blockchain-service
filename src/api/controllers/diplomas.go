@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"github.com/42School/blockchain-service/src/api/models"
+	"github.com/42School/blockchain-service/src/tools"
 	"io/ioutil"
 	"net/http"
 )
@@ -30,6 +31,7 @@ func CreateDiploma(w http.ResponseWriter, r *http.Request) {
 		w.Write(res)
 		return
 	}
+	tools.LogsDev("Received request to write the " + newDiploma.FirstName + " " + newDiploma.LastName + " diploma.")
 	var res []byte
 	hash, bool := models.NewDiploma(newDiploma)
 	if bool == false {

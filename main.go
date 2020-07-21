@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/42School/blockchain-service/src/tools"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/42School/blockchain-service/src/account"
 	"github.com/42School/blockchain-service/src/api"
@@ -35,6 +36,7 @@ func ValidedHash() {
 
 func main() {
 	go ValidedHash()
+	tools.LogsMsg("Blockchain Service is running !")
 	account.CreateAccountsManager()
 	router := api.InitRouter()
 	log.Fatal(http.ListenAndServe(":8080", router))

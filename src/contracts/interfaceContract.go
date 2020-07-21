@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/ecdsa"
 	"fmt"
+	"github.com/42School/blockchain-service/src/tools"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -67,14 +68,17 @@ func getAuth() (*bind.TransactOpts, error) {
 func CallCreateDiploma(level uint64, skills [30]uint64, v uint8, r [32]byte, s [32]byte, hash [32]byte) bool {
 	instance, _, err := connectEthGetInstance()
 	if err != nil {
+		tools.LogsError(err)
 		return false
 	}
 	auth, errAuth := getAuth()
 	if errAuth != nil {
+		tools.LogsError(errAuth)
 		return false
 	}
 	_, errCreate := instance.CreateDiploma(auth, level, skills, v, r, s, hash)
 	if errCreate != nil {
+		tools.LogsError(errCreate)
 		return false
 	}
 	return true

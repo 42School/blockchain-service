@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/42School/blockchain-service/src/tools"
 	"github.com/ethereum/go-ethereum/common"
 	crypgo "github.com/ethereum/go-ethereum/crypto"
 	account "github.com/42School/blockchain-service/src/account"
@@ -32,7 +33,6 @@ func (_dp Diploma) CheckDiploma() bool {
 }
 
 func (_dp Diploma) PrintDiploma() {
-	log.Print("Print one new Diploma:")
 	log.Println("First Name:", _dp.FirstName)
 	log.Println("Last Name:", _dp.LastName)
 	log.Println("Birth Date:", _dp.BirthDate)
@@ -75,6 +75,8 @@ func NewDiploma(new Diploma) (string, bool) {
 	dataToHash := new.FirstName + ", " + new.LastName + ", " + new.BirthDate.String()[:10] + ", " + new.AlumniDate.String()[:10]
 	newHash := crypgo.Keccak256Hash([]byte(dataToHash))
 	sign, err := account.KeyStore.SignHashWithPassphrase(account.GetAccount(), global.PasswordAccount, newHash.Bytes())
+	tools.LogsDev("The hash of the diploma is " + newHash.String())
+	tools.LogsDev("The signature on the diploma is " + common.Bytes2Hex(sign))
 	if err != nil {
 		return "", false
 	}
