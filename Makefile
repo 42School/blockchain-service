@@ -34,9 +34,9 @@ compile:
 			@echo "$(YELLOW)Compiling the smart-contract in solidity!$(NONE)"
 			truffle compile
 			@echo "$(YELLOW)Compiling the smart-contract in golang!$(NONE)"
-			solcjs --abi contracts/$(NAME).sol > $(NAME).abi
-			solcjs --bin contracts/$(NAME).sol > $(NAME).bin
-			abigen --bin=$(NAME).bin --abi=contracts_$(NAME)_sol_$(NAME).abi --pkg=diploma --out=$(NAME).go
+			solcjs --abi contracts/FtDiploma.sol > FtDiploma.abi
+			solcjs --bin contracts/FtDiploma.sol > FtDiploma.bin
+			abigen --bin=FtDiploma.bin --abi=contracts_FtDiploma_sol_FtDiploma.abi --pkg=diploma --out=$(NAME).go
 			sed -i 's/diploma/contracts/' $(NAME).go
 			mv $(NAME).go ./src/contracts/$(NAME).go
 			@echo "$(YELLOW)Compiling $(NAME) in golang!$(NONE)"
