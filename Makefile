@@ -36,7 +36,7 @@ compile:
 			@echo "$(YELLOW)Compiling the smart-contract in golang!$(NONE)"
 			solcjs --abi contracts/FtDiploma.sol > FtDiploma.abi
 			solcjs --bin contracts/FtDiploma.sol > FtDiploma.bin
-			abigen --bin=FtDiploma.bin --abi=contracts_FtDiploma_sol_FtDiploma.abi --pkg=diploma --out=$(NAME).go
+			abigen --bin=FtDiploma.bin --abi=contracts_FtDiploma_sol_FtDiploma.abi --pkg=diploma --out=FtDiploma.go
 			sed -i 's/diploma/contracts/' $(NAME).go
 			mv $(NAME).go ./src/contracts/$(NAME).go
 			@echo "$(YELLOW)Compiling $(NAME) in golang!$(NONE)"
