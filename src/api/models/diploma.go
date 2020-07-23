@@ -1,11 +1,9 @@
 package models
 
 import (
-	"container/list"
 	account "github.com/42School/blockchain-service/src/account"
 	"github.com/42School/blockchain-service/src/contracts"
 	"github.com/42School/blockchain-service/src/global"
-	"github.com/42School/blockchain-service/src/queues"
 	"github.com/42School/blockchain-service/src/tools"
 	"github.com/ethereum/go-ethereum/common"
 	crypgo "github.com/ethereum/go-ethereum/crypto"
@@ -20,6 +18,22 @@ type Diploma struct {
 	AlumniDate	time.Time	`json:"alumni_date"`
 	Level		float64		`json:"level"`
 	Skills		[]float64	`json:"skills"`
+}
+
+func convertSkillToInt(skills []float64) [30]uint64 {
+	newSkills := [30]uint64{}
+	for i := 0; i < 30; i++ {
+		newSkills[i] = uint64(skills[i] * 100)
+	}
+	return newSkills
+}
+
+func convertSkillToFloat(skills [30]uint64) [30]float64 {
+	newSkills := [30]float64{}
+	for i := 0; i < 30; i++ {
+		newSkills[i] = float64(skills[i]) / 100
+	}
+	return newSkills
 }
 
 func (_dp Diploma) CheckDiploma() bool {
@@ -48,20 +62,21 @@ func (_dp Diploma) String() string {
 	return str
 }
 
-func convertSkillToInt(skills []float64) [30]uint64 {
-	newSkills := [30]uint64{}
-	for i := 0; i < 30; i++ {
-		newSkills[i] = uint64(skills[i] * 100)
+func (_dp Diploma) AddToRetry() {
+	copyList := global.RetryQueue
+	for e := copyList.Front(); e != nil; e = e.Next() {
+		if e != nil {
+			diploma, _ := e.Value.(Diploma)
+			log.Println("Diploma in list:", diploma.String())
+			log.Println("Diploma to find:", _dp.String())
+			if diploma.String() == _dp.String() {
+				log.Println("Match diploma in list & to find")
+				return
+			}
+		}
 	}
-	return newSkills
-}
-
-func convertSkillToFloat(skills [30]uint64) [30]float64 {
-	newSkills := [30]float64{}
-	for i := 0; i < 30; i++ {
-		newSkills[i] = float64(skills[i]) / 100
-	}
-	return newSkills
+	tools.LogsDev("Adding diploma in Queue:" + _dp.String())
+	global.RetryQueue.PushBack(_dp)
 }
 
 func (_dp Diploma) convertDpToData(_sign []byte, _hash common.Hash) (uint64, [30]uint64, uint8, [32]byte, [32]byte, [32]byte) {
@@ -87,7 +102,7 @@ func (_dp Diploma) EthWriting() (string, bool) {
 		return "", false
 	}
 	if contracts.CallCreateDiploma(_dp.convertDpToData(sign, newHash)) == false {
-		queues.PushRetryQueue(list.Element{Value: _dp})
+		_dp.AddToRetry()
 		return "", false
 	}
 	global.ToCheckHash.PushBack(newHash.Bytes())

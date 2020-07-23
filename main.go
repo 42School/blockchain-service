@@ -14,11 +14,11 @@ import (
 	"time"
 )
 
-func ValidedHash() { // Valide
+func ValidedHash() {
 	for {
 		time.Sleep(10 * time.Minute)
 		copyList := global.ToCheckHash
-		for e := copyList.Front(); e != nil; e = copyList.Front() {
+		for e := copyList.Front(); e != nil; {
 			if e != nil {
 				hash, _ := e.Value.([]byte)
 				_, _, err := contracts.CallGetDiploma(hash)
@@ -28,18 +28,23 @@ func ValidedHash() { // Valide
 					_, err := http.Post(global.FtEndPoint + "/check-request", "Content-Type: application/json", strings.NewReader(data))
 					if err == nil {
 						global.ToCheckHash.Remove(e)
+						e = copyList.Front()
+					} else {
+						e = e.Next()
 					}
+				} else {
+					e = e.Next()
 				}
 			}
 		}
 	}
 }
 
-func RetryDiploma () { // Testing
+func RetryDiploma () {
 	for {
 		time.Sleep(1 * time.Minute)
 		copyList := global.RetryQueue
-		for e := copyList.Front(); e != nil; e = copyList.Front() {
+		for e := copyList.Front(); e != nil; {
 			if e != nil {
 				diploma, _ := e.Value.(models.Diploma)
 				tools.LogsDev(diploma.String())
@@ -47,7 +52,10 @@ func RetryDiploma () { // Testing
 				if bool == true {
 					data := "{'Status':true,'Message':'The writing in blockchain has been done, it will be confirmed in 10 min.','Data':{'Hash': " + hash + ",'Level':0,'Skills':[]}}"
 					http.Post(global.FtEndPoint + "/check-request", "Content-Type: application/json", strings.NewReader(data))
+					e = copyList.Front()
 					global.RetryQueue.Remove(e)
+				} else {
+					e = e.Next()
 				}
 			}
 		}
