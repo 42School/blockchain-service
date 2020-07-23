@@ -7,11 +7,14 @@ import (
 	accounts "github.com/42School/blockchain-service/src/account"
 	"github.com/42School/blockchain-service/src/global"
 	"github.com/42School/blockchain-service/src/tools"
+	"github.com/ethereum/go-ethereum"
+	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"log"
+	"strings"
 
 	"math/big"
 )
@@ -66,22 +69,52 @@ func getAuth() (*bind.TransactOpts, error) {
 	return auth, nil
 }
 
-func CallCreateDiploma(level uint64, skills [30]uint64, v uint8, r [32]byte, s [32]byte, hash [32]byte) bool {
-	instance, _, err := connectEthGetInstance()
-	if err != nil {
-		tools.LogsError(err)
-		return false
+func getLogs(client *ethclient.Client) (logs []types.Log, contractAbi abi.ABI, error error){
+	query := ethereum.FilterQuery{Addresses: []common.Address{common.HexToAddress(global.AddressOfContract)}}
+	logs, errLogs := client.FilterLogs(context.Background(), query)
+	if errLogs != nil {
+		tools.LogsError(errLogs)
+		return nil, abi.ABI{}, errLogs
 	}
+	contractAbi, errAbi := abi.JSON(strings.NewReader(string(DiplomaABI)))
+	if errAbi != nil {
+		tools.LogsError(errAbi)
+		return nil, abi.ABI{}, errAbi
+	}
+	return logs, contractAbi, nil
+}
+
+func CallCreateDiploma(level uint64, skills [30]uint64, v uint8, r [32]byte, s [32]byte, hash [32]byte) bool {
+	instance, client, err := connectEthGetInstance()
 	auth, errAuth := getAuth()
-	if errAuth != nil {
-		tools.LogsError(errAuth)
+	if err != nil || errAuth != nil {
 		return false
 	}
 	tx, errCreate := instance.CreateDiploma(auth, level, skills, v, r, s, hash)
-	log.Println(tx.Data(), string(tx.Data()))
 	if errCreate != nil {
 		tools.LogsError(errCreate)
 		return false
+	}
+	logs, contractAbi, errLogs := getLogs(client)
+	if errLogs != nil {
+		tools.LogsError(errLogs)
+		return true
+	}
+	for _, vLog := range logs {
+		if vLog.TxHash.Hex() == tx.Hash().Hex() {
+			event := struct {
+				Student   [32]byte
+			}{}
+			errUnpack := contractAbi.Unpack(&event, "CreateDiploma", vLog.Data)
+			if errUnpack != nil {
+				tools.LogsError(errUnpack)
+				return true
+			}
+			if common.Bytes2Hex(hash[:]) != common.Bytes2Hex(event.Student[:]) {
+				tools.LogsMsg("Error: The hash writing in blockchain is not the same of this student !")
+				// Send Mail... && Security system on
+			}
+		}
 	}
 	return true
 }
