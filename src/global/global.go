@@ -20,4 +20,5 @@ var Env string = os.Getenv("RUNENV")
 var DevAddress string = os.Getenv("DEVADDRESS")
 var DevPrivateKey string = os.Getenv("DEVPRIVATEKEY")
 
+var RetryQueue *list.List = list.New()
 var ToCheckHash *list.List = list.New()

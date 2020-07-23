@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/42School/blockchain-service/src/api/models"
 	"github.com/42School/blockchain-service/src/tools"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/42School/blockchain-service/src/account"
@@ -13,9 +14,9 @@ import (
 	"time"
 )
 
-func ValidedHash() {
+func ValidedHash() { // Valide
 	for {
-		time.Sleep(6000/*00*/ * time.Millisecond)
+		time.Sleep(10 * time.Minute)
 		copyList := global.ToCheckHash
 		for e := copyList.Front(); e != nil; e = copyList.Front() {
 			if e != nil {
@@ -24,7 +25,7 @@ func ValidedHash() {
 				if err == nil {
 					strHash := hexutil.Encode(hash)
 					data := "{'Status': true, 'Message': 'The " + strHash + " diploma is definitely inscribed on Ethereum.', 'Data': {" + strHash + "}}"
-					_, err := http.Post(global.FtEndPoint, "Content-Type: application/json", strings.NewReader(data))
+					_, err := http.Post(global.FtEndPoint + "/check-request", "Content-Type: application/json", strings.NewReader(data))
 					if err == nil {
 						global.ToCheckHash.Remove(e)
 					}
@@ -34,8 +35,28 @@ func ValidedHash() {
 	}
 }
 
+func RetryDiploma () { // Testing
+	for {
+		time.Sleep(1 * time.Minute)
+		copyList := global.RetryQueue
+		for e := copyList.Front(); e != nil; e = copyList.Front() {
+			if e != nil {
+				diploma, _ := e.Value.(models.Diploma)
+				tools.LogsDev(diploma.String())
+				hash, bool := diploma.EthWriting()
+				if bool == true {
+					data := "{'Status':true,'Message':'The writing in blockchain has been done, it will be confirmed in 10 min.','Data':{'Hash': " + hash + ",'Level':0,'Skills':[]}}"
+					http.Post(global.FtEndPoint + "/check-request", "Content-Type: application/json", strings.NewReader(data))
+					global.RetryQueue.Remove(e)
+				}
+			}
+		}
+	}
+}
+
 func main() {
 	go ValidedHash()
+	go RetryDiploma()
 	tools.LogsMsg("Blockchain Service is running !")
 	account.CreateAccountsManager()
 	router := api.InitRouter()

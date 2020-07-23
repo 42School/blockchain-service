@@ -5,6 +5,7 @@ import (
 	"github.com/42School/blockchain-service/src/api/models"
 	"github.com/42School/blockchain-service/src/tools"
 	"io/ioutil"
+	"log"
 	"net/http"
 )
 
@@ -33,9 +34,9 @@ func CreateDiploma(w http.ResponseWriter, r *http.Request) {
 	}
 	tools.LogsDev("Received request to write the " + newDiploma.FirstName + " " + newDiploma.LastName + " diploma.")
 	var res []byte
-	hash, bool := models.NewDiploma(newDiploma)
+	hash, bool := newDiploma.EthWriting()
 	if bool == false {
-		res, _ = json.Marshal(ResponseJson{false, "Blockchain writing had a problem, please try again.", ResponseData{"", 0, []float64{}}})
+		res, _ = json.Marshal(ResponseJson{false, "Blockchain writing had a problem, the diploma is saved in the queue.", ResponseData{"", 0, []float64{}}})
 		w.WriteHeader(http.StatusBadRequest)
 	} else {
 		res, _ = json.Marshal(ResponseJson{true, "The writing in blockchain has been done, it will be confirmed in 10 min.", ResponseData{hash, 0, []float64{}}})
@@ -51,7 +52,7 @@ func GetDiploma(w http.ResponseWriter, r *http.Request) {
 	var res []byte
 	jsonData, readErr := ioutil.ReadAll(r.Body)
 	jsonErr := json.Unmarshal(jsonData, &diploma)
-	level, skills, errGet := models.GetDiploma(diploma)
+	level, skills, errGet := diploma.EthGetter()
 	if r.ContentLength == 0 || readErr != nil || jsonErr != nil || errGet != nil {
 		res, _ = json.Marshal(ResponseJson{false, "The request is fail, please retry & check the data", ResponseData{}})
 		w.WriteHeader(http.StatusBadRequest)
@@ -61,4 +62,9 @@ func GetDiploma(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Write(res)
 	return
+}
+
+func CheckRouter (w http.ResponseWriter, r *http.Request) {
+	jsonData, _ := ioutil.ReadAll(r.Body)
+	log.Println("r.body", string(jsonData))
 }

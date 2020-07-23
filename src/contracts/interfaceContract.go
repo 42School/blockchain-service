@@ -93,6 +93,13 @@ func CallCreateDiploma(level uint64, skills [30]uint64, v uint8, r [32]byte, s [
 	tx, errCreate := instance.CreateDiploma(auth, level, skills, v, r, s, hash)
 	if errCreate != nil {
 		tools.LogsError(errCreate)
+		if strings.Contains(errCreate.Error(), "FtDiploma: The diploma already exists.") {
+			return true
+		}
+		if strings.Contains(errCreate.Error(), "sender doesn't have enough funds to send tx.") {
+			tools.LogsDev("Do Change accounts here")
+			// Change account to write
+		}
 		return false
 	}
 	logs, contractAbi, errLogs := getLogs(client)
