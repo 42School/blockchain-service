@@ -2,9 +2,8 @@ package contracts
 
 import (
 	"context"
-	"crypto/ecdsa"
 	"fmt"
-	accounts "github.com/42School/blockchain-service/src/account"
+	"github.com/42School/blockchain-service/src/account"
 	"github.com/42School/blockchain-service/src/global"
 	"github.com/42School/blockchain-service/src/tools"
 	"github.com/ethereum/go-ethereum"
@@ -12,7 +11,6 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"strings"
 
@@ -33,27 +31,15 @@ func connectEthGetInstance() (*Diploma, *ethclient.Client, error) {
 }
 
 func getAuth() (*bind.TransactOpts, error) {
-	var address common.Address
-	var privateKey *ecdsa.PrivateKey
-	var nonce uint64
-	var errNonce error
 	client, errConnection := ethclient.Dial(global.NetworkLink)
 	if errConnection != nil {
 		return nil, errConnection
 	}
-	if global.Env == "Dev" {
-		address = common.HexToAddress(global.DevAddress)
-		privateKey, _ = crypto.HexToECDSA(global.DevPrivateKey)
-	} else {
-		account := accounts.GetAccount()
-		address = account.Address
-		ks, errKey := accounts.GetKey()
-		if errKey != nil  {
-			return nil, errKey
-		}
-		privateKey = ks.PrivateKey
+	address, privateKey, errGet := account.GetWriterAccount()
+	if errGet != nil {
+		return nil, errGet
 	}
-	nonce, errNonce = client.PendingNonceAt(context.Background(), address)
+	nonce, errNonce := client.PendingNonceAt(context.Background(), address)
 	if errNonce != nil  {
 		return nil, errNonce
 	}
@@ -98,7 +84,7 @@ func CallCreateDiploma(level uint64, skills [30]uint64, v uint8, r [32]byte, s [
 		}
 		if strings.Contains(errCreate.Error(), "sender doesn't have enough funds to send tx.") {
 			tools.LogsDev("Do Change accounts here")
-			// Change account to write
+			account.ChangeAccount()
 		}
 		return false
 	}

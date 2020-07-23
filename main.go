@@ -42,7 +42,7 @@ func ValidedHash() {
 
 func RetryDiploma () {
 	for {
-		time.Sleep(1 * time.Minute)
+		time.Sleep(30 * time.Minute)
 		copyList := global.RetryQueue
 		for e := copyList.Front(); e != nil; {
 			if e != nil {
