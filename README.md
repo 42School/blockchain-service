@@ -10,15 +10,29 @@ La stack choisi pour ce projet est `go`, la blockchain `ethereum` et `solidity` 
 
 La branche dev en cours est [dev/go/eth](https://github.com/lpieri/42-Alumni/tree/dev/go/eth).
 
+## Sommaire
+
+- [Installation](#installation)
+- [Lancement en mode dev](#lancement-en-mode-dev)
+- [Route de l'api](#route-de-lapi)
+- [Makefile](#makefile)
+- Nouvelle Feature
+- [Création d'un fichier keystore](#création-dun-fichier-keystore)
+
 ## Installation
 
 **Petite modification importante** - Avant de lancer `make install` veuillez modifier dans le Dockerfile `Dockerfile.dev` la variable `FTENDPOINT` avec l'ip du service d'alumnisation:
 
 ```dockerfile
-ENV FTENDPOINT="http://[ip-42]/confirmed-alumni"
+ENV FTENDPOINT="http://[ip-42]" # By default "http://127.0.0.1:8080"
+ENV VALIDATIONPATH="/[Path for validation]" # By default "/check-request"
+ENV PATHRETRY="/[Path for retry]" # By default "/check-request"
 ```
 
-L'API enverra toutes les 10 minutes des requêtes confirmant les diplômes en blockchain à cette adresse.
+L'API enverra:
+
+- Toutes les 10 minutes des requêtes confirmant les diplômes en blockchain à l'adresse `EndPoint + ValidationPath` 
+- Toutes les 30 minutes des requêtes validant l'inscription d'un diplôme ayant échouer sont écriture à cette adresse `EndPoint + RetryPath`
 
 Pour lancé le projet il faut intaller `docker`
 
@@ -74,9 +88,9 @@ dev: Lance le projet en mode dev dans un container docker (commande un peu lente
 compile: Compile le smart-contract, convertie le smart-contract solidity en golang et compile la partie golang
 clean: Supprime le binaire go et tous autres fichiers utiles à la compilation
 docker-stop: Stop les containers docker et les supprimes
-docker-clean: Appel la règle docker-stop et supprime les images docker
-fclean: Supprime l'image docker
-re: Appelle les règles clean et all
+docker-rm: Supprime les images docker des dockerfiles
+docker-clean: Appelle les règles docker-stop et docker-rm
+re: Appelle les règles docker-clean et all
 ```
 
 ## Création d'un fichier Keystore

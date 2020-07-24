@@ -12,6 +12,8 @@ var NetworkLink string = os.Getenv("NETWORKLINK")
 var AddressOfContract string = os.Getenv("ADDRESSCONTRACT")
 
 var FtEndPoint string = os.Getenv("FTENDPOINT")
+var PathValidation string = os.Getenv("VALIDATIONPATH")
+var PathRetry string = os.Getenv("PATHRETRY")
 
 var Env string = os.Getenv("RUNENV")
 

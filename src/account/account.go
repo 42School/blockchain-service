@@ -64,7 +64,7 @@ func GetWriterAccount() (common.Address, *ecdsa.PrivateKey, error) {
 func ChangeAccount() {
 	// Send Mail of Current Account
 	address, _, _ := GetWriterAccount()
-	tools.SendMail("Empty Account", "bocal@email", address.Hex())
+	tools.SendMail("Empty Account", address.Hex())
 	if CurrentAccount + 1 == len(Accounts) {
 		CurrentAccount = 0
 	} else {
