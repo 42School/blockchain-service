@@ -8,7 +8,9 @@ Blockchain-service est un project blockchain de 42.
 
 La stack choisi pour ce projet est `go`, la blockchain `ethereum` et `solidity` pour le smartcontract.
 
-La branche dev en cours est [dev/go/eth](https://github.com/lpieri/42-Alumni/tree/dev/go/eth).
+La branche dev en cours est [dev/go/eth](https://github.com/42School/blockchain-service/tree/dev/go/eth).
+
+La précédente version stable est la [v1.3.1](https://github.com/42School/blockchain-service/tree/v1.3.1)
 
 ## Sommaire
 
@@ -16,7 +18,8 @@ La branche dev en cours est [dev/go/eth](https://github.com/lpieri/42-Alumni/tre
 - [Lancement en mode dev](#lancement-en-mode-dev)
 - [Route de l'api](#route-de-lapi)
 - [Makefile](#makefile)
-- Nouvelle Feature
+- [Nouvelle Feature](#nouvelle-feature)
+- [Configuration](#configuration)
 - [Création d'un fichier keystore](#création-dun-fichier-keystore)
 
 ## Installation
@@ -92,6 +95,54 @@ docker-rm: Supprime les images docker des dockerfiles
 docker-clean: Appelle les règles docker-stop et docker-rm
 re: Appelle les règles docker-clean et all
 ```
+
+## Nouvelle Feature
+
+Voici les nouvelles features pour la v2:
+
+- Une meilleure vérification lors de l'écriture d'un diplôme. Check du hash demandé lors de l'écriture et celui écrit emit par un événement blockchain.
+- Une queue de retry qui ré-essaye l'écriture d'un diplôme 30 minutes après, si il avait échouer une première fois.
+- Un système de roulement de compte Ethereum qui va envoyer les transactions pour écrire un diplôme en blockchain.
+- Un sytème d'envoye de mail:
+  - Si le seuil d'Eth est trop faible sur un compte
+  - Si le système de sécurité s'active
+- Un sytème de sécurité, si l'écriture d'un diplôme en blockchain est différent que celui demandé alors il s'active et envoie toutes les prochaines demande en queue de retry. Sa désactivation se fait manuellement via un mode de commande sur STDIN.
+- Un système de commande, il lis des commandes sur STDIN lors de l'éxecution du programme.
+  - Pour l'activer il faut écrire `cmd` dans STDIN
+  - Commandes prise en charge:
+    - `disable security system` pour désactiver le système de sécurité
+    - `exit` pour quitté le mode de commande
+
+## Configuration
+
+### Roulement de compte ETH
+
+Pour configurer le roulement des comptes Ethereum qui vont écrire sur la blockchain, vous devez créer un fichier csv tel quel:
+
+```csv
+#file name, password
+UTC--2020-07-24T08-19-17.983576000Z--cac03bac6965e6d8ca96537a0344cc506b32c2c7, password
+UTC--2020-07-24T08-24-31.985849000Z--fe5ac6a7bb66da6916becb74a4a3e00074cd2599, password
+UTC--2020-07-24T08-25-31.194883000Z--aec7bdfb241e56c04acf5e1a2a49f147867b85b7, password
+```
+
+Puis ajouté dans l'env le path du dossier contenant les fichiers keystore:
+
+```dockerfile
+ENV KEYSTOREPATH="./keystore"
+```
+
+Pour les tests un fichier est fournis `accounts.csv` ainsi qu'un dossier `./keystore`.
+
+### Compte Officiel de 42 
+
+Pour configurer le compte qui va signer les diplômes vous devez créer un fichier `keystore` qui sera stocker un dossier à part du dossier pour le roulement, puis enregistrer son `path` dans l`env:
+
+```dockerfile
+ENV KEYSTOREPATHSIGN="./keystore-sign"
+```
+
+Pour les tests un dossier ainsi qu'un fichier keystore sont fournis
 
 ## Création d'un fichier Keystore
 
