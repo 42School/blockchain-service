@@ -1,15 +1,18 @@
 package main
 
 import (
-	"github.com/42School/blockchain-service/src/api/models"
-	"github.com/42School/blockchain-service/src/tools"
-	"github.com/ethereum/go-ethereum/common/hexutil"
+	"bufio"
+	"fmt"
 	"github.com/42School/blockchain-service/src/account"
 	"github.com/42School/blockchain-service/src/api"
+	"github.com/42School/blockchain-service/src/api/models"
 	"github.com/42School/blockchain-service/src/contracts"
 	"github.com/42School/blockchain-service/src/global"
+	"github.com/42School/blockchain-service/src/tools"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 )
@@ -64,9 +67,40 @@ func RetryDiploma () {
 	}
 }
 
+func ReadStdin() {
+	scanner := bufio.NewScanner(os.Stdin)
+	var cmd = false
+	for {
+		if cmd {
+			fmt.Print("> ")
+		}
+		scanner.Scan()
+		if err := scanner.Err(); err != nil {
+			log.Println(err)
+		} else {
+			text := scanner.Text()
+			if text == "CMD" || text == "cmd" || text == "Cmd"{
+				fmt.Println("Please enter your command:")
+				fmt.Println(" - 'disable security system': to disable the security system")
+				fmt.Println(" - 'exit' or 'Exit' or 'EXIT': to exit the CMD mode")
+				cmd = true
+			} else if text == "disable security system" && cmd {
+				cmd = false
+				global.SecuritySystem = false
+				fmt.Println("The security system has been disabled !")
+				fmt.Println("Goodbye of cmd mode")
+			} else if text == "Exit" || text == "exit" || text == "EXIT" {
+				cmd = false
+				fmt.Println("Goodbye of cmd mode")
+			}
+		}
+	}
+}
+
 func main() {
 	go ValidedHash()
 	go RetryDiploma()
+	go ReadStdin()
 	tools.LogsMsg("Blockchain Service is running !")
 	account.CreateAccountsManager()
 	router := api.InitRouter()

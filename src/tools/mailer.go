@@ -1,9 +1,12 @@
 package tools
 
-import "net/smtp"
+import (
+	"net/smtp"
+	"os"
+)
 
-var emailSender string = "emailSender"
-var passwordEmail string = "password"
+var emailSender string = os.Getenv("EMAILSENDER")
+var passwordEmail string = os.Getenv("PASSWDEMAIL")
 
 func getAuth() smtp.Auth {
 	auth := smtp.PlainAuth(
