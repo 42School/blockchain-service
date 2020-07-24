@@ -26,7 +26,7 @@ func ValideHash() {
 				if err == nil {
 					strHash := hexutil.Encode(hash)
 					data := "{'Status': true, 'Message': 'The " + strHash + " diploma is definitely inscribed on Ethereum.', 'Data': {" + strHash + "}}"
-					_, err := http.Post(global.FtEndPoint + global.PathValidation, "Content-Type: application/json", strings.NewReader(data))
+					_, err := http.Post(global.FtEndPoint + global.ValidationPath, "Content-Type: application/json", strings.NewReader(data))
 					if err == nil {
 						global.ToCheckHash.Remove(e)
 						e = copyList.Front()
@@ -53,7 +53,7 @@ func RetryDiploma () {
 					hash, bool := diploma.EthWriting()
 					if bool == true {
 						data := "{'Status':true,'Message':'The writing in blockchain has been done, it will be confirmed in 10 min.','Data':{'Hash': " + hash + ",'Level':0,'Skills':[]}}"
-						http.Post(global.FtEndPoint + global.PathRetry, "Content-Type: application/json", strings.NewReader(data))
+						http.Post(global.FtEndPoint + global.RetryPath, "Content-Type: application/json", strings.NewReader(data))
 						global.RetryQueue.Remove(e)
 						e = copyList.Front()
 					} else {

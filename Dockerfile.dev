@@ -32,7 +32,11 @@ ENV FTENDPOINT="http://127.0.0.1:8080"
 
 ENV VALIDATIONPATH="/check-request"
 
-ENV PATHRETRY="/check-request"
+ENV RETRYPATH="/check-request"
+
+ENV EMAILSENDER="emailSender"
+
+ENV PASSWDEMAIL="password"
 
 ENV NETWORKLINK="http://172.17.0.1:9545"
 

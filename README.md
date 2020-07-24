@@ -29,7 +29,7 @@ La précédente version stable est la [v1.3.1](https://github.com/42School/block
 ```dockerfile
 ENV FTENDPOINT="http://[ip-42]" # By default "http://127.0.0.1:8080"
 ENV VALIDATIONPATH="/[Path for validation]" # By default "/check-request"
-ENV PATHRETRY="/[Path for retry]" # By default "/check-request"
+ENV RETRYPATH="/[Path for retry]" # By default "/check-request"
 ```
 
 L'API enverra:
