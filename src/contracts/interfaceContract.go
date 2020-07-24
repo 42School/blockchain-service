@@ -83,7 +83,6 @@ func CallCreateDiploma(level uint64, skills [30]uint64, v uint8, r [32]byte, s [
 			return true
 		}
 		if strings.Contains(errCreate.Error(), "sender doesn't have enough funds to send tx.") {
-			tools.LogsDev("Do Change accounts here")
 			account.ChangeAccount()
 		}
 		return false
@@ -106,7 +105,7 @@ func CallCreateDiploma(level uint64, skills [30]uint64, v uint8, r [32]byte, s [
 			if common.Bytes2Hex(hash[:]) != common.Bytes2Hex(event.Student[:]) {
 				tools.LogsMsg("Error: The hash writing in blockchain is not the same of this student !")
 				tools.SendMail("Security Alert", "bocal@email", "")
-				// Send Mail... && Security system on
+				global.SecuritySystem = true
 			}
 		}
 	}

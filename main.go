@@ -43,19 +43,21 @@ func ValidedHash() {
 func RetryDiploma () {
 	for {
 		time.Sleep(1/*30*/ * time.Minute)
-		copyList := global.RetryQueue
-		for e := copyList.Front(); e != nil; {
-			if e != nil {
-				diploma, _ := e.Value.(models.Diploma)
-				tools.LogsDev(diploma.String())
-				hash, bool := diploma.EthWriting()
-				if bool == true {
-					data := "{'Status':true,'Message':'The writing in blockchain has been done, it will be confirmed in 10 min.','Data':{'Hash': " + hash + ",'Level':0,'Skills':[]}}"
-					http.Post(global.FtEndPoint + "/check-request", "Content-Type: application/json", strings.NewReader(data))
-					global.RetryQueue.Remove(e)
-					e = copyList.Front()
-				} else {
-					e = e.Next()
+		if global.SecuritySystem == false {
+			copyList := global.RetryQueue
+			for e := copyList.Front(); e != nil; {
+				if e != nil {
+					diploma, _ := e.Value.(models.Diploma)
+					tools.LogsDev(diploma.String())
+					hash, bool := diploma.EthWriting()
+					if bool == true {
+						data := "{'Status':true,'Message':'The writing in blockchain has been done, it will be confirmed in 10 min.','Data':{'Hash': " + hash + ",'Level':0,'Skills':[]}}"
+						http.Post(global.FtEndPoint+"/check-request", "Content-Type: application/json", strings.NewReader(data))
+						global.RetryQueue.Remove(e)
+						e = copyList.Front()
+					} else {
+						e = e.Next()
+					}
 				}
 			}
 		}

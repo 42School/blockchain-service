@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"github.com/42School/blockchain-service/src/api/models"
+	"github.com/42School/blockchain-service/src/global"
 	"github.com/42School/blockchain-service/src/tools"
 	"io/ioutil"
 	"log"
@@ -29,6 +30,13 @@ func CreateDiploma(w http.ResponseWriter, r *http.Request) {
 	if r.ContentLength == 0 || readErr != nil || jsonErr != nil || newDiploma.CheckDiploma() == false {
 		res, _ := json.Marshal(ResponseJson{false, "The data sent are not valid, to be written in blockchain please try again!", ResponseData{}})
 		w.WriteHeader(http.StatusBadRequest)
+		w.Write(res)
+		return
+	}
+	if global.SecuritySystem {
+		newDiploma.AddToRetry()
+		res, _ := json.Marshal(ResponseJson{false, "The security system is activated, the request has just been queued.", ResponseData{}})
+		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(res)
 		return
 	}
