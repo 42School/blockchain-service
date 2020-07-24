@@ -3,6 +3,7 @@ package account
 import (
 	"crypto/ecdsa"
 	"github.com/42School/blockchain-service/src/global"
+	"github.com/42School/blockchain-service/src/tools"
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/accounts/keystore"
 	"github.com/ethereum/go-ethereum/common"
@@ -62,6 +63,8 @@ func GetWriterAccount() (common.Address, *ecdsa.PrivateKey, error) {
 
 func ChangeAccount() {
 	// Send Mail of Current Account
+	address, _, _ := GetWriterAccount()
+	tools.SendMail("Empty Account", "bocal@email", address.Hex())
 	if CurrentAccount + 1 == len(Accounts) {
 		CurrentAccount = 0
 	} else {

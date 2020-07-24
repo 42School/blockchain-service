@@ -105,6 +105,7 @@ func CallCreateDiploma(level uint64, skills [30]uint64, v uint8, r [32]byte, s [
 			}
 			if common.Bytes2Hex(hash[:]) != common.Bytes2Hex(event.Student[:]) {
 				tools.LogsMsg("Error: The hash writing in blockchain is not the same of this student !")
+				tools.SendMail("Security Alert", "bocal@email", "")
 				// Send Mail... && Security system on
 			}
 		}
