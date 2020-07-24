@@ -1,11 +1,12 @@
 package models
 
 import (
-	"github.com/ethereum/go-ethereum/common"
-	crypgo "github.com/ethereum/go-ethereum/crypto"
 	account "github.com/42School/blockchain-service/src/account"
 	"github.com/42School/blockchain-service/src/contracts"
 	"github.com/42School/blockchain-service/src/global"
+	"github.com/42School/blockchain-service/src/tools"
+	"github.com/ethereum/go-ethereum/common"
+	crypgo "github.com/ethereum/go-ethereum/crypto"
 	"log"
 	"time"
 )
@@ -18,29 +19,6 @@ type Diploma struct {
 	Level		float64		`json:"level"`
 	Skills		[]float64	`json:"skills"`
 }
-
-func (_dp Diploma) CheckDiploma() bool {
-	if _dp.FirstName == "" || _dp.LastName == "" || _dp.Level <= 6 || len(_dp.Skills) != 30 || _dp.AlumniDate.IsZero() || _dp.BirthDate.IsZero() {
-		return false
-	}
-	for i := 0; i < len(_dp.Skills); i++ {
-		if _dp.Skills[i] < 0.0 {
-			return false
-		}
-	}
-	return true
-}
-
-func (_dp Diploma) PrintDiploma() {
-	log.Print("Print one new Diploma:")
-	log.Println("First Name:", _dp.FirstName)
-	log.Println("Last Name:", _dp.LastName)
-	log.Println("Birth Date:", _dp.BirthDate)
-	log.Println("Alumni Date:", _dp.AlumniDate)
-	log.Println("Level:", _dp.Level)
-	log.Println("Skills:", _dp.Skills)
-}
-
 
 func convertSkillToInt(skills []float64) [30]uint64 {
 	newSkills := [30]uint64{}
@@ -58,6 +36,49 @@ func convertSkillToFloat(skills [30]uint64) [30]float64 {
 	return newSkills
 }
 
+func (_dp Diploma) CheckDiploma() bool {
+	if _dp.FirstName == "" || _dp.LastName == "" || _dp.Level <= 6 || len(_dp.Skills) != 30 || _dp.AlumniDate.IsZero() || _dp.BirthDate.IsZero() {
+		return false
+	}
+	for i := 0; i < len(_dp.Skills); i++ {
+		if _dp.Skills[i] < 0.0 {
+			return false
+		}
+	}
+	return true
+}
+
+func (_dp Diploma) PrintDiploma() {
+	log.Println("First Name:", _dp.FirstName)
+	log.Println("Last Name:", _dp.LastName)
+	log.Println("Birth Date:", _dp.BirthDate)
+	log.Println("Alumni Date:", _dp.AlumniDate)
+	log.Println("Level:", _dp.Level)
+	log.Println("Skills:", _dp.Skills)
+}
+
+func (_dp Diploma) String() string {
+	str := _dp.FirstName + ", " + _dp.LastName + ", " + _dp.BirthDate.String()[:10] + ", " + _dp.AlumniDate.String()[:10]
+	return str
+}
+
+func (_dp Diploma) AddToRetry() {
+	copyList := global.RetryQueue
+	for e := copyList.Front(); e != nil; e = e.Next() {
+		if e != nil {
+			diploma, _ := e.Value.(Diploma)
+			log.Println("Diploma in list:", diploma.String())
+			log.Println("Diploma to find:", _dp.String())
+			if diploma.String() == _dp.String() {
+				log.Println("Match diploma in list & to find")
+				return
+			}
+		}
+	}
+	tools.LogsDev("Adding diploma in Queue:" + _dp.String())
+	global.RetryQueue.PushBack(_dp)
+}
+
 func (_dp Diploma) convertDpToData(_sign []byte, _hash common.Hash) (uint64, [30]uint64, uint8, [32]byte, [32]byte, [32]byte) {
 	level := uint64(_dp.Level * 100)
 	skills := convertSkillToInt(_dp.Skills)
@@ -71,21 +92,24 @@ func (_dp Diploma) convertDpToData(_sign []byte, _hash common.Hash) (uint64, [30
 	return level, skills, v, r, s, hash
 }
 
-func NewDiploma(new Diploma) (string, bool) {
-	dataToHash := new.FirstName + ", " + new.LastName + ", " + new.BirthDate.String()[:10] + ", " + new.AlumniDate.String()[:10]
+func (_dp Diploma) EthWriting() (string, bool) {
+	dataToHash := _dp.FirstName + ", " + _dp.LastName + ", " + _dp.BirthDate.String()[:10] + ", " + _dp.AlumniDate.String()[:10]
 	newHash := crypgo.Keccak256Hash([]byte(dataToHash))
-	sign, err := account.KeyStore.SignHashWithPassphrase(account.GetAccount(), global.PasswordAccount, newHash.Bytes())
+	sign, err := account.KeyStore.SignHashWithPassphrase(account.GetSignAccount(), global.PasswordAccount, newHash.Bytes())
+	tools.LogsDev("The hash of the diploma is " + newHash.String())
+	tools.LogsDev("The signature on the diploma is " + common.Bytes2Hex(sign))
 	if err != nil {
 		return "", false
 	}
-	if contracts.CallCreateDiploma(new.convertDpToData(sign, newHash)) == false {
+	if contracts.CallCreateDiploma(_dp.convertDpToData(sign, newHash)) == false {
+		_dp.AddToRetry()
 		return "", false
 	}
 	global.ToCheckHash.PushBack(newHash.Bytes())
 	return newHash.Hex(), true
 }
 
-func GetDiploma(_dp Diploma) (float64, [30]float64, error) {
+func (_dp Diploma) EthGetter() (float64, [30]float64, error) {
 	dataToHash := _dp.FirstName + ", " + _dp.LastName + ", " + _dp.BirthDate.String()[:10] + ", " + _dp.AlumniDate.String()[:10]
 	hash := crypgo.Keccak256Hash([]byte(dataToHash))
 	levelInt, skillsInt, err := contracts.CallGetDiploma(hash.Bytes())

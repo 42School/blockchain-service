@@ -1,4 +1,4 @@
-FROM debian:buster
+FROM debian:buster-backports
 
 RUN apt-get update -y && apt-get upgrade -y
 
@@ -12,4 +12,4 @@ COPY ./truffle-config.js /.
 
 EXPOSE 9545:9545
 
-CMD ganache-cli --account "0x2a5c20b8657e52644b994b71d451b1a5f40188cec559e288475750710d1c54a7,500000000000000000000" -h 0.0.0.0 -p 9545 -k muirGlacier
+CMD ganache-cli --account "0xd4ecb28d0bbfdc6e12c9245d42e2ca58bc13e2fe434d0b547de3356124ce9bc2,134439500000000000" --account "0xd634b7172b296da0b018a52582a0d41add6acc3289d361df2c984df27958fa1b,13443950000" --account "0x5b273f2fd8aaf42c31aa995a3cd2b6ce298cbcd6f8cba2785f4e5d46ba5ef147,500000000000000000000" -h 0.0.0.0 -p 9545 -k muirGlacier
