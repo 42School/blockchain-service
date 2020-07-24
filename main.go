@@ -42,7 +42,7 @@ func ValidedHash() {
 
 func RetryDiploma () {
 	for {
-		time.Sleep(30 * time.Minute)
+		time.Sleep(1/*30*/ * time.Minute)
 		copyList := global.RetryQueue
 		for e := copyList.Front(); e != nil; {
 			if e != nil {
@@ -52,8 +52,8 @@ func RetryDiploma () {
 				if bool == true {
 					data := "{'Status':true,'Message':'The writing in blockchain has been done, it will be confirmed in 10 min.','Data':{'Hash': " + hash + ",'Level':0,'Skills':[]}}"
 					http.Post(global.FtEndPoint + "/check-request", "Content-Type: application/json", strings.NewReader(data))
-					e = copyList.Front()
 					global.RetryQueue.Remove(e)
+					e = copyList.Front()
 				} else {
 					e = e.Next()
 				}

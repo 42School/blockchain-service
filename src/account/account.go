@@ -6,7 +6,10 @@ import (
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/accounts/keystore"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/crypto"
 	"io/ioutil"
+	"log"
 )
 
 type Account struct {
@@ -17,11 +20,14 @@ type Account struct {
 var AccountsManager *accounts.Manager
 var KeyStore *keystore.KeyStore
 var CurrentAccount int = 0
-var Accounts = []Account{{"UTC--2020-07-16T13-52-10.535505000Z--7e12234e994384a757e2689addb2a463ccd3b47d", "password"}, {"File2", "pwd2"}}
-
+var Accounts = []Account{
+	{"UTC--2020-07-24T08-19-17.983576000Z--cac03bac6965e6d8ca96537a0344cc506b32c2c7", "password"},
+	{"UTC--2020-07-24T08-24-31.985849000Z--fe5ac6a7bb66da6916becb74a4a3e00074cd2599", "password"},
+	{"UTC--2020-07-24T08-25-31.194883000Z--aec7bdfb241e56c04acf5e1a2a49f147867b85b7", "password"},
+}
 
 func CreateAccountsManager() {
-	KeyStore = keystore.NewKeyStore(global.PathKeyStore, keystore.StandardScryptN, keystore.StandardScryptP)
+	KeyStore = keystore.NewKeyStore(global.PathKeyStoreSign, keystore.StandardScryptN, keystore.StandardScryptP)
 	AccountsManager = accounts.NewManager(&accounts.Config{InsecureUnlockAllowed: false}, KeyStore)
 }
 
@@ -38,11 +44,12 @@ func GetWriterAccount() (common.Address, *ecdsa.PrivateKey, error) {
 	if errDecrypt != nil {
 		return common.Address{}, nil, errDecrypt
 	}
+	log.Println("pk:", hexutil.Encode(crypto.FromECDSA(key.PrivateKey)))
 	return key.Address, key.PrivateKey, nil
 }
 
 func ChangeAccount() {
-	// Send Mail of Current Account 
+	// Send Mail of Current Account
 	if CurrentAccount + 1 == len(Accounts) {
 		CurrentAccount = 0
 	} else {
