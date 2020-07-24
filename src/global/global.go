@@ -15,7 +15,7 @@ var FtEndPoint string = os.Getenv("FTENDPOINT")
 
 var Env string = os.Getenv("RUNENV")
 
-var SecuritySystem bool = true
+var SecuritySystem bool = false
 
 var RetryQueue *list.List = list.New()
 var ToCheckHash *list.List = list.New()
