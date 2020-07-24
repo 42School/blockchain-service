@@ -95,7 +95,7 @@ func (_dp Diploma) convertDpToData(_sign []byte, _hash common.Hash) (uint64, [30
 func (_dp Diploma) EthWriting() (string, bool) {
 	dataToHash := _dp.FirstName + ", " + _dp.LastName + ", " + _dp.BirthDate.String()[:10] + ", " + _dp.AlumniDate.String()[:10]
 	newHash := crypgo.Keccak256Hash([]byte(dataToHash))
-	sign, err := account.KeyStore.SignHashWithPassphrase(account.GetAccount(), global.PasswordAccount, newHash.Bytes())
+	sign, err := account.KeyStore.SignHashWithPassphrase(account.GetSignAccount(), global.PasswordAccount, newHash.Bytes())
 	tools.LogsDev("The hash of the diploma is " + newHash.String())
 	tools.LogsDev("The signature on the diploma is " + common.Bytes2Hex(sign))
 	if err != nil {

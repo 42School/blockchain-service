@@ -10,6 +10,7 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"io/ioutil"
 	"log"
+	"strings"
 )
 
 type Account struct {
@@ -17,21 +18,32 @@ type Account struct {
 	Password		string
 }
 
-var AccountsManager *accounts.Manager
 var KeyStore *keystore.KeyStore
 var CurrentAccount int = 0
-var Accounts = []Account{
-	{"UTC--2020-07-24T08-19-17.983576000Z--cac03bac6965e6d8ca96537a0344cc506b32c2c7", "password"},
-	{"UTC--2020-07-24T08-24-31.985849000Z--fe5ac6a7bb66da6916becb74a4a3e00074cd2599", "password"},
-	{"UTC--2020-07-24T08-25-31.194883000Z--aec7bdfb241e56c04acf5e1a2a49f147867b85b7", "password"},
+var Accounts []Account
+
+func ParseAccounts() {
+	bits, err := ioutil.ReadFile("./accounts.csv")
+	if err == nil {
+		data := string(bits)
+		lines := strings.Split(data, "\n")
+		for i := 0; i < len(lines); i++ {
+			line := lines[i]
+			if line[0] != '#' {
+				accountData := strings.Split(line, ", ")
+				account := Account{accountData[0], accountData[1]}
+				Accounts = append(Accounts, account)
+			}
+		}
+	}
 }
 
 func CreateAccountsManager() {
 	KeyStore = keystore.NewKeyStore(global.PathKeyStoreSign, keystore.StandardScryptN, keystore.StandardScryptP)
-	AccountsManager = accounts.NewManager(&accounts.Config{InsecureUnlockAllowed: false}, KeyStore)
+	ParseAccounts()
 }
 
-func GetAccount() accounts.Account {
+func GetSignAccount() accounts.Account {
 	return KeyStore.Accounts()[0]
 }
 
