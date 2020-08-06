@@ -18,8 +18,8 @@ CYAN = \033[36m
 all:		install testing dev
 
 install:
-			docker build -f Dockerfile.server -t $(ETHSERV) .
 			docker build -f Dockerfile.dev -t $(APICLIENT) .
+			docker build -f Dockerfile.server -t $(ETHSERV) .
 
 testing: server
 			$(shell sleep 10)
@@ -28,7 +28,7 @@ testing: server
 server:
 			docker run --add-host=$(ETHSERV):172.17.0.1 --name $(ETHSERV) -ti -p 9545:9545 -d $(ETHSERV)
 
-dev: server
+dev:
 			docker run --name $(APICLIENT) -ti -p 8080:8080 -d $(APICLIENT)
 
 compile:
@@ -53,10 +53,11 @@ clean:
 			rm contracts_$(NAME)_sol_$(NAME).bin
 
 docker-stop:
-			docker stop $(ETHSERV)
-			docker rm $(ETHSERV)
 			docker stop $(APICLIENT)
 			docker rm $(APICLIENT)
+			docker stop $(ETHSERV)
+			docker rm $(ETHSERV)
+
 docker-rm:
 			docker image rm $(ETHSERV)
 			docker image rm $(APICLIENT)

@@ -33,24 +33,28 @@ func connectEthGetInstance() (*Diploma, *ethclient.Client, error) {
 func getAuth() (*bind.TransactOpts, error) {
 	client, errConnection := ethclient.Dial(global.NetworkLink)
 	if errConnection != nil {
+		tools.LogsDev("errConnection")
 		return nil, errConnection
 	}
 	address, privateKey, errGet := account.GetWriterAccount()
 	if errGet != nil {
+		tools.LogsDev("errGet")
 		return nil, errGet
 	}
 	nonce, errNonce := client.PendingNonceAt(context.Background(), address)
 	if errNonce != nil  {
+		tools.LogsDev("errNonce")
 		return nil, errNonce
 	}
 	gasPrice, errGas := client.SuggestGasPrice(context.Background())
 	if errGas != nil {
+		tools.LogsDev("errGas")
 		return nil, errGas
 	}
 	auth := bind.NewKeyedTransactor(privateKey)
 	auth.Nonce = big.NewInt(int64(nonce))
 	auth.Value = big.NewInt(0)
-	auth.GasLimit = uint64(600000)
+	auth.GasLimit = uint64(604758)
 	auth.GasPrice = gasPrice
 	return auth, nil
 }
@@ -74,9 +78,12 @@ func CallCreateDiploma(level uint64, skills [30]uint64, v uint8, r [32]byte, s [
 	instance, client, err := connectEthGetInstance()
 	auth, errAuth := getAuth()
 	if err != nil || errAuth != nil {
+		tools.LogsError(err)
+		tools.LogsError(errAuth)
 		return false
 	}
 	tx, errCreate := instance.CreateDiploma(auth, level, skills, v, r, s, hash)
+	tools.LogsDev(tx.Hash().Hex())
 	if errCreate != nil {
 		tools.LogsError(errCreate)
 		if strings.Contains(errCreate.Error(), "FtDiploma: The diploma already exists.") {
