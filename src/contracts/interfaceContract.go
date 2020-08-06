@@ -74,30 +74,26 @@ func getLogs(client *ethclient.Client) (logs []types.Log, contractAbi abi.ABI, e
 	return logs, contractAbi, nil
 }
 
-func CallCreateDiploma(level uint64, skills [30]uint64, v uint8, r [32]byte, s [32]byte, hash [32]byte) bool {
+func CallCreateDiploma(level uint64, skills [30]uint64, v uint8, r [32]byte, s [32]byte, hash [32]byte) (*types.Transaction, bool) {
 	instance, client, err := connectEthGetInstance()
 	auth, errAuth := getAuth()
 	if err != nil || errAuth != nil {
-		tools.LogsError(err)
-		tools.LogsError(errAuth)
-		return false
+		return nil, false
 	}
 	tx, errCreate := instance.CreateDiploma(auth, level, skills, v, r, s, hash)
-	tools.LogsDev(tx.Hash().Hex())
 	if errCreate != nil {
-		tools.LogsError(errCreate)
 		if strings.Contains(errCreate.Error(), "FtDiploma: The diploma already exists.") {
-			return true
+			return nil, true
 		}
 		if strings.Contains(errCreate.Error(), "sender doesn't have enough funds to send tx.") {
 			account.ChangeAccount()
 		}
-		return false
+		return nil, false
 	}
+	tools.LogsDev("Transation Hash: " + tx.Hash().Hex())
 	logs, contractAbi, errLogs := getLogs(client)
 	if errLogs != nil {
-		tools.LogsError(errLogs)
-		return true
+		return tx, true
 	}
 	for _, vLog := range logs {
 		if vLog.TxHash.Hex() == tx.Hash().Hex() {
@@ -107,7 +103,7 @@ func CallCreateDiploma(level uint64, skills [30]uint64, v uint8, r [32]byte, s [
 			errUnpack := contractAbi.Unpack(&event, "CreateDiploma", vLog.Data)
 			if errUnpack != nil {
 				tools.LogsError(errUnpack)
-				return true
+				return tx, true
 			}
 			if common.Bytes2Hex(hash[:]) != common.Bytes2Hex(event.Student[:]) {
 				tools.LogsMsg("Error: The hash writing in blockchain is not the same of this student !")
@@ -116,7 +112,7 @@ func CallCreateDiploma(level uint64, skills [30]uint64, v uint8, r [32]byte, s [
 			}
 		}
 	}
-	return true
+	return tx, true
 }
 
 func CallGetDiploma(hash []byte) (uint64, [30]uint64, error) {

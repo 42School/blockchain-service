@@ -2,12 +2,13 @@ package async
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"github.com/42School/blockchain-service/src/api/models"
-	"github.com/42School/blockchain-service/src/contracts"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/42School/blockchain-service/src/global"
 	"github.com/42School/blockchain-service/src/tools"
-	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"log"
 	"net/http"
 	"os"
@@ -15,21 +16,28 @@ import (
 	"time"
 )
 
+
+
 func ValideHash() {
 	for {
 		time.Sleep(10 * time.Minute)
 		copyList := global.ToCheckHash
 		for e := copyList.Front(); e != nil; {
 			if e != nil {
-				hash, _ := e.Value.([]byte)
-				_, _, err := contracts.CallGetDiploma(hash)
+				check, _ := e.Value.(models.VerificationHash)
+				client, _ := ethclient.Dial(global.NetworkLink)
+				receipt, err := client.TransactionReceipt(context.Background(), check.Tx.Hash())
 				if err == nil {
-					strHash := hexutil.Encode(hash)
-					data := "{'Status': true, 'Message': 'The " + strHash + " diploma is definitely inscribed on Ethereum.', 'Data': {" + strHash + "}}"
-					_, err := http.Post(global.FtEndPoint + global.ValidationPath, "Content-Type: application/json", strings.NewReader(data))
-					if err == nil {
-						global.ToCheckHash.Remove(e)
-						e = copyList.Front()
+					if receipt.Status == 1 {
+						strHash := hexutil.Encode(check.StudentHash)
+						data := "{'Status': true, 'Message': 'The " + strHash + " diploma is definitely inscribed on Ethereum.', 'Data': {" + strHash + "}}"
+						_, err := http.Post(global.FtEndPoint + global.ValidationPath, "Content-Type: application/json", strings.NewReader(data))
+						if err == nil {
+							global.ToCheckHash.Remove(e)
+							e = copyList.Front()
+						} else {
+							e = e.Next()
+						}
 					} else {
 						e = e.Next()
 					}
