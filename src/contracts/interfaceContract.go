@@ -33,22 +33,18 @@ func connectEthGetInstance() (*Diploma, *ethclient.Client, error) {
 func getAuth() (*bind.TransactOpts, error) {
 	client, errConnection := ethclient.Dial(global.NetworkLink)
 	if errConnection != nil {
-		tools.LogsDev("errConnection")
 		return nil, errConnection
 	}
 	address, privateKey, errGet := account.GetWriterAccount()
 	if errGet != nil {
-		tools.LogsDev("errGet")
 		return nil, errGet
 	}
 	nonce, errNonce := client.PendingNonceAt(context.Background(), address)
 	if errNonce != nil  {
-		tools.LogsDev("errNonce")
 		return nil, errNonce
 	}
 	gasPrice, errGas := client.SuggestGasPrice(context.Background())
 	if errGas != nil {
-		tools.LogsDev("errGas")
 		return nil, errGas
 	}
 	auth := bind.NewKeyedTransactor(privateKey)
@@ -82,10 +78,8 @@ func CallCreateDiploma(level uint64, skills [30]uint64, v uint8, r [32]byte, s [
 	}
 	tx, errCreate := instance.CreateDiploma(auth, level, skills, v, r, s, hash)
 	if errCreate != nil {
-		if strings.Contains(errCreate.Error(), "FtDiploma: The diploma already exists.") {
-			return nil, true
-		}
-		if strings.Contains(errCreate.Error(), "sender doesn't have enough funds to send tx.") {
+		tools.LogsError(errCreate)
+		if strings.Contains(errCreate.Error(), "insufficient funds for gas * price + value") {
 			account.ChangeAccount()
 		}
 		return nil, false

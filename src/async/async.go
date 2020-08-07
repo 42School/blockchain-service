@@ -5,9 +5,9 @@ import (
 	"context"
 	"fmt"
 	"github.com/42School/blockchain-service/src/api/models"
-	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/42School/blockchain-service/src/global"
 	"github.com/42School/blockchain-service/src/tools"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"log"
 	"net/http"
@@ -16,11 +16,9 @@ import (
 	"time"
 )
 
-
-
 func ValideHash() {
 	for {
-		time.Sleep(10 * time.Minute)
+		time.Sleep(1 * time.Minute)
 		copyList := global.ToCheckHash
 		for e := copyList.Front(); e != nil; {
 			if e != nil {
@@ -39,11 +37,22 @@ func ValideHash() {
 							e = e.Next()
 						}
 					} else {
+						// do check if hash exist in blockchain...
+						//if strings.Contains(errCreate.Error(), "FtDiploma: The diploma already exists.") {
+						//	return nil, true
+						//}
+						//
+						// do check value of account
+						tools.LogsError(err)
+						log.Println(receipt.Status)
+						log.Println(receipt.Logs)
+						log.Println(receipt.Bloom)
+						log.Println(string(receipt.PostState))
 						e = e.Next()
 					}
-				} else {
 					e = e.Next()
 				}
+				e = e.Next()
 			}
 		}
 	}
