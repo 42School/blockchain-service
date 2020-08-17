@@ -19,7 +19,7 @@ import (
 
 func ValideHash() {
 	for {
-		time.Sleep(1 * time.Minute)
+		time.Sleep(10 * time.Minute)
 		copyList := global.ToCheckHash
 		for e := copyList.Front(); e != nil; {
 			if e != nil {
@@ -38,7 +38,6 @@ func ValideHash() {
 							continue
 						}
 					} else {
-						// do check value of accounts if == 0 eth delete e
 						revertMsg := contracts.GetRevert(client, check.Tx, receipt)
 						if revertMsg != "" {
 							data := ""

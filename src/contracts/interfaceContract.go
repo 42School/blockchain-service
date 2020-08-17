@@ -111,7 +111,6 @@ func CheckSecurity(client *ethclient.Client, tx *types.Transaction, hash []byte)
 	}
 	for _, vLog := range logs {
 		if vLog.TxHash.Hex() == tx.Hash().Hex() {
-			tools.LogsMsg("Enter in check secu")
 			event := struct {
 				Student   [32]byte
 			}{}
