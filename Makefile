@@ -13,25 +13,30 @@ BLUE = \033[34m
 MAGENTA = \033[35m
 CYAN = \033[36m
 
-.PHONY:	all install testing server dev compile clean docker-stop docker-clean re
+.PHONY:	all install testing server dev go-compile full-compile go-clean full-clean docker-stop docker-clean re
 
 all:		install testing dev
 
 install:
 			docker build -f Dockerfile.dev -t $(APICLIENT) .
-			docker build -f Dockerfile.server -t $(ETHSERV) .
 
 testing: server
 			$(shell sleep 10)
 			truffle test --network localhost
 
 server:
+			docker build -f Dockerfile.server -t $(ETHSERV) .
 			docker run --add-host=$(ETHSERV):172.17.0.1 --name $(ETHSERV) -ti -p 9545:9545 -d $(ETHSERV)
 
 dev:
 			docker run --name $(APICLIENT) -ti -p 8080:8080 -d $(APICLIENT)
 
-compile:
+go-compile:
+			@echo "$(YELLOW)Compiling $(NAME) in golang!$(NONE)"
+			go build -o $(NAME)
+			@echo "$(GREEN)$(NAME) ready!$(NONE)"
+
+full-compile:
 			@echo "$(YELLOW)Compiling the smart-contract in solidity!$(NONE)"
 			truffle compile
 			@echo "$(YELLOW)Compiling the smart-contract in golang!$(NONE)"
@@ -44,9 +49,11 @@ compile:
 			go build -o $(NAME)
 			@echo "$(GREEN)$(NAME) ready!$(NONE)"
 
-clean:
+go-clean:
 			@echo "$(YELLOW)Cleaning...$(NONE)"
 			rm $(NAME)
+
+full-clean: go-clean
 			rm $(NAME).bin
 			rm $(NAME).abi
 			rm contracts_$(NAME)_sol_$(NAME).abi
@@ -55,12 +62,10 @@ clean:
 docker-stop:
 			docker stop $(APICLIENT)
 			docker rm $(APICLIENT)
-			docker stop $(ETHSERV)
-			docker rm $(ETHSERV)
 
 docker-rm:
-			docker image rm $(ETHSERV)
 			docker image rm $(APICLIENT)
+			docker image rm $(ETHSERV)
 
 docker-clean: docker-stop docker-rm
 
