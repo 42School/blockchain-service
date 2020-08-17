@@ -10,7 +10,7 @@ La stack choisi pour ce projet est `go`, la blockchain `ethereum` et `solidity` 
 
 La branche dev en cours est [dev/go/eth](https://github.com/42School/blockchain-service/tree/dev/go/eth).
 
-La précédente version stable est la [v1.3.1](https://github.com/42School/blockchain-service/tree/v1.3.1), si vous trouvez des bugs sur cette version n'hésitez pas à faire une `issue`
+La précédente version stable est la [v2.1](https://github.com/42School/blockchain-service/tree/v2.1), si vous trouvez des bugs sur cette version n'hésitez pas à faire une `issue`
 
 ## Sommaire
 
