@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/42School/blockchain-service/src/api/models"
+	"github.com/42School/blockchain-service/src/contracts"
 	"github.com/42School/blockchain-service/src/global"
 	"github.com/42School/blockchain-service/src/tools"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -33,24 +34,22 @@ func ValideHash() {
 						if err == nil {
 							global.ToCheckHash.Remove(e)
 							e = copyList.Front()
-						} else {
-							e = e.Next()
+							continue
 						}
 					} else {
-						// do check if hash exist in blockchain...
-						//if strings.Contains(errCreate.Error(), "FtDiploma: The diploma already exists.") {
-						//	return nil, true
-						//}
-						//
 						// do check value of account
-						tools.LogsError(err)
-						log.Println(receipt.Status)
-						log.Println(receipt.Logs)
-						log.Println(receipt.Bloom)
-						log.Println(string(receipt.PostState))
-						e = e.Next()
+						revertMsg := contracts.GetRevert(client, check.Tx, receipt)
+						if strings.Contains(revertMsg, "FtDiploma: The diploma already exists.") {
+							strHash := hexutil.Encode(check.StudentHash)
+							data := "{'Status': true, 'Message': 'The " + strHash + " diploma is definitely inscribed on Ethereum.', 'Data': {" + strHash + "}}"
+							_, err := http.Post(global.FtEndPoint + global.ValidationPath, "Content-Type: application/json", strings.NewReader(data))
+							if err == nil {
+								global.ToCheckHash.Remove(e)
+								e = copyList.Front()
+								continue
+							}
+						}
 					}
-					e = e.Next()
 				}
 				e = e.Next()
 			}
