@@ -2,12 +2,14 @@ package async
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"github.com/42School/blockchain-service/src/api/models"
 	"github.com/42School/blockchain-service/src/contracts"
 	"github.com/42School/blockchain-service/src/global"
 	"github.com/42School/blockchain-service/src/tools"
 	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"log"
 	"net/http"
 	"os"
@@ -21,21 +23,39 @@ func ValideHash() {
 		copyList := global.ToCheckHash
 		for e := copyList.Front(); e != nil; {
 			if e != nil {
-				hash, _ := e.Value.([]byte)
-				_, _, err := contracts.CallGetDiploma(hash)
+				check, _ := e.Value.(models.VerificationHash)
+				strHash := hexutil.Encode(check.StudentHash)
+				client, _ := ethclient.Dial(global.NetworkLink)
+				receipt, err := client.TransactionReceipt(context.Background(), check.Tx.Hash())
 				if err == nil {
-					strHash := hexutil.Encode(hash)
-					data := "{'Status': true, 'Message': 'The " + strHash + " diploma is definitely inscribed on Ethereum.', 'Data': {" + strHash + "}}"
-					_, err := http.Post(global.FtEndPoint + global.ValidationPath, "Content-Type: application/json", strings.NewReader(data))
-					if err == nil {
-						global.ToCheckHash.Remove(e)
-						e = copyList.Front()
+					if receipt.Status == 1 {
+						contracts.CheckSecurity(client, check.Tx, check.StudentHash)
+						data := "{'Status': true, 'Message': 'The " + strHash + " diploma is definitely inscribed on Ethereum.', 'Data': {" + strHash + "}}"
+						_, err := http.Post(global.FtEndPoint + global.ValidationPath, "Content-Type: application/json", strings.NewReader(data))
+						if err == nil {
+							global.ToCheckHash.Remove(e)
+							e = copyList.Front()
+							continue
+						}
 					} else {
-						e = e.Next()
+						revertMsg := contracts.GetRevert(client, check.Tx, receipt)
+						if revertMsg != "" {
+							data := ""
+							if strings.Contains(revertMsg, "FtDiploma: Is not 42 sign this diploma") {
+								data = "{'Status': false, 'Message': 'The " + strHash + " diploma wasn't signed by 42, so it's not in the blockchain.', 'Data': {" + strHash + "}}"
+							} else if strings.Contains(revertMsg, "FtDiploma: The diploma already exists.") {
+								data = "{'Status': true, 'Message': 'The " + strHash + " diploma is definitely inscribed on Ethereum.', 'Data': {" + strHash + "}}"
+							}
+							_, err := http.Post(global.FtEndPoint + global.ValidationPath, "Content-Type: application/json", strings.NewReader(data))
+							if err == nil {
+								global.ToCheckHash.Remove(e)
+								e = copyList.Front()
+								continue
+							}
+						}
 					}
-				} else {
-					e = e.Next()
 				}
+				e = e.Next()
 			}
 		}
 	}

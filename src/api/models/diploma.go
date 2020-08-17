@@ -6,6 +6,7 @@ import (
 	"github.com/42School/blockchain-service/src/global"
 	"github.com/42School/blockchain-service/src/tools"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	crypgo "github.com/ethereum/go-ethereum/crypto"
 	"log"
 	"time"
@@ -18,6 +19,11 @@ type Diploma struct {
 	AlumniDate	time.Time	`json:"alumni_date"`
 	Level		float64		`json:"level"`
 	Skills		[]float64	`json:"skills"`
+}
+
+type VerificationHash struct {
+	Tx *types.Transaction
+	StudentHash []byte
 }
 
 func convertSkillToInt(skills []float64) [30]uint64 {
@@ -101,11 +107,12 @@ func (_dp Diploma) EthWriting() (string, bool) {
 	if err != nil {
 		return "", false
 	}
-	if contracts.CallCreateDiploma(_dp.convertDpToData(sign, newHash)) == false {
+	tx, success := contracts.CallCreateDiploma(_dp.convertDpToData(sign, newHash))
+	if success == false {
 		_dp.AddToRetry()
 		return "", false
 	}
-	global.ToCheckHash.PushBack(newHash.Bytes())
+	global.ToCheckHash.PushBack(VerificationHash{Tx: tx, StudentHash: newHash.Bytes()})
 	return newHash.Hex(), true
 }
 

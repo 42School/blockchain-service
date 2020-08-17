@@ -9,8 +9,6 @@ import (
 	"net/http"
 )
 
-
-
 func main() {
 	go async.ValideHash()
 	go async.RetryDiploma()

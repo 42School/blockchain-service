@@ -38,10 +38,12 @@ ENV EMAILSENDER="emailSender"
 
 ENV PASSWDEMAIL="password"
 
-ENV NETWORKLINK="http://172.17.0.1:9545"
+ENV NETWORKLINK="https://ropsten.infura.io/v3/8389b141c43c4143abf48183bb477bb6"
+
+ENV ADDRESSCONTRACT="0x7dd6b2e41C3F07f16785c943B1eF6ad6eB2e34D1"
 
 ENV RUNENV="Dev"
 
 EXPOSE 8080:8080
 
-CMD cd /blockchain-service && make compile && export ADDRESSCONTRACT=$(truffle migrate --network development | grep "contract address" | cut -c27-) && echo $ADDRESSCONTRACT && ./blockchain-service
+CMD cd /blockchain-service && make go-compile && ./blockchain-service

@@ -30,10 +30,12 @@ func ParseAccounts() {
 		lines := strings.Split(data, "\n")
 		for i := 0; i < len(lines); i++ {
 			line := lines[i]
-			if line[0] != '#' {
-				accountData := strings.Split(line, ", ")
-				account := Account{accountData[0], accountData[1]}
-				Accounts = append(Accounts, account)
+			if line != "" {
+				if line[0] != '#' {
+					accountData := strings.Split(line, ", ")
+					account := Account{accountData[0], accountData[1]}
+					Accounts = append(Accounts, account)
+				}
 			}
 		}
 	}
