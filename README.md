@@ -12,6 +12,8 @@ La branche dev en cours est [dev/go/eth](https://github.com/42School/blockchain-
 
 La précédente version stable est la [v2.1](https://github.com/42School/blockchain-service/tree/v2.1), si vous trouvez des bugs sur cette version n'hésitez pas à faire une `issue`
 
+Le smart-contract est actuellement deployé sur Ropsten et est accessible à cette [adresse](https://ropsten.etherscan.io/address/0x7dd6b2e41c3f07f16785c943b1ef6ad6eb2e34d1) `0x7dd6b2e41C3F07f16785c943B1eF6ad6eB2e34D1`, vous pouvez y trouver toutes les transactions effectuées au contract.
+
 ## Sommaire
 
 - [Installation](#installation)
@@ -86,10 +88,12 @@ Un makefile est fourni avec les règles suivantes:
 all: Appelle les règles install, testing, compile
 install: Build les Dockerfile
 testing: Appel la règle server et lance la commande truffle test (utilise un serveur eth local ref: Dockerfile) pour tester le smart-contract
-server: Lance un conteneur Docker d'un simulateur blockchain
-dev: Lance le projet en mode dev dans un container docker (commande un peu lente)
-compile: Compile le smart-contract, convertie le smart-contract solidity en golang et compile la partie golang
-clean: Supprime le binaire go et tous autres fichiers utiles à la compilation
+server: Lance un conteneur Docker d'un simulateur blockchain (obselte)
+dev: Lance le projet en mode dev dans un container docker
+go-compile: Compile uniquement l'api en go
+full-compile: Compile le smart-contract, convertie le smart-contract solidity en golang et compile la partie golang
+go-clean: Supprime le binaire go
+full-clean: Supprime le binaire go et tous autres fichiers utiles à la compilation
 docker-stop: Stop les containers docker et les supprimes
 docker-rm: Supprime les images docker des dockerfiles
 docker-clean: Appelle les règles docker-stop et docker-rm
