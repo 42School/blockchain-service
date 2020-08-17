@@ -24,11 +24,12 @@ func ValideHash() {
 		for e := copyList.Front(); e != nil; {
 			if e != nil {
 				check, _ := e.Value.(models.VerificationHash)
+				strHash := hexutil.Encode(check.StudentHash)
 				client, _ := ethclient.Dial(global.NetworkLink)
 				receipt, err := client.TransactionReceipt(context.Background(), check.Tx.Hash())
 				if err == nil {
 					if receipt.Status == 1 {
-						strHash := hexutil.Encode(check.StudentHash)
+						contracts.CheckSecurity(client, check.Tx, check.StudentHash)
 						data := "{'Status': true, 'Message': 'The " + strHash + " diploma is definitely inscribed on Ethereum.', 'Data': {" + strHash + "}}"
 						_, err := http.Post(global.FtEndPoint + global.ValidationPath, "Content-Type: application/json", strings.NewReader(data))
 						if err == nil {
@@ -37,11 +38,15 @@ func ValideHash() {
 							continue
 						}
 					} else {
-						// do check value of account
+						// do check value of accounts if == 0 eth delete e
 						revertMsg := contracts.GetRevert(client, check.Tx, receipt)
-						if strings.Contains(revertMsg, "FtDiploma: The diploma already exists.") {
-							strHash := hexutil.Encode(check.StudentHash)
-							data := "{'Status': true, 'Message': 'The " + strHash + " diploma is definitely inscribed on Ethereum.', 'Data': {" + strHash + "}}"
+						if revertMsg != "" {
+							data := ""
+							if strings.Contains(revertMsg, "FtDiploma: Is not 42 sign this diploma") {
+								data = "{'Status': false, 'Message': 'The " + strHash + " diploma wasn't signed by 42, so it's not in the blockchain.', 'Data': {" + strHash + "}}"
+							} else if strings.Contains(revertMsg, "FtDiploma: The diploma already exists.") {
+								data = "{'Status': true, 'Message': 'The " + strHash + " diploma is definitely inscribed on Ethereum.', 'Data': {" + strHash + "}}"
+							}
 							_, err := http.Post(global.FtEndPoint + global.ValidationPath, "Content-Type: application/json", strings.NewReader(data))
 							if err == nil {
 								global.ToCheckHash.Remove(e)

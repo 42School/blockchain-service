@@ -13,6 +13,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"log"
 	"strings"
 
 	"math/big"
@@ -63,7 +64,7 @@ func getLogs(client *ethclient.Client) (logs []types.Log, contractAbi abi.ABI, e
 		tools.LogsError(errLogs)
 		return nil, abi.ABI{}, errLogs
 	}
-	contractAbi, errAbi := abi.JSON(strings.NewReader(string(DiplomaABI)))
+	contractAbi, errAbi := abi.JSON(strings.NewReader(DiplomaABI))
 	if errAbi != nil {
 		tools.LogsError(errAbi)
 		return nil, abi.ABI{}, errAbi
@@ -84,6 +85,7 @@ func GetRevert(client *ethclient.Client, tx *types.Transaction, receipt *types.R
 	res, err := client.CallContract(context.Background(), msg, receipt.BlockNumber)
 	if err != nil {
 		tools.LogsError(err)
+		return ""
 	}
 	var (
 		errorSig            = []byte{0x08, 0xc3, 0x79, 0xa0}
@@ -91,42 +93,46 @@ func GetRevert(client *ethclient.Client, tx *types.Transaction, receipt *types.R
 	)
 	if len(res) < 4 || !bytes.Equal(res[:4], errorSig) {
 		tools.LogsError(err)
+		return ""
 	}
 	vs, err := abi.Arguments{{Type: abiString}}.UnpackValues(res[4:])
 	if err != nil {
 		tools.LogsError(err)
+		return ""
 	}
 	return vs[0].(string)
 }
 
-func CheckSecurity(client *ethclient.Client, tx *types.Transaction, hash [32]byte) {
-	logs, contractAbi, _ := getLogs(client)
-	//if errLogs != nil {
-	//	log.Println(errLogs)
-	//	return tx, true
-	//}
+func CheckSecurity(client *ethclient.Client, tx *types.Transaction, hash []byte) bool {
+	logs, contractAbi, errLogs := getLogs(client)
+	if errLogs != nil {
+		log.Println(errLogs)
+		return true
+	}
 	for _, vLog := range logs {
 		if vLog.TxHash.Hex() == tx.Hash().Hex() {
 			tools.LogsMsg("Enter in check secu")
 			event := struct {
 				Student   [32]byte
 			}{}
-			contractAbi.Unpack(&event, "CreateDiploma", vLog.Data)
-			//if errUnpack != nil {
-			//	tools.LogsError(errUnpack)
-			//	return tx, true
-			//}
+			errUnpack := contractAbi.Unpack(&event, "CreateDiploma", vLog.Data)
+			if errUnpack != nil {
+				tools.LogsError(errUnpack)
+				return true
+			}
 			if common.Bytes2Hex(hash[:]) != common.Bytes2Hex(event.Student[:]) {
 				tools.LogsMsg("Error: The hash writing in blockchain is not the same of this student !")
 				tools.SendMail("Security Alert", "")
 				global.SecuritySystem = true
+				return false
 			}
 		}
 	}
+	return true
 }
 
 func CallCreateDiploma(level uint64, skills [30]uint64, v uint8, r [32]byte, s [32]byte, hash [32]byte) (*types.Transaction, bool) {
-	instance, client, err := connectEthGetInstance()
+	instance, _, err := connectEthGetInstance()
 	auth, errAuth := getAuth()
 	if err != nil || errAuth != nil {
 		return nil, false
@@ -140,7 +146,6 @@ func CallCreateDiploma(level uint64, skills [30]uint64, v uint8, r [32]byte, s [
 		return nil, false
 	}
 	tools.LogsDev("Transation Hash: " + tx.Hash().Hex())
-	CheckSecurity(client, tx, hash)
 	return tx, true
 }
 
