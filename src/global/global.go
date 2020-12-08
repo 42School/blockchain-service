@@ -14,6 +14,7 @@ var AddressOfContract string = os.Getenv("ADDRESSCONTRACT")
 var FtEndPoint string = os.Getenv("FTENDPOINT")
 var ValidationPath string = os.Getenv("VALIDATIONPATH")
 var RetryPath string = os.Getenv("RETRYPATH")
+var Token string = os.Getenv("TOKEN")
 
 var Env string = os.Getenv("RUNENV")
 

@@ -27,6 +27,12 @@ func CreateDiploma(w http.ResponseWriter, r *http.Request) {
 	var newDiploma models.Diploma
 	jsonData, readErr := ioutil.ReadAll(r.Body)
 	jsonErr := json.Unmarshal(jsonData, &newDiploma)
+	if r.Header.Get("Token") != global.Token {
+		res, _ := json.Marshal(ResponseJson{false, "You are not authorized !", ResponseData{}})
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write(res)
+		return
+	}
 	if r.ContentLength == 0 || readErr != nil || jsonErr != nil || newDiploma.CheckDiploma() == false {
 		res, _ := json.Marshal(ResponseJson{false, "The data sent are not valid, to be written in blockchain please try again!", ResponseData{}})
 		w.WriteHeader(http.StatusBadRequest)
