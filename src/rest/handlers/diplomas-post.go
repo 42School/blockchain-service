@@ -1,30 +1,16 @@
-package controllers
+package handlers
 
 import (
 	"encoding/json"
-	"github.com/42School/blockchain-service/src/api/models"
+	"github.com/42School/blockchain-service/src/dao/diplomas"
 	"github.com/42School/blockchain-service/src/global"
 	"github.com/42School/blockchain-service/src/tools"
-	"io/ioutil"
-	"log"
 	"net/http"
 )
 
-type ResponseData struct {
-	Hash	string
-	Level	float64
-	Skills	[]float64
-}
-
-type ResponseJson struct {
-	Status	bool
-	Message	string
-	Data	ResponseData
-}
-
 func CreateDiploma(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type", "application/json;charset=UTF-8")
-	var newDiploma models.Diploma
+	var newDiploma diplomas.Diploma
 	if r.Header.Get("Token") != global.Token {
 		http.Error(w, "You are not authorized !", http.StatusUnauthorized)
 		return
@@ -54,29 +40,4 @@ func CreateDiploma(w http.ResponseWriter, r *http.Request) {
 		w.Write(res)
 	}
 	return
-}
-
-func GetDiploma(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-type", "application/json;charset=UTF-8")
-	var diploma models.Diploma
-	err := json.NewDecoder(r.Body).Decode(&diploma)
-	if err != nil {
-		http.Error(w, "Fail Unmarshalling json", http.StatusBadRequest)
-		return
-	}
-	level, skills, errGet := diploma.EthGetter()
-	if r.ContentLength == 0 || errGet != nil {
-		http.Error(w, "The request is fail, please retry & check the data.", http.StatusBadRequest)
-		return
-	} else {
-		res, _ := json.Marshal(ResponseJson{true, "", ResponseData{"", level, skills[:]}})
-		w.WriteHeader(http.StatusOK)
-		w.Write(res)
-	}
-	return
-}
-
-func CheckRouter (w http.ResponseWriter, r *http.Request) {
-	jsonData, _ := ioutil.ReadAll(r.Body)
-	log.Println("r.body", string(jsonData))
 }

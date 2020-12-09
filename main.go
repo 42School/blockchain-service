@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/42School/blockchain-service/src/account"
-	"github.com/42School/blockchain-service/src/api"
+	"github.com/42School/blockchain-service/src/rest"
 	"github.com/42School/blockchain-service/src/async"
 	"github.com/42School/blockchain-service/src/tools"
 	"log"
@@ -15,6 +15,6 @@ func main() {
 	go async.ReadStdin()
 	tools.LogsMsg("Blockchain Service is running !")
 	account.CreateAccountsManager()
-	router := api.InitRouter()
+	router := rest.InitRouter()
 	log.Fatal(http.ListenAndServe(":8080", router))
 }

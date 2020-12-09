@@ -4,8 +4,8 @@ import (
 	"bufio"
 	"context"
 	"fmt"
-	"github.com/42School/blockchain-service/src/api/models"
-	"github.com/42School/blockchain-service/src/contracts"
+	"github.com/42School/blockchain-service/src/dao/contracts"
+	"github.com/42School/blockchain-service/src/dao/diplomas"
 	"github.com/42School/blockchain-service/src/global"
 	"github.com/42School/blockchain-service/src/tools"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -23,7 +23,7 @@ func ValideHash() {
 		copyList := global.ToCheckHash
 		for e := copyList.Front(); e != nil; {
 			if e != nil {
-				check, _ := e.Value.(models.VerificationHash)
+				check, _ := e.Value.(diplomas.VerificationHash)
 				strHash := hexutil.Encode(check.StudentHash)
 				client, _ := ethclient.Dial(global.NetworkLink)
 				receipt, err := client.TransactionReceipt(context.Background(), check.Tx.Hash())
@@ -68,7 +68,7 @@ func RetryDiploma () {
 			copyList := global.RetryQueue
 			for e := copyList.Front(); e != nil; {
 				if e != nil {
-					diploma, _ := e.Value.(models.Diploma)
+					diploma, _ := e.Value.(diplomas.Diploma)
 					tools.LogsDev(diploma.String())
 					hash, bool := diploma.EthWriting()
 					if bool == true {

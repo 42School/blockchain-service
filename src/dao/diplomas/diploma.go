@@ -1,8 +1,8 @@
-package models
+package diplomas
 
 import (
 	account "github.com/42School/blockchain-service/src/account"
-	"github.com/42School/blockchain-service/src/contracts"
+	"github.com/42School/blockchain-service/src/dao/contracts"
 	"github.com/42School/blockchain-service/src/global"
 	"github.com/42School/blockchain-service/src/tools"
 	"github.com/ethereum/go-ethereum/common"
