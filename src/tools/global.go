@@ -1,4 +1,4 @@
-package global
+package tools
 
 import (
 	"container/list"

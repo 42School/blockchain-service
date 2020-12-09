@@ -5,7 +5,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/42School/blockchain-service/src/account"
-	"github.com/42School/blockchain-service/src/global"
 	"github.com/42School/blockchain-service/src/tools"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
@@ -20,11 +19,11 @@ import (
 )
 
 func connectEthGetInstance() (*Diploma, *ethclient.Client, error) {
-	client, errConnection := ethclient.Dial(global.NetworkLink)
+	client, errConnection := ethclient.Dial(tools.NetworkLink)
 	if errConnection != nil {
 		return nil, nil, errConnection
 	}
-	addressOfAddress := common.HexToAddress(global.AddressOfContract)
+	addressOfAddress := common.HexToAddress(tools.AddressOfContract)
 	instance, errInstance := NewDiploma(addressOfAddress, client)
 	if errInstance != nil {
 		return nil, nil, errInstance
@@ -33,7 +32,7 @@ func connectEthGetInstance() (*Diploma, *ethclient.Client, error) {
 }
 
 func getAuth() (*bind.TransactOpts, error) {
-	client, errConnection := ethclient.Dial(global.NetworkLink)
+	client, errConnection := ethclient.Dial(tools.NetworkLink)
 	if errConnection != nil {
 		return nil, errConnection
 	}
@@ -58,7 +57,7 @@ func getAuth() (*bind.TransactOpts, error) {
 }
 
 func getLogs(client *ethclient.Client) (logs []types.Log, contractAbi abi.ABI, error error){
-	query := ethereum.FilterQuery{Addresses: []common.Address{common.HexToAddress(global.AddressOfContract)}}
+	query := ethereum.FilterQuery{Addresses: []common.Address{common.HexToAddress(tools.AddressOfContract)}}
 	logs, errLogs := client.FilterLogs(context.Background(), query)
 	if errLogs != nil {
 		tools.LogsError(errLogs)
@@ -122,7 +121,7 @@ func CheckSecurity(client *ethclient.Client, tx *types.Transaction, hash []byte)
 			if common.Bytes2Hex(hash[:]) != common.Bytes2Hex(event.Student[:]) {
 				tools.LogsMsg("Error: The hash writing in blockchain is not the same of this student !")
 				tools.SendMail("Security Alert", "")
-				global.SecuritySystem = true
+				tools.SecuritySystem = true
 				return false
 			}
 		}

@@ -2,7 +2,6 @@ package account
 
 import (
 	"crypto/ecdsa"
-	"github.com/42School/blockchain-service/src/global"
 	"github.com/42School/blockchain-service/src/tools"
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/accounts/keystore"
@@ -42,7 +41,7 @@ func ParseAccounts() {
 }
 
 func CreateAccountsManager() {
-	KeyStore = keystore.NewKeyStore(global.PathKeyStoreSign, keystore.StandardScryptN, keystore.StandardScryptP)
+	KeyStore = keystore.NewKeyStore(tools.PathKeyStoreSign, keystore.StandardScryptN, keystore.StandardScryptP)
 	ParseAccounts()
 }
 
@@ -51,7 +50,7 @@ func GetSignAccount() accounts.Account {
 }
 
 func GetWriterAccount() (common.Address, *ecdsa.PrivateKey, error) {
-	keyjson, errRead := ioutil.ReadFile(global.PathKeyStore + "/" + Accounts[CurrentAccount].KeyStoreFile)
+	keyjson, errRead := ioutil.ReadFile(tools.PathKeyStore + "/" + Accounts[CurrentAccount].KeyStoreFile)
 	if errRead != nil {
 		return common.Address{}, nil, errRead
 	}

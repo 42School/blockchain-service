@@ -3,7 +3,6 @@ package diplomas
 import (
 	account "github.com/42School/blockchain-service/src/account"
 	"github.com/42School/blockchain-service/src/dao/contracts"
-	"github.com/42School/blockchain-service/src/global"
 	"github.com/42School/blockchain-service/src/tools"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -69,7 +68,7 @@ func (_dp Diploma) String() string {
 }
 
 func (_dp Diploma) AddToRetry() {
-	copyList := global.RetryQueue
+	copyList := tools.RetryQueue
 	for e := copyList.Front(); e != nil; e = e.Next() {
 		if e != nil {
 			diploma, _ := e.Value.(Diploma)
@@ -82,7 +81,7 @@ func (_dp Diploma) AddToRetry() {
 		}
 	}
 	tools.LogsDev("Adding diploma in Queue:" + _dp.String())
-	global.RetryQueue.PushBack(_dp)
+	tools.RetryQueue.PushBack(_dp)
 }
 
 func (_dp Diploma) convertDpToData(_sign []byte, _hash common.Hash) (uint64, [30]uint64, uint8, [32]byte, [32]byte, [32]byte) {
@@ -101,7 +100,7 @@ func (_dp Diploma) convertDpToData(_sign []byte, _hash common.Hash) (uint64, [30
 func (_dp Diploma) EthWriting() (string, bool) {
 	dataToHash := _dp.FirstName + ", " + _dp.LastName + ", " + _dp.BirthDate.String()[:10] + ", " + _dp.AlumniDate.String()[:10]
 	newHash := crypgo.Keccak256Hash([]byte(dataToHash))
-	sign, err := account.KeyStore.SignHashWithPassphrase(account.GetSignAccount(), global.PasswordAccount, newHash.Bytes())
+	sign, err := account.KeyStore.SignHashWithPassphrase(account.GetSignAccount(), tools.PasswordAccount, newHash.Bytes())
 	tools.LogsDev("The hash of the diploma is " + newHash.String())
 	tools.LogsDev("The signature on the diploma is " + common.Bytes2Hex(sign))
 	if err != nil {
@@ -112,7 +111,7 @@ func (_dp Diploma) EthWriting() (string, bool) {
 		_dp.AddToRetry()
 		return "", false
 	}
-	global.ToCheckHash.PushBack(VerificationHash{Tx: tx, StudentHash: newHash.Bytes()})
+	tools.ToCheckHash.PushBack(VerificationHash{Tx: tx, StudentHash: newHash.Bytes()})
 	return newHash.Hex(), true
 }
 

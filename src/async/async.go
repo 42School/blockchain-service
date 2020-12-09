@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/42School/blockchain-service/src/dao/contracts"
 	"github.com/42School/blockchain-service/src/dao/diplomas"
-	"github.com/42School/blockchain-service/src/global"
 	"github.com/42School/blockchain-service/src/tools"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -20,20 +19,20 @@ import (
 func ValideHash() {
 	for {
 		time.Sleep(10 * time.Minute)
-		copyList := global.ToCheckHash
+		copyList := tools.ToCheckHash
 		for e := copyList.Front(); e != nil; {
 			if e != nil {
 				check, _ := e.Value.(diplomas.VerificationHash)
 				strHash := hexutil.Encode(check.StudentHash)
-				client, _ := ethclient.Dial(global.NetworkLink)
+				client, _ := ethclient.Dial(tools.NetworkLink)
 				receipt, err := client.TransactionReceipt(context.Background(), check.Tx.Hash())
 				if err == nil {
 					if receipt.Status == 1 {
 						contracts.CheckSecurity(client, check.Tx, check.StudentHash)
 						data := "{'Status': true, 'Message': 'The " + strHash + " diploma is definitely inscribed on Ethereum.', 'Data': {" + strHash + "}}"
-						_, err := http.Post(global.FtEndPoint + global.ValidationPath, "Content-Type: application/json", strings.NewReader(data))
+						_, err := http.Post(tools.FtEndPoint+tools.ValidationPath, "Content-Type: application/json", strings.NewReader(data))
 						if err == nil {
-							global.ToCheckHash.Remove(e)
+							tools.ToCheckHash.Remove(e)
 							e = copyList.Front()
 							continue
 						}
@@ -46,9 +45,9 @@ func ValideHash() {
 							} else if strings.Contains(revertMsg, "FtDiploma: The diploma already exists.") {
 								data = "{'Status': true, 'Message': 'The " + strHash + " diploma is definitely inscribed on Ethereum.', 'Data': {" + strHash + "}}"
 							}
-							_, err := http.Post(global.FtEndPoint + global.ValidationPath, "Content-Type: application/json", strings.NewReader(data))
+							_, err := http.Post(tools.FtEndPoint+tools.ValidationPath, "Content-Type: application/json", strings.NewReader(data))
 							if err == nil {
-								global.ToCheckHash.Remove(e)
+								tools.ToCheckHash.Remove(e)
 								e = copyList.Front()
 								continue
 							}
@@ -64,8 +63,8 @@ func ValideHash() {
 func RetryDiploma () {
 	for {
 		time.Sleep(30 * time.Minute)
-		if global.SecuritySystem == false {
-			copyList := global.RetryQueue
+		if tools.SecuritySystem == false {
+			copyList := tools.RetryQueue
 			for e := copyList.Front(); e != nil; {
 				if e != nil {
 					diploma, _ := e.Value.(diplomas.Diploma)
@@ -73,8 +72,8 @@ func RetryDiploma () {
 					hash, bool := diploma.EthWriting()
 					if bool == true {
 						data := "{'Status':true,'Message':'The writing in blockchain has been done, it will be confirmed in 10 min.','Data':{'Hash': " + hash + ",'Level':0,'Skills':[]}}"
-						http.Post(global.FtEndPoint + global.RetryPath, "Content-Type: application/json", strings.NewReader(data))
-						global.RetryQueue.Remove(e)
+						http.Post(tools.FtEndPoint+tools.RetryPath, "Content-Type: application/json", strings.NewReader(data))
+						tools.RetryQueue.Remove(e)
 						e = copyList.Front()
 					} else {
 						e = e.Next()
@@ -104,7 +103,7 @@ func ReadStdin() {
 				cmd = true
 			} else if text == "disable security system" && cmd {
 				cmd = false
-				global.SecuritySystem = false
+				tools.SecuritySystem = false
 				fmt.Println("The security system has been disabled !")
 				fmt.Println("Goodbye of cmd mode")
 			} else if text == "Exit" || text == "exit" || text == "EXIT" {

@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"github.com/42School/blockchain-service/src/dao/diplomas"
-	"github.com/42School/blockchain-service/src/global"
 	"github.com/42School/blockchain-service/src/tools"
 	"net/http"
 )
@@ -11,7 +10,7 @@ import (
 func CreateDiploma(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type", "application/json;charset=UTF-8")
 	var newDiploma diplomas.Diploma
-	if r.Header.Get("Token") != global.Token {
+	if r.Header.Get("Token") != tools.Token {
 		http.Error(w, "You are not authorized !", http.StatusUnauthorized)
 		return
 	}
@@ -24,7 +23,7 @@ func CreateDiploma(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "The data sent are not valid, to be written in blockchain please try again !", http.StatusBadRequest)
 		return
 	}
-	if global.SecuritySystem {
+	if tools.SecuritySystem {
 		newDiploma.AddToRetry()
 		http.Error(w, "The security system is activated, the request has just been queued.", http.StatusInternalServerError)
 		return
