@@ -15,7 +15,7 @@ func GetDiploma(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	level, skills, errGet := diploma.EthGetter()
-	if r.ContentLength == 0 || errGet != nil {
+	if errGet != nil {
 		http.Error(w, "The request is fail, please retry & check the data.", http.StatusBadRequest)
 		return
 	} else {

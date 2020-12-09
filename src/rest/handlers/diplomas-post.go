@@ -20,7 +20,7 @@ func CreateDiploma(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Fail Unmarshalling json", http.StatusBadRequest)
 		return
 	}
-	if r.ContentLength == 0 || newDiploma.CheckDiploma() == false {
+	if newDiploma.CheckDiploma() == false {
 		http.Error(w, "The data sent are not valid, to be written in blockchain please try again !", http.StatusBadRequest)
 		return
 	}

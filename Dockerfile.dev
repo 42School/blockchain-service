@@ -36,6 +36,8 @@ ENV RETRYPATH="/check-request"
 
 ENV EMAILSENDER="emailSender"
 
+ENV TOKEN="token"
+
 ENV PASSWDEMAIL="password"
 
 ENV NETWORKLINK="https://ropsten.infura.io/v3/8389b141c43c4143abf48183bb477bb6"
