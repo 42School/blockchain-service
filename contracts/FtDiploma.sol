@@ -36,7 +36,7 @@ contract	FtDiploma {
 	}
 
 	function createDiploma(uint64 _level, uint64[30] memory _skills, uint8 _v, bytes32 _r, bytes32 _s, bytes32 _studentHash) public {
-		require(ecrecover(_studentHash, _v, _r, _s) == ftPubAddress, "FtDiploma: Is not 42 sign this diploma");
+		require(ecrecover(_studentHash, _v, _r, _s) == ftPubAddress, "FtDiploma: Is not 42 sign this diploma.");
 		require(hashToDiploma[_studentHash].level == 0, "FtDiploma: The diploma already exists.");
 		hashToDiploma[_studentHash] = Diploma(_level, _skills, _studentHash, Sign(_v, _r, _s));
 		intToHash.push(_studentHash);
@@ -50,8 +50,8 @@ contract	FtDiploma {
 		return (levelDiploma, skillsDiploma);
 	}
 
-	function getAll() public view returns (Diploma[] memory) {
-		require(msg.sender == ftPubAddress, "FtDiploma: Is not 42 !");
+	function getAllDiploma() public view returns (Diploma[] memory) {
+		require(msg.sender == ftPubAddress, "FtDiploma: Is not 42.");
 		Diploma[] memory diplomas = new Diploma[](intToHash.length);
 		for (uint256 i = 0; i < intToHash.length; i++) {
 			diplomas[i] = hashToDiploma[intToHash[i]];
