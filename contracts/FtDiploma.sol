@@ -2,7 +2,8 @@
 **	Autor: Louise Pieri
 */
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.5.8 <0.7.0;
+pragma solidity >=0.8.0;
+pragma abicoder v2;
 
 contract	FtDiploma {
 
@@ -23,10 +24,12 @@ contract	FtDiploma {
 	struct	Diploma {
 		uint64		level;
 		uint64[30]	skills;
+		bytes32		hash;
 		Sign		signature;
 	}
 
 	mapping (bytes32 => Diploma) hashToDiploma;
+	bytes32[] intToHash;
 
 	constructor () public {
 		emit Publish42Diploma(ftPubAddress, linkOfRepo);
@@ -35,7 +38,8 @@ contract	FtDiploma {
 	function createDiploma(uint64 _level, uint64[30] memory _skills, uint8 _v, bytes32 _r, bytes32 _s, bytes32 _studentHash) public {
 		require(ecrecover(_studentHash, _v, _r, _s) == ftPubAddress, "FtDiploma: Is not 42 sign this diploma");
 		require(hashToDiploma[_studentHash].level == 0, "FtDiploma: The diploma already exists.");
-		hashToDiploma[_studentHash] = Diploma(_level, _skills, Sign(_v, _r, _s));
+		hashToDiploma[_studentHash] = Diploma(_level, _skills, _studentHash, Sign(_v, _r, _s));
+		intToHash.push(_studentHash);
 		emit CreateDiploma(_studentHash);
 	}
 
@@ -44,5 +48,14 @@ contract	FtDiploma {
 		uint64 levelDiploma = _getDiploma.level;
 		uint64[30] memory skillsDiploma = _getDiploma.skills;
 		return (levelDiploma, skillsDiploma);
+	}
+
+	function getAll() public view returns (Diploma[] memory) {
+		require(msg.sender == ftPubAddress, "FtDiploma: Is not 42 !");
+		Diploma[] memory diplomas = new Diploma[](intToHash.length);
+		for (uint256 i = 0; i < intToHash.length; i++) {
+			diplomas[i] = hashToDiploma[intToHash[i]];
+		}
+		return (diplomas);
 	}
 }
