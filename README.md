@@ -1,4 +1,4 @@
-# Blockchain-service
+# Blockchain-service - V3
 
 ## Description
 
@@ -12,7 +12,7 @@ La branche dev en cours est [dev/go/eth](https://github.com/42School/blockchain-
 
 La précédente version stable est la [v2.1](https://github.com/42School/blockchain-service/tree/v2.1), si vous trouvez des bugs sur cette version n'hésitez pas à faire une `issue`
 
-Le smart-contract est actuellement deployé sur Ropsten et est accessible à cette [adresse](https://ropsten.etherscan.io/address/0x7dd6b2e41c3f07f16785c943b1ef6ad6eb2e34d1) `0x7dd6b2e41C3F07f16785c943B1eF6ad6eB2e34D1`, vous pouvez y trouver toutes les transactions effectuées au contract.
+Une nouvelle version du smart-contract à été redéployé sur Ropsten et est accessible à cette [adresse](https://ropsten.etherscan.io/address/0x29a5c09219a5c71a81d26922d708e472677f4548) `0x29a5c09219a5c71a81d26922d708e472677f4548`, l'ancienne version de test se trouve à l'adresse suivante `0x7dd6b2e41C3F07f16785c943B1eF6ad6eB2e34D1`
 
 ## Sommaire
 
@@ -57,8 +57,9 @@ Le port par défaut de l'API est `8080`.
 
 L'API `FtDiploma` contains à ce jour 2 routes différentes:
 
-- `/create-diploma` qui permet de crée un nouveau diplôme dans la blockchain. C'est une route `POST` qui prend comme donnée un json.
+- `/create-diploma` qui permet de crée un nouveau diplôme dans la blockchain. C'est une route `POST` qui prend comme donnée un json. ⚠️ Token requis
 - `/get-diploma` pour vérifier si un diplôme existe en blockchain. C'est une route `POST` qui prend comme donnée un json.
+- `/get-all-diploma` pour récupérer tous les diplomes stocker dans la blockchain pour une éventuelle migration du contract. ⚠️ Token requis
 
 Le json accepté par les deux routes est le même, voici comment il doit être formaté (un fichier template existe dans `/test/datas/template.json`):
 
@@ -102,20 +103,10 @@ re: Appelle les règles docker-clean et all
 
 ## Nouvelle Feature
 
-Voici les nouvelles features pour la v2:
+Voici les nouvelles features pour la v3:
 
-- Une meilleure vérification lors de l'écriture d'un diplôme. Check du hash demandé lors de l'écriture et celui écrit emit par un événement blockchain.
-- Une queue de retry qui ré-essaye l'écriture d'un diplôme 30 minutes après, si il avait échouer une première fois.
-- Un système de roulement de compte Ethereum qui va envoyer les transactions pour écrire un diplôme en blockchain.
-- Un sytème d'envoye de mail:
-  - Si le seuil d'Eth est trop faible sur un compte
-  - Si le système de sécurité s'active
-- Un sytème de sécurité, si l'écriture d'un diplôme en blockchain est différent que celui demandé alors il s'active et envoie toutes les prochaines demande en queue de retry. Sa désactivation se fait manuellement via un mode de commande sur STDIN.
-- Un système de commande, il lis des commandes sur STDIN lors de l'éxecution du programme.
-  - Pour l'activer il faut écrire `cmd` dans STDIN
-  - Commandes prise en charge:
-    - `disable security system` pour désactiver le système de sécurité
-    - `exit` pour quitté le mode de commande
+- Ajout d'un fonction `getAllDiploma` dans le smart-contract afin de migrer les données.
+- Verification d'un token avant de poster un diplôme.
 
 ## Configuration
 
@@ -181,7 +172,7 @@ L'adresse publique renvoyée par la commande **doit être impérativement écrit
 Par exemple l'adresse publique renvoyée par `geth account new` est `0x7e12234E994384A757E2689aDdB2A463ccD3B47d`, elle devra être assigné à la variable `ftPubAddress` du contract, comme ici:
 
 ```js
-pragma solidity >=0.5.8 <0.7.0;
+pragma solidity >=0.8.0;
 
 contract	FtDiploma {
 

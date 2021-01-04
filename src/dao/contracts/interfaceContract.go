@@ -163,3 +163,16 @@ func CallGetDiploma(hash []byte) (uint64, [30]uint64, error) {
 	}
 	return result.Level, result.Skills, nil
 }
+
+func CallGetAllDiploma() ([]FtDiplomaDiploma, error) {
+	instance, _, err := connectEthGetInstance()
+	if err != nil {
+		return nil, err
+	}
+	result, err := instance.GetAllDiploma(&bind.CallOpts{From: account.GetSignAccount().Address})
+	if err != nil {
+		return nil, err
+	}
+	log.Print(result)
+	return result, nil
+}

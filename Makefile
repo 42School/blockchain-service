@@ -42,9 +42,9 @@ full-compile:
 			@echo "$(YELLOW)Compiling the smart-contract in golang!$(NONE)"
 			solcjs --abi contracts/$(CONTRACTNAME).sol > $(CONTRACTNAME).abi
 			solcjs --bin contracts/$(CONTRACTNAME).sol > $(CONTRACTNAME).bin
-			abigen --bin=$(CONTRACTNAME).bin --abi=contracts_$(CONTRACTNAME)_sol_$(CONTRACTNAME).abi --pkg=diploma --out=$(CONTRACTNAME).go
+			abigen --bin=contracts_$(CONTRACTNAME)_sol_$(CONTRACTNAME).bin --abi=contracts_$(CONTRACTNAME)_sol_$(CONTRACTNAME).abi --pkg=diploma --out=$(CONTRACTNAME).go
 			sed -i 's/diploma/contracts/' $(CONTRACTNAME).go
-			mv $(CONTRACTNAME).go ./src/contracts/$(CONTRACTNAME).go
+			mv $(CONTRACTNAME).go ./src/dao/contracts/$(CONTRACTNAME).go
 			@echo "$(YELLOW)Compiling $(NAME) in golang!$(NONE)"
 			go build -o $(NAME)
 			@echo "$(GREEN)$(NAME) ready!$(NONE)"

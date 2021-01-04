@@ -127,3 +127,11 @@ func (_dp Diploma) EthGetter() (float64, [30]float64, error) {
 	log.Print(levelInt, skillsInt)
 	return level, skills, nil
 }
+
+func EthAllGetter() []contracts.FtDiplomaDiploma {
+	diplomas, err := contracts.CallGetAllDiploma()
+	if err != nil {
+		return nil
+	}
+	return diplomas
+}
