@@ -56,7 +56,6 @@ func addToCheck(toAdd VerificationHash) {
 		return
 	}
 	tools.ToCheckHash.PushBack(toAdd)
-	toAdd.Id = uuid.New()
 	txJson, _ := toAdd.Tx.MarshalJSON()
 	tools.ToCheckDB.InsertOne(context.Background(), bson.M{"tx": txJson, "studenthash": toAdd.StudentHash})
 }
@@ -92,10 +91,10 @@ func (_dp Diploma) AddToRetry() {
 	for e := copyList.Front(); e != nil; e = e.Next() {
 		if e != nil {
 			diploma, _ := e.Value.(Diploma)
-			log.Println("Diploma in list:", diploma.String())
-			log.Println("Diploma to find:", _dp.String())
+			tools.LogsDev("Diploma in list: " + diploma.String())
+			tools.LogsDev("Diploma to find: " + _dp.String())
 			if diploma.String() == _dp.String() {
-				log.Println("Match diploma in list & to find")
+				tools.LogsDev("Match diploma in list & to find")
 				return
 			}
 		}

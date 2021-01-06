@@ -4,7 +4,6 @@ import (
 	"container/list"
 	"go.mongodb.org/mongo-driver/mongo"
 	"os"
-	"context"
 )
 
 var PasswordAccount string = os.Getenv("KEYPASSWD")
@@ -27,4 +26,3 @@ var ToCheckHash *list.List = list.New()
 
 var RetryDB		*mongo.Collection
 var ToCheckDB	*mongo.Collection
-var CtxDB		context.Context

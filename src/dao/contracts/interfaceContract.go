@@ -19,34 +19,34 @@ import (
 )
 
 func connectEthGetInstance() (*Diploma, *ethclient.Client, error) {
-	client, errConnection := ethclient.Dial(tools.NetworkLink)
-	if errConnection != nil {
-		return nil, nil, errConnection
+	client, err := ethclient.Dial(tools.NetworkLink)
+	if err != nil {
+		return nil, nil, err
 	}
 	addressOfAddress := common.HexToAddress(tools.AddressOfContract)
-	instance, errInstance := NewDiploma(addressOfAddress, client)
-	if errInstance != nil {
-		return nil, nil, errInstance
+	instance, err := NewDiploma(addressOfAddress, client)
+	if err != nil {
+		return nil, nil, err
 	}
 	return instance, client, nil
 }
 
 func getAuth() (*bind.TransactOpts, error) {
-	client, errConnection := ethclient.Dial(tools.NetworkLink)
-	if errConnection != nil {
-		return nil, errConnection
+	client, err := ethclient.Dial(tools.NetworkLink)
+	if err != nil {
+		return nil, err
 	}
-	address, privateKey, errGet := account.GetWriterAccount()
-	if errGet != nil {
-		return nil, errGet
+	address, privateKey, err := account.GetWriterAccount()
+	if err != nil {
+		return nil, err
 	}
-	nonce, errNonce := client.PendingNonceAt(context.Background(), address)
-	if errNonce != nil  {
-		return nil, errNonce
+	nonce, err := client.PendingNonceAt(context.Background(), address)
+	if err != nil  {
+		return nil, err
 	}
-	gasPrice, errGas := client.SuggestGasPrice(context.Background())
-	if errGas != nil {
-		return nil, errGas
+	gasPrice, err := client.SuggestGasPrice(context.Background())
+	if err != nil {
+		return nil, err
 	}
 	auth := bind.NewKeyedTransactor(privateKey)
 	auth.Nonce = big.NewInt(int64(nonce))
@@ -56,17 +56,17 @@ func getAuth() (*bind.TransactOpts, error) {
 	return auth, nil
 }
 
-func getLogs(client *ethclient.Client) (logs []types.Log, contractAbi abi.ABI, error error){
+func getLogs(client *ethclient.Client) ([]types.Log, abi.ABI, error) {
 	query := ethereum.FilterQuery{Addresses: []common.Address{common.HexToAddress(tools.AddressOfContract)}}
-	logs, errLogs := client.FilterLogs(context.Background(), query)
-	if errLogs != nil {
-		tools.LogsError(errLogs)
-		return nil, abi.ABI{}, errLogs
+	logs, err := client.FilterLogs(context.Background(), query)
+	if err != nil {
+		tools.LogsError(err)
+		return nil, abi.ABI{}, err
 	}
-	contractAbi, errAbi := abi.JSON(strings.NewReader(DiplomaABI))
-	if errAbi != nil {
-		tools.LogsError(errAbi)
-		return nil, abi.ABI{}, errAbi
+	contractAbi, err := abi.JSON(strings.NewReader(DiplomaABI))
+	if err != nil {
+		tools.LogsError(err)
+		return nil, abi.ABI{}, err
 	}
 	return logs, contractAbi, nil
 }
@@ -103,9 +103,9 @@ func GetRevert(client *ethclient.Client, tx *types.Transaction, receipt *types.R
 }
 
 func CheckSecurity(client *ethclient.Client, tx *types.Transaction, hash []byte) bool {
-	logs, contractAbi, errLogs := getLogs(client)
-	if errLogs != nil {
-		log.Println(errLogs)
+	logs, contractAbi, err := getLogs(client)
+	if err != nil {
+		log.Println(err)
 		return true
 	}
 	for _, vLog := range logs {
@@ -113,9 +113,9 @@ func CheckSecurity(client *ethclient.Client, tx *types.Transaction, hash []byte)
 			event := struct {
 				Student   [32]byte
 			}{}
-			errUnpack := contractAbi.Unpack(&event, "CreateDiploma", vLog.Data)
-			if errUnpack != nil {
-				tools.LogsError(errUnpack)
+			err = contractAbi.Unpack(&event, "CreateDiploma", vLog.Data)
+			if err != nil {
+				tools.LogsError(err)
 				return true
 			}
 			if common.Bytes2Hex(hash[:]) != common.Bytes2Hex(event.Student[:]) {
@@ -131,14 +131,17 @@ func CheckSecurity(client *ethclient.Client, tx *types.Transaction, hash []byte)
 
 func CallCreateDiploma(level uint64, skills [30]uint64, v uint8, r [32]byte, s [32]byte, hash [32]byte) (*types.Transaction, bool) {
 	instance, _, err := connectEthGetInstance()
-	auth, errAuth := getAuth()
-	if err != nil || errAuth != nil {
+	if err != nil {
 		return nil, false
 	}
-	tx, errCreate := instance.CreateDiploma(auth, level, skills, v, r, s, hash)
-	if errCreate != nil {
-		tools.LogsError(errCreate)
-		if strings.Contains(errCreate.Error(), "insufficient funds for gas * price + value") {
+	auth, err := getAuth()
+	if err != nil {
+		return nil, false
+	}
+	tx, err := instance.CreateDiploma(auth, level, skills, v, r, s, hash)
+	if err != nil {
+		tools.LogsError(err)
+		if strings.Contains(err.Error(), "insufficient funds for gas * price + value") {
 			account.ChangeAccount()
 		}
 		return nil, false
@@ -154,9 +157,9 @@ func CallGetDiploma(hash []byte) (uint64, [30]uint64, error) {
 	}
 	hash32 := [32]byte{}
 	copy(hash32[:], hash)
-	result, errGet := instance.GetDiploma(&bind.CallOpts{}, hash32)
-	if errGet != nil {
-		return 0, [30]uint64{}, errGet
+	result, err := instance.GetDiploma(&bind.CallOpts{}, hash32)
+	if err != nil {
+		return 0, [30]uint64{}, err
 	}
 	if result.Level == 0 {
 		return 0, [30]uint64{}, fmt.Errorf("the diploma doesnt exist")

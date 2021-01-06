@@ -19,6 +19,7 @@ import (
 
 func ValideHash() {
 	url := tools.FtEndPoint + tools.ValidationPath
+
 	for {
 		time.Sleep(1 * time.Minute)
 		copyList := tools.ToCheckHash
@@ -26,13 +27,13 @@ func ValideHash() {
 			if e != nil {
 				check, _ := e.Value.(diplomas.VerificationHash)
 				strHash := hexutil.Encode(check.StudentHash)
+				data := "{'Status': true, 'Message': 'The " + strHash + " diploma is definitely inscribed on Ethereum.', 'Data': {" + strHash + "}}"
 				client, _ := ethclient.Dial(tools.NetworkLink)
 				receipt, err := client.TransactionReceipt(context.Background(), check.Tx.Hash())
 				if err == nil {
 					if receipt.Status == 1 {
 						contracts.CheckSecurity(client, check.Tx, check.StudentHash)
-						data := "{'Status': true, 'Message': 'The " + strHash + " diploma is definitely inscribed on Ethereum.', 'Data': {" + strHash + "}}"
-						_, err := http.Post(url, "Content-Type: application/json", strings.NewReader(data))
+						_, err = http.Post(url, "Content-Type: application/json", strings.NewReader(data))
 						if err == nil {
 							tools.ToCheckHash.Remove(e)
 							txByte, _ := check.Tx.MarshalJSON()
@@ -43,13 +44,10 @@ func ValideHash() {
 					} else {
 						revertMsg := contracts.GetRevert(client, check.Tx, receipt)
 						if revertMsg != "" {
-							data := ""
 							if strings.Contains(revertMsg, "FtDiploma: Is not 42 sign this diploma") {
 								data = "{'Status': false, 'Message': 'The " + strHash + " diploma wasn't signed by 42, so it's not in the blockchain.', 'Data': {" + strHash + "}}"
-							} else if strings.Contains(revertMsg, "FtDiploma: The diploma already exists.") {
-								data = "{'Status': true, 'Message': 'The " + strHash + " diploma is definitely inscribed on Ethereum.', 'Data': {" + strHash + "}}"
 							}
-							_, err := http.Post(url, "Content-Type: application/json", strings.NewReader(data))
+							_, err = http.Post(url, "Content-Type: application/json", strings.NewReader(data))
 							if err == nil {
 								tools.ToCheckHash.Remove(e)
 								txByte, _ := check.Tx.MarshalJSON()
@@ -69,13 +67,13 @@ func ValideHash() {
 func RetryDiploma () {
 	url := tools.FtEndPoint + tools.RetryPath
 	for {
-		time.Sleep(1 * time.Minute)
+		time.Sleep(30 * time.Minute)
 		if tools.SecuritySystem == false {
 			copyList := tools.RetryQueue
 			for e := copyList.Front(); e != nil; {
 				if e != nil {
 					diploma, _ := e.Value.(diplomas.Diploma)
-					tools.LogsDev(diploma.String())
+					tools.LogsDev("Retry the diploma: " + diploma.String())
 					hash, bool := diploma.EthWriting()
 					if bool == true {
 						data := "{'Status':true,'Message':'The writing in blockchain has been done, it will be confirmed in 10 min.','Data':{'Hash': " + hash + ",'Level':0,'Skills':[]}}"
