@@ -108,6 +108,7 @@ Voici les nouvelles features pour la v3:
 - Ajout d'un fonction `getAllDiploma` dans le smart-contract afin de migrer les données.
 - Verification d'un token avant de poster un diplôme.
 - Création d'une nouvelle route API `/get-all-diploma`
+- Enregistrement des queues `retry` & `to-check` dans une db dockeriser (MongoDB)
 
 ## Configuration
 
