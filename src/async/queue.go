@@ -7,7 +7,6 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
-	"log"
 )
 
 type verifHashDB struct {
@@ -29,16 +28,15 @@ func RestoreQueue() {
 		}
 		tools.RetryQueue.PushBack(dp)
 	}
-	cur, err := tools.ToCheckDB.Find(context.TODO(), bson.M{})
+	cursor, err = tools.ToCheckDB.Find(context.TODO(), bson.M{})
 	if err != nil {
 		tools.LogsError(err)
 	}
-	log.Println(cur)
-	for cur.Next(context.TODO()) {
+	for cursor.Next(context.TODO()) {
 		var toGet verifHashDB
 		var toCheck diplomas.VerificationHash
 		var tx types.Transaction
-		err = cur.Decode(&toGet)
+		err = cursor.Decode(&toGet)
 		if err != nil {
 			continue
 		}
