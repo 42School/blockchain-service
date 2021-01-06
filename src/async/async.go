@@ -19,9 +19,8 @@ import (
 
 func ValideHash() {
 	url := tools.FtEndPoint + tools.ValidationPath
-
 	for {
-		time.Sleep(1 * time.Minute)
+		time.Sleep(10 * time.Minute)
 		copyList := tools.ToCheckHash
 		for e := copyList.Front(); e != nil; {
 			if e != nil {
