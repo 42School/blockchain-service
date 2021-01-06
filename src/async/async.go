@@ -9,6 +9,7 @@ import (
 	"github.com/42School/blockchain-service/src/tools"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"go.mongodb.org/mongo-driver/bson"
 	"log"
 	"net/http"
 	"os"
@@ -19,7 +20,7 @@ import (
 func ValideHash() {
 	url := tools.FtEndPoint + tools.ValidationPath
 	for {
-		time.Sleep(10 * time.Minute)
+		time.Sleep(1 * time.Minute)
 		copyList := tools.ToCheckHash
 		for e := copyList.Front(); e != nil; {
 			if e != nil {
@@ -34,6 +35,8 @@ func ValideHash() {
 						_, err := http.Post(url, "Content-Type: application/json", strings.NewReader(data))
 						if err == nil {
 							tools.ToCheckHash.Remove(e)
+							txByte, _ := check.Tx.MarshalJSON()
+							tools.ToCheckDB.DeleteOne(context.TODO(), bson.M{"tx": txByte, "studenthash": check.StudentHash})
 							e = copyList.Front()
 							continue
 						}
@@ -49,6 +52,8 @@ func ValideHash() {
 							_, err := http.Post(url, "Content-Type: application/json", strings.NewReader(data))
 							if err == nil {
 								tools.ToCheckHash.Remove(e)
+								txByte, _ := check.Tx.MarshalJSON()
+								tools.ToCheckDB.DeleteOne(context.TODO(), bson.M{"tx": txByte, "studenthash": check.StudentHash})
 								e = copyList.Front()
 								continue
 							}
@@ -64,7 +69,7 @@ func ValideHash() {
 func RetryDiploma () {
 	url := tools.FtEndPoint + tools.RetryPath
 	for {
-		time.Sleep(30 * time.Minute)
+		time.Sleep(1 * time.Minute)
 		if tools.SecuritySystem == false {
 			copyList := tools.RetryQueue
 			for e := copyList.Front(); e != nil; {
@@ -76,6 +81,7 @@ func RetryDiploma () {
 						data := "{'Status':true,'Message':'The writing in blockchain has been done, it will be confirmed in 10 min.','Data':{'Hash': " + hash + ",'Level':0,'Skills':[]}}"
 						http.Post(url, "Content-Type: application/json", strings.NewReader(data))
 						tools.RetryQueue.Remove(e)
+						tools.RetryDB.DeleteOne(context.TODO(), diploma)
 						e = copyList.Front()
 					} else {
 						e = e.Next()
