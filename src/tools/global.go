@@ -2,7 +2,9 @@ package tools
 
 import (
 	"container/list"
+	"go.mongodb.org/mongo-driver/mongo"
 	"os"
+	"context"
 )
 
 var PasswordAccount string = os.Getenv("KEYPASSWD")
@@ -22,3 +24,7 @@ var SecuritySystem bool = false
 
 var RetryQueue *list.List = list.New()
 var ToCheckHash *list.List = list.New()
+
+var RetryDB		*mongo.Collection
+var ValideDB	*mongo.Collection
+var CtxDB		context.Context

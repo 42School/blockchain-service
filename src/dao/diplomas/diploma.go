@@ -1,17 +1,21 @@
 package diplomas
 
 import (
+	"context"
 	account "github.com/42School/blockchain-service/src/account"
 	"github.com/42School/blockchain-service/src/dao/contracts"
 	"github.com/42School/blockchain-service/src/tools"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	crypgo "github.com/ethereum/go-ethereum/crypto"
+	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/bson"
 	"log"
 	"time"
 )
 
 type Diploma struct {
+	Id			uuid.UUID   `bson:"_id"`
 	FirstName	string		`json:"first_name"`
 	LastName	string		`json:"last_name"`
 	BirthDate	time.Time	`json:"birth_date"`
@@ -80,7 +84,16 @@ func (_dp Diploma) AddToRetry() {
 			}
 		}
 	}
-	tools.LogsDev("Adding diploma in Queue:" + _dp.String())
+	var DpDB Diploma
+	result := tools.RetryDB.FindOne(context.TODO(), bson.M{"firstname": _dp.FirstName, "lastname": _dp.LastName, "birthdate": _dp.BirthDate, "alumnidate": _dp.AlumniDate})
+	err := result.Decode(&DpDB)
+	if DpDB.String() == _dp.String() || err == nil {
+		tools.LogsDev("Diploma already in DB Queue: " + _dp.String())
+		return
+	}
+	tools.LogsDev("Adding diploma in Queue: " + _dp.String())
+	_dp.Id = uuid.New()
+	tools.RetryDB.InsertOne(context.TODO(), _dp)
 	tools.RetryQueue.PushBack(_dp)
 }
 
@@ -112,6 +125,7 @@ func (_dp Diploma) EthWriting() (string, bool) {
 		return "", false
 	}
 	tools.ToCheckHash.PushBack(VerificationHash{Tx: tx, StudentHash: newHash.Bytes()})
+	tools.ValideDB.InsertOne(context.Background(), VerificationHash{Tx: tx, StudentHash: newHash.Bytes()})
 	return newHash.Hex(), true
 }
 
