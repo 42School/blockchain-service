@@ -57,7 +57,8 @@ func addToCheck(toAdd VerificationHash) {
 	}
 	tools.ToCheckHash.PushBack(toAdd)
 	toAdd.Id = uuid.New()
-	tools.ToCheckDB.InsertOne(context.Background(), toAdd)
+	txJson, _ := toAdd.Tx.MarshalJSON()
+	tools.ToCheckDB.InsertOne(context.Background(), bson.M{"tx": txJson, "studenthash": toAdd.StudentHash})
 }
 
 func (_dp Diploma) CheckDiploma() bool {

@@ -17,6 +17,7 @@ import (
 )
 
 func ValideHash() {
+	url := tools.FtEndPoint + tools.ValidationPath
 	for {
 		time.Sleep(10 * time.Minute)
 		copyList := tools.ToCheckHash
@@ -30,7 +31,7 @@ func ValideHash() {
 					if receipt.Status == 1 {
 						contracts.CheckSecurity(client, check.Tx, check.StudentHash)
 						data := "{'Status': true, 'Message': 'The " + strHash + " diploma is definitely inscribed on Ethereum.', 'Data': {" + strHash + "}}"
-						_, err := http.Post(tools.FtEndPoint+tools.ValidationPath, "Content-Type: application/json", strings.NewReader(data))
+						_, err := http.Post(url, "Content-Type: application/json", strings.NewReader(data))
 						if err == nil {
 							tools.ToCheckHash.Remove(e)
 							e = copyList.Front()
@@ -45,7 +46,7 @@ func ValideHash() {
 							} else if strings.Contains(revertMsg, "FtDiploma: The diploma already exists.") {
 								data = "{'Status': true, 'Message': 'The " + strHash + " diploma is definitely inscribed on Ethereum.', 'Data': {" + strHash + "}}"
 							}
-							_, err := http.Post(tools.FtEndPoint+tools.ValidationPath, "Content-Type: application/json", strings.NewReader(data))
+							_, err := http.Post(url, "Content-Type: application/json", strings.NewReader(data))
 							if err == nil {
 								tools.ToCheckHash.Remove(e)
 								e = copyList.Front()
@@ -61,6 +62,7 @@ func ValideHash() {
 }
 
 func RetryDiploma () {
+	url := tools.FtEndPoint + tools.RetryPath
 	for {
 		time.Sleep(30 * time.Minute)
 		if tools.SecuritySystem == false {
@@ -72,7 +74,7 @@ func RetryDiploma () {
 					hash, bool := diploma.EthWriting()
 					if bool == true {
 						data := "{'Status':true,'Message':'The writing in blockchain has been done, it will be confirmed in 10 min.','Data':{'Hash': " + hash + ",'Level':0,'Skills':[]}}"
-						http.Post(tools.FtEndPoint+tools.RetryPath, "Content-Type: application/json", strings.NewReader(data))
+						http.Post(url, "Content-Type: application/json", strings.NewReader(data))
 						tools.RetryQueue.Remove(e)
 						e = copyList.Front()
 					} else {

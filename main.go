@@ -38,6 +38,7 @@ func main() {
 	go async.RetryDiploma()
 	go async.ReadStdin()
 	err := MongoStart()
+	async.RestoreQueue()
 	if err != nil {
 		tools.LogsError(err)
 		return
