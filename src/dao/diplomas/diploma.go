@@ -6,6 +6,7 @@ import (
 	"github.com/42School/blockchain-service/src/dao/contracts"
 	"github.com/42School/blockchain-service/src/tools"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	crypgo "github.com/ethereum/go-ethereum/crypto"
 	"github.com/google/uuid"
@@ -25,6 +26,7 @@ type Diploma struct {
 }
 
 type VerificationHash struct {
+	Id	uuid.UUID   `bson:"_id"`
 	Tx *types.Transaction
 	StudentHash []byte
 }
@@ -43,6 +45,19 @@ func convertSkillToFloat(skills [30]uint64) [30]float64 {
 		newSkills[i] = float64(skills[i]) / 100
 	}
 	return newSkills
+}
+
+func addToCheck(toAdd VerificationHash) {
+	var checkDB VerificationHash
+	result := tools.ToCheckDB.FindOne(context.TODO(), bson.M{"studenthash": toAdd.StudentHash})
+	err := result.Decode(&checkDB)
+	if hexutil.Encode(checkDB.StudentHash) == hexutil.Encode(toAdd.StudentHash) || err == nil {
+		tools.LogsDev("Verification Hash already in DB Queue: " + hexutil.Encode(toAdd.StudentHash))
+		return
+	}
+	tools.ToCheckHash.PushBack(toAdd)
+	toAdd.Id = uuid.New()
+	tools.ToCheckDB.InsertOne(context.Background(), toAdd)
 }
 
 func (_dp Diploma) CheckDiploma() bool {
@@ -124,8 +139,7 @@ func (_dp Diploma) EthWriting() (string, bool) {
 		_dp.AddToRetry()
 		return "", false
 	}
-	tools.ToCheckHash.PushBack(VerificationHash{Tx: tx, StudentHash: newHash.Bytes()})
-	tools.ValideDB.InsertOne(context.Background(), VerificationHash{Tx: tx, StudentHash: newHash.Bytes()})
+	addToCheck(VerificationHash{Tx: tx, StudentHash: newHash.Bytes()})
 	return newHash.Hex(), true
 }
 

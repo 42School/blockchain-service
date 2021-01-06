@@ -29,7 +29,7 @@ func MongoStart() error {
 		return err
 	}
 	tools.RetryDB = client.Database("queue").Collection("retry")
-	tools.ValideDB = client.Database("queue").Collection("valide")
+	tools.ToCheckDB = client.Database("queue").Collection("valide")
 	return nil
 }
 

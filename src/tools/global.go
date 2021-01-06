@@ -26,5 +26,5 @@ var RetryQueue *list.List = list.New()
 var ToCheckHash *list.List = list.New()
 
 var RetryDB		*mongo.Collection
-var ValideDB	*mongo.Collection
+var ToCheckDB	*mongo.Collection
 var CtxDB		context.Context
