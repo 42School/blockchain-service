@@ -88,13 +88,12 @@ Un makefile est fourni avec les règles suivantes:
 ```
 all: Appelle les règles install, testing, compile
 install: Build les Dockerfile
-testing: Appel la règle server et lance la commande truffle test (utilise un serveur eth local ref: Dockerfile) pour tester le smart-contract
-server: Lance un conteneur Docker d'un simulateur blockchain (obselte)
+testing: lance la commande truffle test (utilise un serveur eth local ref: Dockerfile.server) pour tester le smart-contract
 dev: Lance le projet en mode dev dans un container docker
 go-compile: Compile uniquement l'api en go
 full-compile: Compile le smart-contract, convertie le smart-contract solidity en golang et compile la partie golang
-go-clean: Supprime le binaire go
-full-clean: Supprime le binaire go et tous autres fichiers utiles à la compilation
+clean: Supprime le binaire go
+fclean: Supprime le binaire go et tous autres fichiers utiles à la compilation
 docker-stop: Stop les containers docker et les supprimes
 docker-rm: Supprime les images docker des dockerfiles
 docker-clean: Appelle les règles docker-stop et docker-rm
