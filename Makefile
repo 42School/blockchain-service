@@ -13,22 +13,24 @@ BLUE = \033[34m
 MAGENTA = \033[35m
 CYAN = \033[36m
 
-.PHONY:	all install testing server dev go-compile full-compile go-clean full-clean docker-stop docker-clean re
+.PHONY:	all install testing dev go-compile full-compile clean fclean docker-stop docker-clean re
 
 all:		install testing dev
 
 install:
 			docker build -f Dockerfile.dev -t $(APICLIENT) .
 
-testing: server
+testing:
+			docker build -f Dockerfile.server -t $(ETHSERV) .
+			docker run --add-host=$(ETHSERV):172.17.0.1 --name $(ETHSERV) -ti -p 9545:9545 -d $(ETHSERV)
 			$(shell sleep 10)
 			truffle test --network localhost
 
-server:
-			docker build -f Dockerfile.server -t $(ETHSERV) .
-			docker run --add-host=$(ETHSERV):172.17.0.1 --name $(ETHSERV) -ti -p 9545:9545 -d $(ETHSERV)
-
 dev:
+			go mod tidy
+			GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o $(NAME)
+			docker build -f Dockerfile.dev -t $(APICLIENT) .
+			docker-compose up
 			docker run --name $(APICLIENT) -ti -p 8080:8080 -d $(APICLIENT)
 
 go-compile:
@@ -49,11 +51,11 @@ full-compile:
 			go build -o $(NAME)
 			@echo "$(GREEN)$(NAME) ready!$(NONE)"
 
-go-clean:
+clean:
 			@echo "$(YELLOW)Cleaning...$(NONE)"
 			rm $(NAME)
 
-full-clean: go-clean
+fclean: clean
 			rm $(NAME).bin
 			rm $(NAME).abi
 			rm contracts_$(NAME)_sol_$(NAME).abi

@@ -13,8 +13,6 @@ import (
 	"net/http"
 )
 
-
-
 func MongoStart() error {
 	credential := options.Credential{
 		Username: "root",
@@ -38,11 +36,11 @@ func main() {
 	go async.RetryDiploma()
 	go async.ReadStdin()
 	err := MongoStart()
-	async.RestoreQueue()
 	if err != nil {
 		tools.LogsError(err)
 		return
 	}
+	async.RestoreQueue()
 	tools.LogsMsg("Blockchain Service is running !")
 	account.CreateAccountsManager()
 	router := rest.InitRouter()

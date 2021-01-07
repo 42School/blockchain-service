@@ -2,12 +2,6 @@ version: '3.1'
 
 services:
 
-#  app:
-#    image: blockchain-service
-#    ports:
-#      - 8080:8080
-
-  #MONGO
   mongo:
     image: mongo
     restart: "no"

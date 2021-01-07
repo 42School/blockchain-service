@@ -48,4 +48,4 @@ ENV RUNENV="Dev"
 
 EXPOSE 8080:8080
 
-CMD cd /blockchain-service && make go-compile && ./blockchain-service
+CMD ["/blockchain-service/blockchain-service"]

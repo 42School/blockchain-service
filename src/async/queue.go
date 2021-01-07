@@ -19,6 +19,7 @@ func RestoreQueue() {
 	cursor, err := tools.RetryDB.Find(context.TODO(), bson.M{})
 	if err != nil {
 		tools.LogsError(err)
+		return
 	}
 	for cursor.Next(context.TODO()) {
 		var dp diplomas.Diploma
@@ -31,6 +32,7 @@ func RestoreQueue() {
 	cursor, err = tools.ToCheckDB.Find(context.TODO(), bson.M{})
 	if err != nil {
 		tools.LogsError(err)
+		return
 	}
 	for cursor.Next(context.TODO()) {
 		var toGet verifHashDB
