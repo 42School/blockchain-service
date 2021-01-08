@@ -27,11 +27,9 @@ testing:
 			truffle test --network localhost
 
 dev:
-			go mod tidy
-			GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o $(NAME)
 			docker build -f Dockerfile.dev -t $(APICLIENT) .
 			docker-compose up
-			docker run --name $(APICLIENT) -ti -p 8080:8080 -d $(APICLIENT)
+			#docker run --name $(APICLIENT) -ti -p 8080:8080 -d $(APICLIENT)
 
 go-compile:
 			@echo "$(YELLOW)Compiling $(NAME) in golang!$(NONE)"

@@ -20,6 +20,8 @@ COPY . /blockchain-service
 
 ENV PATH=/usr/lib/go-1.13/bin:$PATH
 
+RUN cd /blockchain-service && go mod download
+
 ENV KEYPASSWD="password"
 
 ENV KEYSTOREPATHSIGN="./keystore-sign"
@@ -38,7 +40,7 @@ ENV TOKEN="token"
 
 ENV PASSWDEMAIL="password"
 
-#ENV NETWORKLINK="https://ropsten.infura.io/v3/8389b141c43c4143abf48183bb477bb6"
+ENV NETWORKLINK="https://ropsten.infura.io/v3/8389b141c43c4143abf48183bb477bb6"
 
 #ENV ADDRESSCONTRACT="0x7dd6b2e41C3F07f16785c943B1eF6ad6eB2e34D1" Old contract
 
@@ -48,4 +50,4 @@ ENV RUNENV="Dev"
 
 EXPOSE 8080:8080
 
-CMD ["/blockchain-service/blockchain-service"]
+CMD cd /blockchain-service && make go-compile && ./blockchain-service

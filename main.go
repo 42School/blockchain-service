@@ -18,7 +18,7 @@ func MongoStart() error {
 		Username: "root",
 		Password: "example",
 	}
-	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI("mongodb://localhost:27017").SetAuth(credential))
+	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI("mongodb://mongo:27017").SetAuth(credential))
 	if err != err {
 		return err
 	}
