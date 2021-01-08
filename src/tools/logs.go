@@ -5,7 +5,7 @@ import (
 )
 
 func LogsDev(msg string) {
-	if Env == "Dev" {
+	if Env == "dev" || Env == "DEV" || Env == "Dev" {
 		log.Println("Developper mode:", msg)
 	}
 }
