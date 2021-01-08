@@ -132,10 +132,12 @@ func CheckSecurity(client *ethclient.Client, tx *types.Transaction, hash []byte)
 func CallCreateDiploma(level uint64, skills [30]uint64, v uint8, r [32]byte, s [32]byte, hash [32]byte) (*types.Transaction, bool) {
 	instance, _, err := connectEthGetInstance()
 	if err != nil {
+		tools.LogsError(err)
 		return nil, false
 	}
 	auth, err := getAuth()
 	if err != nil {
+		tools.LogsError(err)
 		return nil, false
 	}
 	tx, err := instance.CreateDiploma(auth, level, skills, v, r, s, hash)

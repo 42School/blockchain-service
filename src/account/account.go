@@ -9,7 +9,6 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
 	"io/ioutil"
-	"log"
 	"strings"
 )
 
@@ -58,7 +57,7 @@ func GetWriterAccount() (common.Address, *ecdsa.PrivateKey, error) {
 	if errDecrypt != nil {
 		return common.Address{}, nil, errDecrypt
 	}
-	log.Println("pk:", hexutil.Encode(crypto.FromECDSA(key.PrivateKey)))
+	tools.LogsDev("private key writer: " + hexutil.Encode(crypto.FromECDSA(key.PrivateKey)))
 	return key.Address, key.PrivateKey, nil
 }
 
