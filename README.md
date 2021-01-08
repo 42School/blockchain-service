@@ -17,7 +17,6 @@ Une nouvelle version du smart-contract à été redéployé sur Ropsten et est a
 ## Sommaire
 
 - [Installation](#installation)
-- [Lancement en mode dev](#lancement-en-mode-dev)
 - [Route de l'api](#route-de-lapi)
 - [Makefile](#makefile)
 - [Nouvelle Feature](#nouvelle-feature)
@@ -42,13 +41,9 @@ L'API enverra:
 Pour lancé le projet il faut intaller `docker`
 
 ```sh
+RUN_ENV="prod" or "dev"
 make install
-```
-
-## Lancement en mode Dev
-
-```sh
-make dev
+make run
 ```
 
 ## Route de l'API
@@ -86,18 +81,17 @@ Il doit contenir 30 skills en float ainsi que le level en float arrondie au cent
 Un makefile est fourni avec les règles suivantes:
 
 ```
-all: Appelle les règles install, testing, compile
-install: Build les Dockerfile
-testing: lance la commande truffle test (utilise un serveur eth local ref: Dockerfile.server) pour tester le smart-contract
-dev: Lance le projet en mode dev dans un container docker
-go-compile: Compile uniquement l'api en go
-full-compile: Compile le smart-contract, convertie le smart-contract solidity en golang et compile la partie golang
+all: Lance install & run
+install: Compile le binaire, build l'image docker
+run: Lance le projet
+testing: Test le smart-contract
+update-contract: Compile le smart-contract, convertie le smart-contract solidity en golang
 clean: Supprime le binaire go
-fclean: Supprime le binaire go et tous autres fichiers utiles à la compilation
+clean-contract: Supprime les fichiers compiler d'update-contract
 docker-stop: Stop les containers docker et les supprimes
 docker-rm: Supprime les images docker des dockerfiles
-docker-clean: Appelle les règles docker-stop et docker-rm
-re: Appelle les règles docker-clean et all
+docker-remake: Lance docker-stop & docker-rm & run
+re: Lance docker-stop & docker-rm & all
 ```
 
 ## Nouvelle Feature
@@ -108,6 +102,8 @@ Voici les nouvelles features pour la v3:
 - Verification d'un token avant de poster un diplôme.
 - Création d'une nouvelle route API `/get-all-diploma`
 - Enregistrement des queues `retry` & `to-check` dans une db dockeriser (MongoDB)
+- Docker-compose
+- Refactor du code + Makefile
 
 ## Configuration
 
@@ -125,7 +121,7 @@ UTC--2020-07-24T08-25-31.194883000Z--aec7bdfb241e56c04acf5e1a2a49f147867b85b7, p
 Puis ajouté dans l'env le path du dossier contenant les fichiers keystore:
 
 ```dockerfile
-ENV KEYSTOREPATH="./keystore"
+ENV KEYSTOREPATH="/blockchain-service/keystore"
 ```
 
 Pour les tests un fichier est fournis `accounts.csv` ainsi qu'un dossier `./keystore`.
@@ -135,7 +131,7 @@ Pour les tests un fichier est fournis `accounts.csv` ainsi qu'un dossier `./keys
 Pour configurer le compte qui va signer les diplômes vous devez créer un fichier `keystore` qui sera stocker un dossier à part du dossier pour le roulement, puis enregistrer son `path` dans l`env:
 
 ```dockerfile
-ENV KEYSTOREPATHSIGN="./keystore-sign"
+ENV KEYSTOREPATHSIGN="/blockchain-service/keystore-sign"
 ```
 
 Pour les tests un dossier ainsi qu'un fichier keystore sont fournis

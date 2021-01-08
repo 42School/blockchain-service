@@ -13,7 +13,7 @@ CYAN = \033[36m
 
 .PHONY:	all install testing run update-contract clean clean-contract docker-stop docker-clean docker-remake re
 
-all:		install testing run
+all:		install run
 
 install:
 			go mod tidy
