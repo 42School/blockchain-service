@@ -30,7 +30,7 @@ services:
     env_file:
       - blockchain-service.env
     environment:
-      RUNENV: "${RUN_ENV}"
+      RUN_ENV: "${RUN_ENV}"
     depends_on:
       - mongo
 

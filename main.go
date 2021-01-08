@@ -14,11 +14,12 @@ import (
 )
 
 func MongoStart() error {
+	url := "mongodb://" + tools.MongoIp + ":" + tools.MongoPort
 	credential := options.Credential{
-		Username: "root",
-		Password: "example",
+		Username: tools.MongoUser,
+		Password: tools.MongoPasswd,
 	}
-	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI("mongodb://mongo:27017").SetAuth(credential))
+	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(url).SetAuth(credential))
 	if err != err {
 		return err
 	}
@@ -41,8 +42,8 @@ func main() {
 		return
 	}
 	async.RestoreQueue()
-	tools.LogsMsg("Blockchain Service is running !")
 	account.CreateAccountsManager()
 	router := rest.InitRouter()
+	tools.LogsMsg("Blockchain Service is running !")
 	log.Fatal(http.ListenAndServe(":8080", router))
 }

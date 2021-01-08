@@ -23,7 +23,7 @@ var CurrentAccount int = 0
 var Accounts []Account
 
 func ParseAccounts() {
-	bits, err := ioutil.ReadFile("./accounts.csv")
+	bits, err := ioutil.ReadFile(tools.AccountsFile)
 	if err == nil {
 		data := string(bits)
 		lines := strings.Split(data, "\n")
