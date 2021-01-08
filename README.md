@@ -1,6 +1,12 @@
-# Blockchain-service - V3
 
-## Description
+#  Blockchain-Service
+
+<p align="center">
+  <a href="https://github.com/42School/blockchain-service/releases"><img alt="GitHub release" src="https://img.shields.io/github/v/release/42School/blockchain-service" /></a>
+  <a href="https://www.codefactor.io/repository/github/42school/blockchain-service"><img src="https://www.codefactor.io/repository/github/42school/blockchain-service/badge?s=10f20c28a71c60d44e26bb03b89762bca3792f6d" alt="CodeFactor" /></a>
+</p>
+
+---
 
 Blockchain-service est un project blockchain de 42.
 
@@ -21,7 +27,6 @@ Une nouvelle version du smart-contract à été redéployé sur Ropsten et est a
 - [Makefile](#makefile)
 - [Nouvelle Feature](#nouvelle-feature)
 - [Configuration](#configuration)
-- [Création d'un fichier keystore](#création-dun-fichier-keystore)
 
 ## Installation
 
@@ -98,7 +103,7 @@ re: Lance docker-stop & docker-rm & all
 
 Voici les nouvelles features pour la v3:
 
-- Ajout d'un fonction `getAllDiploma` dans le smart-contract afin de migrer les données.
+- Ajout d'une nouvelle fonction `getAllDiploma` dans le smart-contract afin de migrer les données.
 - Verification d'un token avant de poster un diplôme.
 - Création d'une nouvelle route API `/get-all-diploma`
 - Enregistrement des queues `retry` & `to-check` dans une db dockeriser (MongoDB)
@@ -136,7 +141,7 @@ ENV KEYSTOREPATHSIGN="/blockchain-service/keystore-sign"
 
 Pour les tests un dossier ainsi qu'un fichier keystore sont fournis
 
-## Création d'un fichier Keystore
+### Création d'un fichier Keystore
 
 Le fichier keystore est un fichier contenant votre compte eth chiffré.
 
@@ -162,7 +167,7 @@ Path of the secret key file: ~/Library/Ethereum/keystore/[Nom du fichier]
 - You must REMEMBER your password! Without the password, it's impossible to decrypt the key!
 ```
 
-### Exemple
+#### Exemple
 
 L'adresse publique renvoyée par la commande **doit être impérativement écrite dans le smart-contract** sinon des erreurs auronts lieu.
 
