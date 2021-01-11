@@ -1,0 +1,48 @@
+version: '3.1'
+
+networks:
+  back:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.10.0/24
+          gateway: 192.168.10.1
+
+services:
+
+  mongo:
+    image: mongo
+    restart: "no"
+    ports:
+      - 27017:27017
+    networks:
+      - back
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+
+  app:
+    image: blockchain-service
+    ports:
+      - 8080:8080
+    networks:
+      - back
+    env_file:
+      - blockchain-service.env
+    environment:
+      RUN_ENV: "${RUN_ENV}"
+    depends_on:
+      - mongo
+
+  mongo-express:
+    image: mongo-express
+    restart: "no"
+    ports:
+      - 8081:8081
+    networks:
+      - back
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+    depends_on:
+      - mongo

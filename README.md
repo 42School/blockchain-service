@@ -1,6 +1,12 @@
-# Blockchain-service
 
-## Description
+#  Blockchain-Service
+
+<p align="center">
+  <a href="https://github.com/42School/blockchain-service/releases"><img alt="GitHub release" src="https://img.shields.io/github/v/release/42School/blockchain-service" /></a>
+  <a href="https://www.codefactor.io/repository/github/42school/blockchain-service"><img src="https://www.codefactor.io/repository/github/42school/blockchain-service/badge?s=10f20c28a71c60d44e26bb03b89762bca3792f6d" alt="CodeFactor" /></a>
+</p>
+
+---
 
 Blockchain-service est un project blockchain de 42.
 
@@ -12,17 +18,15 @@ La branche dev en cours est [dev/go/eth](https://github.com/42School/blockchain-
 
 La précédente version stable est la [v2.1](https://github.com/42School/blockchain-service/tree/v2.1), si vous trouvez des bugs sur cette version n'hésitez pas à faire une `issue`
 
-Le smart-contract est actuellement deployé sur Ropsten et est accessible à cette [adresse](https://ropsten.etherscan.io/address/0x7dd6b2e41c3f07f16785c943b1ef6ad6eb2e34d1) `0x7dd6b2e41C3F07f16785c943B1eF6ad6eB2e34D1`, vous pouvez y trouver toutes les transactions effectuées au contract.
+Une nouvelle version du smart-contract à été redéployé sur Ropsten et est accessible à cette [adresse](https://ropsten.etherscan.io/address/0x29a5c09219a5c71a81d26922d708e472677f4548) `0x29a5c09219a5c71a81d26922d708e472677f4548`, l'ancienne version de test se trouve à l'adresse suivante `0x7dd6b2e41C3F07f16785c943B1eF6ad6eB2e34D1`
 
 ## Sommaire
 
 - [Installation](#installation)
-- [Lancement en mode dev](#lancement-en-mode-dev)
 - [Route de l'api](#route-de-lapi)
 - [Makefile](#makefile)
 - [Nouvelle Feature](#nouvelle-feature)
 - [Configuration](#configuration)
-- [Création d'un fichier keystore](#création-dun-fichier-keystore)
 
 ## Installation
 
@@ -42,13 +46,9 @@ L'API enverra:
 Pour lancé le projet il faut intaller `docker`
 
 ```sh
+RUN_ENV="prod" or "dev"
 make install
-```
-
-## Lancement en mode Dev
-
-```sh
-make dev
+make run
 ```
 
 ## Route de l'API
@@ -57,8 +57,9 @@ Le port par défaut de l'API est `8080`.
 
 L'API `FtDiploma` contains à ce jour 2 routes différentes:
 
-- `/create-diploma` qui permet de crée un nouveau diplôme dans la blockchain. C'est une route `POST` qui prend comme donnée un json.
+- `/create-diploma` qui permet de crée un nouveau diplôme dans la blockchain. C'est une route `POST` qui prend comme donnée un json. ⚠️ Token requis
 - `/get-diploma` pour vérifier si un diplôme existe en blockchain. C'est une route `POST` qui prend comme donnée un json.
+- `/get-all-diploma` pour récupérer tous les diplomes stocker dans la blockchain pour une éventuelle migration du contract. ⚠️ Token requis
 
 Le json accepté par les deux routes est le même, voici comment il doit être formaté (un fichier template existe dans `/test/datas/template.json`):
 
@@ -85,37 +86,29 @@ Il doit contenir 30 skills en float ainsi que le level en float arrondie au cent
 Un makefile est fourni avec les règles suivantes:
 
 ```
-all: Appelle les règles install, testing, compile
-install: Build les Dockerfile
-testing: Appel la règle server et lance la commande truffle test (utilise un serveur eth local ref: Dockerfile) pour tester le smart-contract
-server: Lance un conteneur Docker d'un simulateur blockchain (obselte)
-dev: Lance le projet en mode dev dans un container docker
-go-compile: Compile uniquement l'api en go
-full-compile: Compile le smart-contract, convertie le smart-contract solidity en golang et compile la partie golang
-go-clean: Supprime le binaire go
-full-clean: Supprime le binaire go et tous autres fichiers utiles à la compilation
+all: Lance install & run
+install: Compile le binaire, build l'image docker
+run: Lance le projet
+testing: Test le smart-contract
+update-contract: Compile le smart-contract, convertie le smart-contract solidity en golang
+clean: Supprime le binaire go
+clean-contract: Supprime les fichiers compiler d'update-contract
 docker-stop: Stop les containers docker et les supprimes
 docker-rm: Supprime les images docker des dockerfiles
-docker-clean: Appelle les règles docker-stop et docker-rm
-re: Appelle les règles docker-clean et all
+docker-remake: Lance docker-stop & docker-rm & run
+re: Lance docker-stop & docker-rm & all
 ```
 
 ## Nouvelle Feature
 
-Voici les nouvelles features pour la v2:
+Voici les nouvelles features pour la v3:
 
-- Une meilleure vérification lors de l'écriture d'un diplôme. Check du hash demandé lors de l'écriture et celui écrit emit par un événement blockchain.
-- Une queue de retry qui ré-essaye l'écriture d'un diplôme 30 minutes après, si il avait échouer une première fois.
-- Un système de roulement de compte Ethereum qui va envoyer les transactions pour écrire un diplôme en blockchain.
-- Un sytème d'envoye de mail:
-  - Si le seuil d'Eth est trop faible sur un compte
-  - Si le système de sécurité s'active
-- Un sytème de sécurité, si l'écriture d'un diplôme en blockchain est différent que celui demandé alors il s'active et envoie toutes les prochaines demande en queue de retry. Sa désactivation se fait manuellement via un mode de commande sur STDIN.
-- Un système de commande, il lis des commandes sur STDIN lors de l'éxecution du programme.
-  - Pour l'activer il faut écrire `cmd` dans STDIN
-  - Commandes prise en charge:
-    - `disable security system` pour désactiver le système de sécurité
-    - `exit` pour quitté le mode de commande
+- Ajout d'une nouvelle fonction `getAllDiploma` dans le smart-contract afin de migrer les données.
+- Verification d'un token avant de poster un diplôme.
+- Création d'une nouvelle route API `/get-all-diploma`
+- Enregistrement des queues `retry` & `to-check` dans une db dockeriser (MongoDB)
+- Docker-compose
+- Refactor du code + Makefile
 
 ## Configuration
 
@@ -133,7 +126,7 @@ UTC--2020-07-24T08-25-31.194883000Z--aec7bdfb241e56c04acf5e1a2a49f147867b85b7, p
 Puis ajouté dans l'env le path du dossier contenant les fichiers keystore:
 
 ```dockerfile
-ENV KEYSTOREPATH="./keystore"
+ENV KEYSTOREPATH="/blockchain-service/keystore"
 ```
 
 Pour les tests un fichier est fournis `accounts.csv` ainsi qu'un dossier `./keystore`.
@@ -143,12 +136,12 @@ Pour les tests un fichier est fournis `accounts.csv` ainsi qu'un dossier `./keys
 Pour configurer le compte qui va signer les diplômes vous devez créer un fichier `keystore` qui sera stocker un dossier à part du dossier pour le roulement, puis enregistrer son `path` dans l`env:
 
 ```dockerfile
-ENV KEYSTOREPATHSIGN="./keystore-sign"
+ENV KEYSTOREPATHSIGN="/blockchain-service/keystore-sign"
 ```
 
 Pour les tests un dossier ainsi qu'un fichier keystore sont fournis
 
-## Création d'un fichier Keystore
+### Création d'un fichier Keystore
 
 Le fichier keystore est un fichier contenant votre compte eth chiffré.
 
@@ -174,14 +167,14 @@ Path of the secret key file: ~/Library/Ethereum/keystore/[Nom du fichier]
 - You must REMEMBER your password! Without the password, it's impossible to decrypt the key!
 ```
 
-### Exemple
+#### Exemple
 
 L'adresse publique renvoyée par la commande **doit être impérativement écrite dans le smart-contract** sinon des erreurs auronts lieu.
 
 Par exemple l'adresse publique renvoyée par `geth account new` est `0x7e12234E994384A757E2689aDdB2A463ccD3B47d`, elle devra être assigné à la variable `ftPubAddress` du contract, comme ici:
 
 ```js
-pragma solidity >=0.5.8 <0.7.0;
+pragma solidity >=0.8.0;
 
 contract	FtDiploma {
 

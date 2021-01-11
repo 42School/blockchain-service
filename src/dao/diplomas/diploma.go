@@ -1,18 +1,22 @@
-package models
+package diplomas
 
 import (
+	"context"
 	account "github.com/42School/blockchain-service/src/account"
-	"github.com/42School/blockchain-service/src/contracts"
-	"github.com/42School/blockchain-service/src/global"
+	"github.com/42School/blockchain-service/src/dao/contracts"
 	"github.com/42School/blockchain-service/src/tools"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	crypgo "github.com/ethereum/go-ethereum/crypto"
+	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/bson"
 	"log"
 	"time"
 )
 
 type Diploma struct {
+	Id			uuid.UUID   `bson:"_id"`
 	FirstName	string		`json:"first_name"`
 	LastName	string		`json:"last_name"`
 	BirthDate	time.Time	`json:"birth_date"`
@@ -22,6 +26,7 @@ type Diploma struct {
 }
 
 type VerificationHash struct {
+	Id	uuid.UUID   `bson:"_id"`
 	Tx *types.Transaction
 	StudentHash []byte
 }
@@ -40,6 +45,19 @@ func convertSkillToFloat(skills [30]uint64) [30]float64 {
 		newSkills[i] = float64(skills[i]) / 100
 	}
 	return newSkills
+}
+
+func addToCheck(toAdd VerificationHash) {
+	var checkDB VerificationHash
+	result := tools.ToCheckDB.FindOne(context.TODO(), bson.M{"studenthash": toAdd.StudentHash})
+	err := result.Decode(&checkDB)
+	if hexutil.Encode(checkDB.StudentHash) == hexutil.Encode(toAdd.StudentHash) || err == nil {
+		tools.LogsDev("Verification Hash already in DB Queue: " + hexutil.Encode(toAdd.StudentHash))
+		return
+	}
+	tools.ToCheckHash.PushBack(toAdd)
+	txJson, _ := toAdd.Tx.MarshalJSON()
+	tools.ToCheckDB.InsertOne(context.Background(), bson.M{"tx": txJson, "studenthash": toAdd.StudentHash})
 }
 
 func (_dp Diploma) CheckDiploma() bool {
@@ -69,20 +87,29 @@ func (_dp Diploma) String() string {
 }
 
 func (_dp Diploma) AddToRetry() {
-	copyList := global.RetryQueue
+	copyList := tools.RetryQueue
 	for e := copyList.Front(); e != nil; e = e.Next() {
 		if e != nil {
 			diploma, _ := e.Value.(Diploma)
-			log.Println("Diploma in list:", diploma.String())
-			log.Println("Diploma to find:", _dp.String())
+			tools.LogsDev("Diploma in list: " + diploma.String())
+			tools.LogsDev("Diploma to find: " + _dp.String())
 			if diploma.String() == _dp.String() {
-				log.Println("Match diploma in list & to find")
+				tools.LogsDev("Match diploma in list & to find")
 				return
 			}
 		}
 	}
-	tools.LogsDev("Adding diploma in Queue:" + _dp.String())
-	global.RetryQueue.PushBack(_dp)
+	var DpDB Diploma
+	result := tools.RetryDB.FindOne(context.TODO(), bson.M{"firstname": _dp.FirstName, "lastname": _dp.LastName, "birthdate": _dp.BirthDate, "alumnidate": _dp.AlumniDate})
+	err := result.Decode(&DpDB)
+	if DpDB.String() == _dp.String() || err == nil {
+		tools.LogsDev("Diploma already in DB Queue: " + _dp.String())
+		return
+	}
+	tools.LogsDev("Adding diploma in Queue: " + _dp.String())
+	_dp.Id = uuid.New()
+	tools.RetryDB.InsertOne(context.TODO(), _dp)
+	tools.RetryQueue.PushBack(_dp)
 }
 
 func (_dp Diploma) convertDpToData(_sign []byte, _hash common.Hash) (uint64, [30]uint64, uint8, [32]byte, [32]byte, [32]byte) {
@@ -101,7 +128,7 @@ func (_dp Diploma) convertDpToData(_sign []byte, _hash common.Hash) (uint64, [30
 func (_dp Diploma) EthWriting() (string, bool) {
 	dataToHash := _dp.FirstName + ", " + _dp.LastName + ", " + _dp.BirthDate.String()[:10] + ", " + _dp.AlumniDate.String()[:10]
 	newHash := crypgo.Keccak256Hash([]byte(dataToHash))
-	sign, err := account.KeyStore.SignHashWithPassphrase(account.GetSignAccount(), global.PasswordAccount, newHash.Bytes())
+	sign, err := account.KeyStore.SignHashWithPassphrase(account.GetSignAccount(), tools.PasswordAccount, newHash.Bytes())
 	tools.LogsDev("The hash of the diploma is " + newHash.String())
 	tools.LogsDev("The signature on the diploma is " + common.Bytes2Hex(sign))
 	if err != nil {
@@ -112,7 +139,7 @@ func (_dp Diploma) EthWriting() (string, bool) {
 		_dp.AddToRetry()
 		return "", false
 	}
-	global.ToCheckHash.PushBack(VerificationHash{Tx: tx, StudentHash: newHash.Bytes()})
+	addToCheck(VerificationHash{Tx: tx, StudentHash: newHash.Bytes()})
 	return newHash.Hex(), true
 }
 
@@ -127,4 +154,12 @@ func (_dp Diploma) EthGetter() (float64, [30]float64, error) {
 	skills := convertSkillToFloat(skillsInt)
 	log.Print(levelInt, skillsInt)
 	return level, skills, nil
+}
+
+func EthAllGetter() []contracts.FtDiplomaDiploma {
+	diplomas, err := contracts.CallGetAllDiploma()
+	if err != nil {
+		return nil
+	}
+	return diplomas
 }

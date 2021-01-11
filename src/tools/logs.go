@@ -1,12 +1,11 @@
 package tools
 
 import (
-	"github.com/42School/blockchain-service/src/global"
 	"log"
 )
 
 func LogsDev(msg string) {
-	if global.Env == "Dev" {
+	if Env == "dev" || Env == "DEV" || Env == "Dev" {
 		log.Println("Developper mode:", msg)
 	}
 }

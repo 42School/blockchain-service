@@ -41,7 +41,7 @@ contract("FtDiploma", async (accounts) => {
 		try {
 			await instance.createDiploma(1517, skills, sign.v, sign.r, sign.s, hash);
 		} catch (error) {
-			assert.equal(error.reason, 'FtDiploma: Is not 42 sign this diploma', `Error: It is possible to write a diploma not signed by 42.`);
+			assert.equal(error.reason, 'FtDiploma: Is not 42 sign this diploma.', `Error: It is possible to write a diploma not signed by 42.`);
 		}
 	})
 
@@ -56,5 +56,20 @@ contract("FtDiploma", async (accounts) => {
 		} catch (error) {
 			assert.equal(error.reason, "FtDiploma: The diploma already exists.", `Error: The double insertion of a diploma is possible.`);
 		}
+	})
+
+	it("Testing the gets all data if not 42", async () => {
+		let instance = await FtDiploma.deployed();
+		try {
+			await instance.getAllDiploma();
+		} catch (error) {
+			assert.ok(error, "FtDiploma: Is not 42.", `Error: The gets of all diplomas is not authorize if is not 42.`);
+		}
+	})
+
+	it("Testing the gets all data", async () => {
+		let instance = await FtDiploma.deployed();
+		let datas = await instance.getAllDiploma({from: "0x7e12234e994384a757e2689addb2a463ccd3b47d"})
+		assert.isNotEmpty(datas);
 	})
 })

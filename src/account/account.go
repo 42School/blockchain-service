@@ -2,7 +2,6 @@ package account
 
 import (
 	"crypto/ecdsa"
-	"github.com/42School/blockchain-service/src/global"
 	"github.com/42School/blockchain-service/src/tools"
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/accounts/keystore"
@@ -10,7 +9,6 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
 	"io/ioutil"
-	"log"
 	"strings"
 )
 
@@ -24,7 +22,7 @@ var CurrentAccount int = 0
 var Accounts []Account
 
 func ParseAccounts() {
-	bits, err := ioutil.ReadFile("./accounts.csv")
+	bits, err := ioutil.ReadFile(tools.AccountsFile)
 	if err == nil {
 		data := string(bits)
 		lines := strings.Split(data, "\n")
@@ -42,7 +40,7 @@ func ParseAccounts() {
 }
 
 func CreateAccountsManager() {
-	KeyStore = keystore.NewKeyStore(global.PathKeyStoreSign, keystore.StandardScryptN, keystore.StandardScryptP)
+	KeyStore = keystore.NewKeyStore(tools.PathKeyStoreSign, keystore.StandardScryptN, keystore.StandardScryptP)
 	ParseAccounts()
 }
 
@@ -51,7 +49,7 @@ func GetSignAccount() accounts.Account {
 }
 
 func GetWriterAccount() (common.Address, *ecdsa.PrivateKey, error) {
-	keyjson, errRead := ioutil.ReadFile(global.PathKeyStore + "/" + Accounts[CurrentAccount].KeyStoreFile)
+	keyjson, errRead := ioutil.ReadFile(tools.PathKeyStore + "/" + Accounts[CurrentAccount].KeyStoreFile)
 	if errRead != nil {
 		return common.Address{}, nil, errRead
 	}
@@ -59,7 +57,7 @@ func GetWriterAccount() (common.Address, *ecdsa.PrivateKey, error) {
 	if errDecrypt != nil {
 		return common.Address{}, nil, errDecrypt
 	}
-	log.Println("pk:", hexutil.Encode(crypto.FromECDSA(key.PrivateKey)))
+	tools.LogsDev("private key writer: " + hexutil.Encode(crypto.FromECDSA(key.PrivateKey)))
 	return key.Address, key.PrivateKey, nil
 }
 
