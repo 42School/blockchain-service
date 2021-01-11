@@ -30,12 +30,12 @@ Une nouvelle version du smart-contract à été redéployé sur Ropsten et est a
 
 ## Installation
 
-**Petite modification importante** - Avant de lancer `make install` veuillez modifier dans le Dockerfile `Dockerfile.dev` la variable `FTENDPOINT` avec l'ip du service d'alumnisation:
+**Petite modification importante** - Modifier dans le fichier `blockchain-service.env` la variable `FTENDPOINT` avec l'ip du service d'alumnisation:
 
-```dockerfile
-ENV FTENDPOINT="http://[ip-42]" # By default "http://127.0.0.1:8080"
-ENV VALIDATIONPATH="/[Path for validation]" # By default "/check-request"
-ENV RETRYPATH="/[Path for retry]" # By default "/check-request"
+```env
+FTENDPOINT="http://[ip-42]" # By default "http://127.0.0.1:8080"
+VALIDATIONPATH="/[Path for validation]" # By default "/check-request"
+RETRYPATH="/[Path for retry]" # By default "/check-request"
 ```
 
 L'API enverra:
