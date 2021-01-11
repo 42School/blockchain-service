@@ -101,7 +101,7 @@ re: Lance docker-stop & docker-rm & all
 
 ## Nouvelle Feature
 
-Voici les nouvelles features pour la v3:
+Voici les nouvelles features pour la v2.2:
 
 - Ajout d'une nouvelle fonction `getAllDiploma` dans le smart-contract afin de migrer les données.
 - Verification d'un token avant de poster un diplôme.
