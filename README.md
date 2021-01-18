@@ -16,7 +16,7 @@ La stack choisi pour ce projet est `go`, la blockchain `ethereum` et `solidity` 
 
 La branche dev en cours est [dev/go/eth](https://github.com/42School/blockchain-service/tree/dev/go/eth).
 
-La précédente version stable est la [v2.1](https://github.com/42School/blockchain-service/tree/v2.1), si vous trouvez des bugs sur cette version n'hésitez pas à faire une `issue`
+Si vous trouvez des bugs sur cette version n'hésitez pas à faire une `issue`
 
 Une nouvelle version du smart-contract à été redéployé sur Ropsten et est accessible à cette [adresse](https://ropsten.etherscan.io/address/0x29a5c09219a5c71a81d26922d708e472677f4548) `0x29a5c09219a5c71a81d26922d708e472677f4548`, l'ancienne version de test se trouve à l'adresse suivante `0x7dd6b2e41C3F07f16785c943B1eF6ad6eB2e34D1`
 
@@ -30,12 +30,12 @@ Une nouvelle version du smart-contract à été redéployé sur Ropsten et est a
 
 ## Installation
 
-**Petite modification importante** - Avant de lancer `make install` veuillez modifier dans le Dockerfile `Dockerfile.dev` la variable `FTENDPOINT` avec l'ip du service d'alumnisation:
+**Petite modification importante** - Modifier dans le fichier `blockchain-service.env` la variable `FTENDPOINT` avec l'ip du service d'alumnisation:
 
-```dockerfile
-ENV FTENDPOINT="http://[ip-42]" # By default "http://127.0.0.1:8080"
-ENV VALIDATIONPATH="/[Path for validation]" # By default "/check-request"
-ENV RETRYPATH="/[Path for retry]" # By default "/check-request"
+```env
+FTENDPOINT="http://[ip-42]" # By default "http://127.0.0.1:8080"
+VALIDATIONPATH="/[Path for validation]" # By default "/check-request"
+RETRYPATH="/[Path for retry]" # By default "/check-request"
 ```
 
 L'API enverra:
@@ -101,7 +101,7 @@ re: Lance docker-stop & docker-rm & all
 
 ## Nouvelle Feature
 
-Voici les nouvelles features pour la v3:
+Voici les nouvelles features pour la v2.2:
 
 - Ajout d'une nouvelle fonction `getAllDiploma` dans le smart-contract afin de migrer les données.
 - Verification d'un token avant de poster un diplôme.
