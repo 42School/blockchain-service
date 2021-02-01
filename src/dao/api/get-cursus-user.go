@@ -7,13 +7,13 @@ import (
 )
 
 type skillsApi struct {
-	Name string `json:"name"`
-	Level float64 `json:"level"`
+	Name	string	`json:"name"`
+	Level	float64	`json:"level"`
 }
 
 type cursusUser struct {
-	Level float64 `json:"level"`
-	Skills []skillsApi `json:"skills"`
+	Level	float64		`json:"level"`
+	Skills	[]skillsApi	`json:"skills"`
 }
 
 func GetCursusUser(cursusId int) (float64, []float64, error) {

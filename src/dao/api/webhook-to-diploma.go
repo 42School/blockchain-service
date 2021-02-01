@@ -4,15 +4,14 @@ import (
 	"encoding/json"
 	"github.com/42School/blockchain-service/src/dao/diplomas"
 	"io"
-	"log"
 	"time"
 )
 
 type WebhookData struct {
-	Login string `json:"login"`
-	FirstName string `json:"first_name"`
-	LastName string `json:"last_name"`
-	AlumnizedCursusUser int `json:"alumnized_cursus_user"`
+	Login				string	`json:"login"`
+	FirstName			string	`json:"first_name"`
+	LastName			string	`json:"last_name"`
+	AlumnizedCursusUser	int		`json:"alumnized_cursus_user"`
 }
 
 func WebhookToDiploma(body io.ReadCloser) (diplomas.Diploma, error) {
@@ -22,9 +21,7 @@ func WebhookToDiploma(body io.ReadCloser) (diplomas.Diploma, error) {
 	if err != nil {
 		return newDiploma, err
 	}
-	//log.Println("In webhookToDiploma: ", webhookData.Login)
 	level, skills, err := GetCursusUser(webhookData.AlumnizedCursusUser)
-	log.Println(level, skills)
 	if err != nil {
 		return newDiploma, err
 	}
@@ -38,6 +35,5 @@ func WebhookToDiploma(body io.ReadCloser) (diplomas.Diploma, error) {
 	newDiploma.AlumniDate = time.Now().Format("2006-01-02")
 	newDiploma.Level = level
 	newDiploma.Skills = skills
-	//log.Println(newDiploma.String())
 	return newDiploma, nil
 }

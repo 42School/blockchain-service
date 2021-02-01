@@ -45,7 +45,11 @@ func convertSkillToInt(skills []float64) [30]uint64 {
 func convertSkillToFloat(skills [30]uint64) [30]float64 {
 	newSkills := [30]float64{}
 	for i := 0; i < 30; i++ {
-		newSkills[i] = float64(skills[i]) / 100
+		if i > len(skills) - 1 {
+			newSkills[i] = float64(0)
+		} else {
+			newSkills[i] = float64(skills[i]) / 100
+		}
 	}
 	return newSkills
 }
