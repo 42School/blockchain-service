@@ -1,0 +1,20 @@
+{
+	"id": 20152,
+	"email": "clabouri@student.42.fr",
+	"login": "clabouri",
+	"first_name": "Charles",
+	"last_name": "Labourier",
+	"usual_first_name": null,
+	"url": "http://localhost:13000/v2/users/clabouri",
+	"phone": "0761289025",
+	"displayname": "Charles Labourier",
+	"image_url": "https://cdn.intra.42.fr/users/clabouri.jpg",
+	"staff?": false,
+	"correction_point": 11,
+	"pool_month": "august",
+	"pool_year": "2016",
+	"location": null,
+	"wallet": 460,
+	"candidature_email": "labourier.charles@gmail.com",
+	"alumnized_cursus_user": 96437
+}
