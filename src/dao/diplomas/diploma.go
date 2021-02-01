@@ -72,7 +72,7 @@ func (_dp Diploma) CheckDiploma() bool {
 		return false
 	}
 	for i := 0; i < len(_dp.Skills); i++ {
-		if _dp.Skills[i] < 0.0 {
+		if _dp.Skills[i] <= 0.0 {
 			return false
 		}
 	}
