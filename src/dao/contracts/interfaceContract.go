@@ -113,7 +113,7 @@ func CheckSecurity(client *ethclient.Client, tx *types.Transaction, hash []byte)
 			event := struct {
 				Student   [32]byte
 			}{}
-			err = contractAbi.Unpack(&event, "CreateDiploma", vLog.Data)
+			_, err := contractAbi.Unpack("CreateDiploma", vLog.Data)
 			if err != nil {
 				tools.LogsError(err)
 				return true

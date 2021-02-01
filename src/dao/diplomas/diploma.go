@@ -12,15 +12,14 @@ import (
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"log"
-	"time"
 )
 
 type Diploma struct {
 	Id			uuid.UUID   `bson:"_id"`
 	FirstName	string		`json:"first_name"`
 	LastName	string		`json:"last_name"`
-	BirthDate	time.Time	`json:"birth_date"`
-	AlumniDate	time.Time	`json:"alumni_date"`
+	BirthDate	string		`json:"birth_date"`
+	AlumniDate	string		`json:"alumni_date"`
 	Level		float64		`json:"level"`
 	Skills		[]float64	`json:"skills"`
 }
@@ -34,7 +33,11 @@ type VerificationHash struct {
 func convertSkillToInt(skills []float64) [30]uint64 {
 	newSkills := [30]uint64{}
 	for i := 0; i < 30; i++ {
-		newSkills[i] = uint64(skills[i] * 100)
+		if i > len(skills) - 1 {
+			newSkills[i] = uint64(0)
+		} else {
+			newSkills[i] = uint64(skills[i] * 100)
+		}
 	}
 	return newSkills
 }
@@ -61,7 +64,7 @@ func addToCheck(toAdd VerificationHash) {
 }
 
 func (_dp Diploma) CheckDiploma() bool {
-	if _dp.FirstName == "" || _dp.LastName == "" || _dp.Level <= 6 || len(_dp.Skills) != 30 || _dp.AlumniDate.IsZero() || _dp.BirthDate.IsZero() {
+	if _dp.FirstName == "" || _dp.LastName == "" || _dp.Level <= 6 || _dp.AlumniDate == "" || _dp.BirthDate == "" {
 		return false
 	}
 	for i := 0; i < len(_dp.Skills); i++ {
@@ -82,7 +85,7 @@ func (_dp Diploma) PrintDiploma() {
 }
 
 func (_dp Diploma) String() string {
-	str := _dp.FirstName + ", " + _dp.LastName + ", " + _dp.BirthDate.String()[:10] + ", " + _dp.AlumniDate.String()[:10]
+	str := _dp.FirstName + ", " + _dp.LastName + ", " + _dp.BirthDate + ", " + _dp.AlumniDate
 	return str
 }
 
@@ -126,7 +129,7 @@ func (_dp Diploma) convertDpToData(_sign []byte, _hash common.Hash) (uint64, [30
 }
 
 func (_dp Diploma) EthWriting() (string, bool) {
-	dataToHash := _dp.FirstName + ", " + _dp.LastName + ", " + _dp.BirthDate.String()[:10] + ", " + _dp.AlumniDate.String()[:10]
+	dataToHash := _dp.FirstName + ", " + _dp.LastName + ", " + _dp.BirthDate + ", " + _dp.AlumniDate
 	newHash := crypgo.Keccak256Hash([]byte(dataToHash))
 	sign, err := account.KeyStore.SignHashWithPassphrase(account.GetSignAccount(), tools.PasswordAccount, newHash.Bytes())
 	tools.LogsDev("The hash of the diploma is " + newHash.String())
@@ -144,7 +147,7 @@ func (_dp Diploma) EthWriting() (string, bool) {
 }
 
 func (_dp Diploma) EthGetter() (float64, [30]float64, error) {
-	dataToHash := _dp.FirstName + ", " + _dp.LastName + ", " + _dp.BirthDate.String()[:10] + ", " + _dp.AlumniDate.String()[:10]
+	dataToHash := _dp.FirstName + ", " + _dp.LastName + ", " + _dp.BirthDate + ", " + _dp.AlumniDate
 	hash := crypgo.Keccak256Hash([]byte(dataToHash))
 	levelInt, skillsInt, err := contracts.CallGetDiploma(hash.Bytes())
 	if err != nil {

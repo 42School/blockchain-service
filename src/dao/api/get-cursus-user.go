@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"encoding/json"
+	"strconv"
 )
 
 type skillsApi struct {
@@ -15,11 +16,11 @@ type cursusUser struct {
 	Skills []skillsApi `json:"skills"`
 }
 
-func GetCursusUser(userLogin string, cursusId string) (float64, []float64, error) {
-	var cursus []cursusUser
+func GetCursusUser(cursusId int) (float64, []float64, error) {
+	var cursus cursusUser
 	var skills []float64
 	server := FtApi.Client(context.Background())
-	url := "https://api.intra.42.fr/v2/users/" + userLogin + "/cursus_users?cursus_id=" + cursusId
+	url := "https://api.intra.42.fr/v2/cursus_users/" + strconv.Itoa(cursusId)
 	rest, err := server.Get(url)
 	if err != nil {
 		return 0, skills, err
@@ -28,9 +29,9 @@ func GetCursusUser(userLogin string, cursusId string) (float64, []float64, error
 	if err != nil {
 		return 0, skills, err
 	}
-	level := cursus[0].Level
-	for i := 0; i < len(cursus[0].Skills); i++ {
-		skills = append(skills, cursus[0].Skills[i].Level)
+	level := cursus.Level
+	for i := 0; i < len(cursus.Skills); i++ {
+		skills = append(skills, cursus.Skills[i].Level)
 	}
 	return level, skills, nil
 }

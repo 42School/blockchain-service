@@ -169,7 +169,7 @@ func bindDiploma(address common.Address, caller bind.ContractCaller, transactor 
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Diploma *DiplomaRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Diploma *DiplomaRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Diploma.Contract.DiplomaCaller.contract.Call(opts, result, method, params...)
 }
 
@@ -188,7 +188,7 @@ func (_Diploma *DiplomaRaw) Transact(opts *bind.TransactOpts, method string, par
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_Diploma *DiplomaCallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+func (_Diploma *DiplomaCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _Diploma.Contract.contract.Call(opts, result, method, params...)
 }
 
@@ -207,12 +207,17 @@ func (_Diploma *DiplomaTransactorRaw) Transact(opts *bind.TransactOpts, method s
 //
 // Solidity: function ftPubAddress() view returns(address)
 func (_Diploma *DiplomaCaller) FtPubAddress(opts *bind.CallOpts) (common.Address, error) {
-	var (
-		ret0 = new(common.Address)
-	)
-	out := ret0
-	err := _Diploma.contract.Call(opts, out, "ftPubAddress")
-	return *ret0, err
+	var out []interface{}
+	err := _Diploma.contract.Call(opts, &out, "ftPubAddress")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
 }
 
 // FtPubAddress is a free data retrieval call binding the contract method 0x5679a859.
@@ -233,12 +238,17 @@ func (_Diploma *DiplomaCallerSession) FtPubAddress() (common.Address, error) {
 //
 // Solidity: function getAllDiploma() view returns((uint64,uint64[30],bytes32,(uint8,bytes32,bytes32))[])
 func (_Diploma *DiplomaCaller) GetAllDiploma(opts *bind.CallOpts) ([]FtDiplomaDiploma, error) {
-	var (
-		ret0 = new([]FtDiplomaDiploma)
-	)
-	out := ret0
-	err := _Diploma.contract.Call(opts, out, "getAllDiploma")
-	return *ret0, err
+	var out []interface{}
+	err := _Diploma.contract.Call(opts, &out, "getAllDiploma")
+
+	if err != nil {
+		return *new([]FtDiplomaDiploma), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([]FtDiplomaDiploma)).(*[]FtDiplomaDiploma)
+
+	return out0, err
+
 }
 
 // GetAllDiploma is a free data retrieval call binding the contract method 0xbe55a556.
@@ -262,13 +272,19 @@ func (_Diploma *DiplomaCaller) GetDiploma(opts *bind.CallOpts, _studentHash [32]
 	Level  uint64
 	Skills [30]uint64
 }, error) {
-	ret := new(struct {
+	var out []interface{}
+	err := _Diploma.contract.Call(opts, &out, "getDiploma", _studentHash)
+
+	outstruct := new(struct {
 		Level  uint64
 		Skills [30]uint64
 	})
-	out := ret
-	err := _Diploma.contract.Call(opts, out, "getDiploma", _studentHash)
-	return *ret, err
+
+	outstruct.Level = out[0].(uint64)
+	outstruct.Skills = out[1].([30]uint64)
+
+	return *outstruct, err
+
 }
 
 // GetDiploma is a free data retrieval call binding the contract method 0x2b04cb77.
@@ -295,12 +311,17 @@ func (_Diploma *DiplomaCallerSession) GetDiploma(_studentHash [32]byte) (struct 
 //
 // Solidity: function linkOfRepo() view returns(string)
 func (_Diploma *DiplomaCaller) LinkOfRepo(opts *bind.CallOpts) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _Diploma.contract.Call(opts, out, "linkOfRepo")
-	return *ret0, err
+	var out []interface{}
+	err := _Diploma.contract.Call(opts, &out, "linkOfRepo")
+
+	if err != nil {
+		return *new(string), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(string)).(*string)
+
+	return out0, err
+
 }
 
 // LinkOfRepo is a free data retrieval call binding the contract method 0x8ebc72c1.
@@ -321,12 +342,17 @@ func (_Diploma *DiplomaCallerSession) LinkOfRepo() (string, error) {
 //
 // Solidity: function name() view returns(string)
 func (_Diploma *DiplomaCaller) Name(opts *bind.CallOpts) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _Diploma.contract.Call(opts, out, "name")
-	return *ret0, err
+	var out []interface{}
+	err := _Diploma.contract.Call(opts, &out, "name")
+
+	if err != nil {
+		return *new(string), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(string)).(*string)
+
+	return out0, err
+
 }
 
 // Name is a free data retrieval call binding the contract method 0x06fdde03.
@@ -347,12 +373,17 @@ func (_Diploma *DiplomaCallerSession) Name() (string, error) {
 //
 // Solidity: function symbol() view returns(string)
 func (_Diploma *DiplomaCaller) Symbol(opts *bind.CallOpts) (string, error) {
-	var (
-		ret0 = new(string)
-	)
-	out := ret0
-	err := _Diploma.contract.Call(opts, out, "symbol")
-	return *ret0, err
+	var out []interface{}
+	err := _Diploma.contract.Call(opts, &out, "symbol")
+
+	if err != nil {
+		return *new(string), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(string)).(*string)
+
+	return out0, err
+
 }
 
 // Symbol is a free data retrieval call binding the contract method 0x95d89b41.
@@ -520,6 +551,7 @@ func (_Diploma *DiplomaFilterer) ParseCreateDiploma(log types.Log) (*DiplomaCrea
 	if err := _Diploma.contract.UnpackLog(event, "CreateDiploma", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
 
@@ -654,5 +686,6 @@ func (_Diploma *DiplomaFilterer) ParsePublish42Diploma(log types.Log) (*DiplomaP
 	if err := _Diploma.contract.UnpackLog(event, "Publish42Diploma", log); err != nil {
 		return nil, err
 	}
+	event.Raw = log
 	return event, nil
 }
