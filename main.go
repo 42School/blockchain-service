@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/42School/blockchain-service/src/account"
 	"github.com/42School/blockchain-service/src/async"
+	"github.com/42School/blockchain-service/src/dao/api"
 	"github.com/42School/blockchain-service/src/rest"
 	"github.com/42School/blockchain-service/src/tools"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -37,6 +38,11 @@ func main() {
 	go async.RetryDiploma()
 	go async.ReadStdin()
 	err := MongoStart()
+	if err != nil {
+		tools.LogsError(err)
+		return
+	}
+	err = api.InitApi()
 	if err != nil {
 		tools.LogsError(err)
 		return

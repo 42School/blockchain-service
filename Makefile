@@ -46,10 +46,10 @@ clean:
 			rm $(NAME)
 
 clean-contract:
-			rm $(NAME).bin
-			rm $(NAME).abi
-			rm contracts_$(NAME)_sol_$(NAME).abi
-			rm contracts_$(NAME)_sol_$(NAME).bin
+			rm $(CONTRACTNAME).bin
+			rm $(CONTRACTNAME).abi
+			rm contracts_$(CONTRACTNAME)_sol_$(CONTRACTNAME).abi
+			rm contracts_$(CONTRACTNAME)_sol_$(CONTRACTNAME).bin
 
 docker-stop:
 			docker stop $(APICLIENT)

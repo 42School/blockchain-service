@@ -1,0 +1,43 @@
+[
+	{
+		"id": 20152,
+		"email": "clabouri@student.42.fr",
+		"login": "clabouri",
+		"first_name": "Charles",
+		"last_name": "Labourier",
+		"usual_first_name": null,
+		"url": "http://localhost:13000/v2/users/clabouri",
+		"phone": "hidden",
+		"displayname": "Charles Labourier",
+		"image_url": "https://cdn.intra.42.fr/users/clabouri.jpg",
+		"staff?": false,
+		"correction_point": 11,
+		"pool_month": "august",
+		"pool_year": "2016",
+		"location": null,
+		"wallet": 460,
+		"candidature_email": "email@gmail.com",
+		"alumnized_cursus_user": 96437
+	},
+	{
+		"id": 27035,
+		"email": "cpieri@student.42.fr",
+		"login": "cpieri",
+		"first_name": "Louise",
+		"last_name": "Pieri",
+		"usual_first_name": null,
+		"url": "https://api.intra.42.fr/v2/users/cpieri",
+		"phone": "hidden",
+		"displayname": "Louise Pieri",
+		"usual_full_name": "Louise Pieri",
+		"image_url": "https://cdn.intra.42.fr/users/cpieri.jpg",
+		"staff?": false,
+		"correction_point": 15,
+		"pool_month": "august",
+		"pool_year": "2017",
+		"location": null,
+		"wallet": 641,
+		"candidature_email": "email@gmail.com",
+		"alumnized_cursus_user": 96446
+	}
+]

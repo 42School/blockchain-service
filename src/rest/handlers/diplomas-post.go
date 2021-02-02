@@ -2,23 +2,25 @@ package handlers
 
 import (
 	"encoding/json"
-	"github.com/42School/blockchain-service/src/dao/diplomas"
+	"github.com/42School/blockchain-service/src/dao/api"
 	"github.com/42School/blockchain-service/src/tools"
+	"log"
 	"net/http"
 )
 
 func CreateDiploma(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type", "application/json;charset=UTF-8")
-	var newDiploma diplomas.Diploma
 	if r.Header.Get("Token") != tools.Token {
 		http.Error(w, "You are not authorized !", http.StatusUnauthorized)
 		return
 	}
-	err := json.NewDecoder(r.Body).Decode(&newDiploma)
+	newDiploma, err := api.WebhookToDiploma(r.Body)
+	//err := json.NewDecoder(r.Body).Decode(&newDiploma)
 	if err != nil {
 		http.Error(w, "Fail Unmarshalling json", http.StatusBadRequest)
 		return
 	}
+	log.Println("In post http: ", newDiploma.String())
 	if newDiploma.CheckDiploma() == false {
 		http.Error(w, "The data sent are not valid, to be written in blockchain please try again !", http.StatusBadRequest)
 		return

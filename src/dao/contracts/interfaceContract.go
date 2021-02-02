@@ -110,15 +110,14 @@ func CheckSecurity(client *ethclient.Client, tx *types.Transaction, hash []byte)
 	}
 	for _, vLog := range logs {
 		if vLog.TxHash.Hex() == tx.Hash().Hex() {
-			event := struct {
-				Student   [32]byte
-			}{}
-			err = contractAbi.Unpack(&event, "CreateDiploma", vLog.Data)
+			var eventHash [32]byte
+			eventData, err := contractAbi.Unpack("CreateDiploma", vLog.Data)
+			eventHash = eventData[0].([32]byte)
 			if err != nil {
 				tools.LogsError(err)
 				return true
 			}
-			if common.Bytes2Hex(hash[:]) != common.Bytes2Hex(event.Student[:]) {
+			if common.Bytes2Hex(hash[:]) != common.Bytes2Hex(eventHash[:]) {
 				tools.LogsMsg("Error: The hash writing in blockchain is not the same of this student !")
 				tools.SendMail("Security Alert", "")
 				tools.SecuritySystem = true
