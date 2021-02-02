@@ -30,18 +30,14 @@ Une nouvelle version du smart-contract à été redéployé sur Ropsten et est a
 
 ## Installation
 
-**Petite modification importante** - Modifier dans le fichier `blockchain-service.env` la variable `FTENDPOINT` avec l'ip du service d'alumnisation:
+**Petite modification importante** - Modifier le fichier `blockchain-service.env` plusieurs variables son à modifier dont la variable `FTENDPOINT` et l'url du service d'alumnisation:
 
 ```env
-FTENDPOINT="http://[ip-42]" # By default "http://127.0.0.1:8080"
-VALIDATIONPATH="/[Path for validation]" # By default "/check-request"
-RETRYPATH="/[Path for retry]" # By default "/check-request"
+FT_END_POINT="http://[ip-42]"							# By default "http://127.0.0.1:8080"
+VALIDATION_PATH="/[Path for validation]"	# By default "/check-request"
+RETRY_PATH="/[Path for retry]"						# By default "/check-request"
+TOKEN="0x..."															# By default "token"
 ```
-
-L'API enverra:
-
-- Toutes les 10 minutes des requêtes confirmant les diplômes en blockchain à l'adresse `EndPoint + ValidationPath` 
-- Toutes les 30 minutes des requêtes validant l'inscription d'un diplôme ayant échouer sont écriture à cette adresse `EndPoint + RetryPath`
 
 Pour lancé le projet il faut intaller `docker`
 
@@ -55,31 +51,75 @@ make run
 
 Le port par défaut de l'API est `8080`.
 
-L'API `FtDiploma` contains à ce jour 2 routes différentes:
+L'API contains à ce jour 3 routes différentes:
 
-- `/create-diploma` qui permet de crée un nouveau diplôme dans la blockchain. C'est une route `POST` qui prend comme donnée un json. ⚠️ Token requis
-- `/get-diploma` pour vérifier si un diplôme existe en blockchain. C'est une route `POST` qui prend comme donnée un json.
-- `/get-all-diploma` pour récupérer tous les diplomes stocker dans la blockchain pour une éventuelle migration du contract. ⚠️ Token requis
+- `/create-diploma` permet de crée un nouveau diplôme dans la blockchain. ⚠️ Token requis
 
-Le json accepté par les deux routes est le même, voici comment il doit être formaté (un fichier template existe dans `/test/datas/template.json`):
+  - Méthode `POST`
+  - Elle reçois le webhook d'alumnisation.
+  - Elle répondra:
 
-Il doit contenir 30 skills en float ainsi que le level en float arrondie au centième.
+    - Toutes les 10 minutes des requêtes confirmant les diplômes en blockchain à l'adresse `EndPoint + ValidationPath` 
+    - Toutes les 30 minutes des requêtes validant l'inscription d'un diplôme ayant échouer sont écriture à cette adresse `EndPoint + RetryPath`
 
-```json
-{
-  "first_name": "Louise",
-  "last_name": "Pieri",
-  "birth_date": "1998-12-27T00:00:00Z",
-  "alumni_date": "2020-06-25T00:00:00Z",
-  "level": 15.17,
-  "skills": [
-    8.57,
-    5.42,
-    ...,
-    4.16
-  ] // (30 Skills)
-}
-```
+- `/get-diploma`  vérifie si un diplôme existe en blockchain.
+
+  - Méthode `POST`
+
+  - Le json requis pour la route `/get-diploma`.
+
+    - ```json
+      {
+        "first_name": "Louise",
+        "last_name": "Pieri",
+        "birth_date": "1998-12-27T00:00:00Z",
+        "alumni_date": "2020-06-25T00:00:00Z"
+      }
+      ```
+
+  - Elle répondra:
+
+    - ```json
+      {
+        "Level": 21.00
+        "Skills": [14.09 10.96 9.95 9.92 9.02 7.31 7.06 6.54 5.77 5.62 3.92 2.56 2.54 2.5 2.19, ...]
+      }
+      ```
+
+- `/get-all-diploma` récupére tous les diplomes stockés dans la blockchain pour une éventuelle migration du contract. ⚠️ Token requis
+
+  - Méthode `GET`
+
+  - Elle répondra:
+
+    - ```json
+      [
+        {
+          "Level": 2100,
+          "Skills": [857,542,620,942,661,416,902,902,902,360,222,550,145, ...],
+          "Hash": [xxx,xx,xx,xx,xx,xxx,x,xx,xxx,xx,xxx,xx,xxx,xx,xx,xx,xxx,xx,xxx,xx, ...],
+          "Signature":
+          {
+            "V": xx,
+            "R": [xxx,xxx,xx,xxx,xxx,xxx,xxx,xxx,xx,xxx,xxx,xx,xxx,xx,xx,xx,xx,xx,xxx,xxx,xxx, ...],
+            "S": [xxx,xxx,xx,xxx,xxx,xxx,x,xx,xxx,xx,xxx,xxx,xx,xxx,xx,xxx,xxx,xxx,xx,xxx,xxx, ...]
+          }
+        },
+       {
+          "Level": 2100,
+          "Skills": [857,542,620,942,661,416,902,902,902,360,222,550,145, ...],
+          "Hash": [xxx,xx,xx,xx,xx,xxx,x,xx,xxx,xx,xxx,xx,xxx,xx,xx,xx,xxx,xx,xxx,xx, ...],
+          "Signature":
+          {
+            "V": xx,
+            "R": [xxx,xxx,xx,xxx,xxx,xxx,xxx,xxx,xx,xxx,xxx,xx,xxx,xx,xx,xx,xx,xx,xxx,xxx,xxx, ...],
+            "S": [xxx,xxx,xx,xxx,xxx,xxx,x,xx,xxx,xx,xxx,xxx,xx,xxx,xx,xxx,xxx,xxx,xx,xxx,xxx, ...]
+          }
+        },
+        {...},
+        {...}
+      ]
+      ```
 
 ## Makefile
 
@@ -101,14 +141,11 @@ re: Lance docker-stop & docker-rm & all
 
 ## Nouvelle Feature
 
-Voici les nouvelles features pour la v2.2:
+Voici les nouvelles features pour la v2.3:
 
-- Ajout d'une nouvelle fonction `getAllDiploma` dans le smart-contract afin de migrer les données.
-- Verification d'un token avant de poster un diplôme.
-- Création d'une nouvelle route API `/get-all-diploma`
-- Enregistrement des queues `retry` & `to-check` dans une db dockeriser (MongoDB)
-- Docker-compose
-- Refactor du code + Makefile
+- Lis la `Webhook d'alumnisation`
+- Récupère les données manquantes sur l'api de 42 (Birthdate, Level & Skills)
+- Update des modules Golang
 
 ## Configuration
 
