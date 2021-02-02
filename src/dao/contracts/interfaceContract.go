@@ -111,8 +111,6 @@ func CheckSecurity(client *ethclient.Client, tx *types.Transaction, hash []byte)
 	for _, vLog := range logs {
 		if vLog.TxHash.Hex() == tx.Hash().Hex() {
 			var eventHash [32]byte
-			// To check this line for this error: "The hash writing in blockchain is not the same of this student !"
-			// Before new version of go-eth: "err := contractAbi.Unpack(&event, "CreateDiploma", vLog.Data)"
 			eventData, err := contractAbi.Unpack("CreateDiploma", vLog.Data)
 			eventHash = eventData[0].([32]byte)
 			if err != nil {
