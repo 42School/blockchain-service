@@ -110,7 +110,7 @@ L'API contains à ce jour 3 routes différentes:
 
   - Le json requis:
 
-    - ```
+    - ```json
       {
         "first_name": "Louise",
         "last_name": "Pieri",
@@ -121,7 +121,7 @@ L'API contains à ce jour 3 routes différentes:
 
   - Elle répondra:
 
-    - ```
+    - ```json
       {
         "Status":true,
         "Message":"",
