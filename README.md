@@ -81,7 +81,7 @@ L'API contains à ce jour 3 routes différentes:
       - ```json
         {
           "Status": true,
-          "Message": 'The 0xa613582498eb03ca0438c8e499594d03be70db2329c96b92d57faa3350658205 diploma is definitely inscribed on Ethereum.",
+          "Message": "The 0xa613582498eb03ca0438c8e499594d03be70db2329c96b92d57faa3350658205 diploma is definitely inscribed on Ethereum.",
           "Data":
           {
             0xa613582498eb03ca0438c8e499594d03be70db2329c96b92d57faa3350658205
