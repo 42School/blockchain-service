@@ -33,10 +33,10 @@ Une nouvelle version du smart-contract à été redéployé sur Ropsten et est a
 **Petite modification importante** - Modifier le fichier `blockchain-service.env` plusieurs variables son à modifier dont la variable `FTENDPOINT` et l'url du service d'alumnisation:
 
 ```env
-FT_END_POINT="http://[ip-42]"							# By default "http://127.0.0.1:8080"
-VALIDATION_PATH="/[Path for validation]"	# By default "/check-request"
-RETRY_PATH="/[Path for retry]"						# By default "/check-request"
-TOKEN="0x..."															# By default "token"
+FT_END_POINT="http://[ip-42]".              # By default "http://127.0.0.1:8080"
+VALIDATION_PATH="/[Path for validation]"    # By default "/check-request"
+RETRY_PATH="/[Path for retry]".             # By default "/check-request"
+TOKEN="0x..."                               # By default "token"
 ```
 
 Pour lancé le projet il faut intaller `docker`
@@ -108,9 +108,9 @@ L'API contains à ce jour 3 routes différentes:
 
   - Méthode `POST`
 
-  - Le json requis pour la route `/get-diploma`.
+  - Le json requis:
 
-    - ```json
+    - ```
       {
         "first_name": "Louise",
         "last_name": "Pieri",
@@ -121,7 +121,7 @@ L'API contains à ce jour 3 routes différentes:
 
   - Elle répondra:
 
-    - ```json
+    - ```
       {
         "Status":true,
         "Message":"",
@@ -140,7 +140,7 @@ L'API contains à ce jour 3 routes différentes:
 
   - Elle répondra:
 
-    - ```json
+    - ```
       [
         {
           "Level": 2100,
