@@ -43,6 +43,7 @@ Pour lancé le projet il faut intaller `docker`
 
 ```sh
 RUN_ENV="prod" or "dev"
+COMPOSE_PROFILE="prod" or "dev"
 make install
 make run
 ```
