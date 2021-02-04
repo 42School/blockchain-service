@@ -22,6 +22,12 @@ var RetryPath string = os.Getenv("RETRY_PATH")
 var ValidationPath string = os.Getenv("VALIDATION_PATH")
 var Token string = os.Getenv("TOKEN")
 
+// Mailer Variable
+var EmailSender string = os.Getenv("SENDER_EMAIL")
+var PasswordEmail string = os.Getenv("PASSWD_EMAIL")
+var EmailHost string = os.Getenv("EMAIL_HOST")
+var ToEmail string = os.Getenv("TO_EMAIL")
+
 // Mongo Variable
 var MongoIp string = os.Getenv("MONGO_IP")
 var MongoPort string = os.Getenv("MONGO_PORT")

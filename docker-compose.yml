@@ -28,7 +28,7 @@ services:
     networks:
       - back
     env_file:
-      - blockchain-service.env
+      - config/blockchain-service.env
     environment:
       RUN_ENV: "${RUN_ENV}"
     depends_on:
@@ -46,3 +46,5 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: example
     depends_on:
       - mongo
+    profiles:
+      - dev

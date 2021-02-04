@@ -20,13 +20,13 @@ install:
 			@echo "$(YELLOW)Compiling $(NAME) in golang!$(NONE)"
 			GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o $(NAME)
 			@echo "$(GREEN)$(NAME) ready!$(NONE)"
-			docker build -f Dockerfile.app -t $(APICLIENT) .
+			docker build -f config/Dockerfile.app -t $(APICLIENT) .
 
 run:
 			docker-compose up
 
 testing:
-			docker build -f Dockerfile.server -t $(ETHSERV) .
+			docker build -f config/Dockerfile.server -t $(ETHSERV) .
 			docker run --add-host=$(ETHSERV):172.17.0.1 --name $(ETHSERV) -ti -p 9545:9545 -d $(ETHSERV)
 			$(shell sleep 10)
 			truffle test --network localhost
