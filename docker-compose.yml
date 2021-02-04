@@ -28,7 +28,7 @@ services:
     networks:
       - back
     env_file:
-      - blockchain-service.env
+      - config/blockchain-service.env
     environment:
       RUN_ENV: "${RUN_ENV}"
     depends_on:
