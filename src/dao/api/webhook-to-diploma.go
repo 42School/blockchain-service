@@ -3,8 +3,8 @@ package api
 import (
 	"encoding/json"
 	"github.com/42School/blockchain-service/src/dao/diplomas"
+	"github.com/42School/blockchain-service/src/tools"
 	"io"
-	"log"
 	"time"
 )
 
@@ -19,18 +19,18 @@ func WebhookToDiploma(body io.ReadCloser) (diplomas.Diploma, error) {
 	var newDiploma diplomas.Diploma
 	var webhookData WebhookData
 	err := json.NewDecoder(body).Decode(&webhookData)
-	log.Println("in webhook->dp:", err)
 	if err != nil {
+		tools.LogsError(err)
 		return newDiploma, err
 	}
 	level, skills, err := GetCursusUser(webhookData.AlumnizedCursusUser)
-	log.Println("in webhook->dp:", err)
 	if err != nil {
+		tools.LogsError(err)
 		return newDiploma, err
 	}
 	birthDate, err := GetBirthdate(webhookData.Login)
-	log.Println("in webhook->dp:", err)
 	if err != nil {
+		tools.LogsError(err)
 		return newDiploma, err
 	}
 	newDiploma.FirstName = webhookData.FirstName
@@ -39,6 +39,6 @@ func WebhookToDiploma(body io.ReadCloser) (diplomas.Diploma, error) {
 	newDiploma.AlumniDate = time.Now().Format("2006-01-02")
 	newDiploma.Level = level
 	newDiploma.Skills = skills
-	log.Println(newDiploma.String(), level, skills)
+	tools.LogsDev("Webhook -> Diploma: ok")
 	return newDiploma, nil
 }

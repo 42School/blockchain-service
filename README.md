@@ -56,11 +56,53 @@ L'API contains à ce jour 3 routes différentes:
 - `/create-diploma` permet de crée un nouveau diplôme dans la blockchain. ⚠️ Token requis
 
   - Méthode `POST`
+
   - Elle reçois le webhook d'alumnisation.
+
   - Elle répondra:
 
-    - Toutes les 10 minutes des requêtes confirmant les diplômes en blockchain à l'adresse `EndPoint + ValidationPath` 
-    - Toutes les 30 minutes des requêtes validant l'inscription d'un diplôme ayant échouer sont écriture à cette adresse `EndPoint + RetryPath`
+    - Toute suite sauf erreur:
+
+      - ```json
+      {
+          "Status":true,
+          "Message":"The writing in blockchain has been done, it will be confirmed in 10 min.",
+          "Data":
+          {
+            "Hash":"0xa613582498eb03ca0438c8e499594d03be70db2329c96b92d57faa3350658205",
+            "Level":0,
+            "Skills":[]
+          }
+        }
+        ```
+      
+    - Toutes les 10 mins pour confirmer l'écriture d'un diplôme à l'adresse `EndPoint + ValidationPath`, sauf erreur:
+
+      - ```json
+        {
+          'Status': true,
+          'Message': 'The 0xa613582498eb03ca0438c8e499594d03be70db2329c96b92d57faa3350658205 diploma is definitely inscribed on Ethereum.',
+          'Data':
+          {
+            0xa613582498eb03ca0438c8e499594d03be70db2329c96b92d57faa3350658205
+          }
+        }
+        ```
+
+    - Toutes les 30 mins pour valider l'inscription d'un diplôme ayant échoué la 1er fois à cette adresse `EndPoint + RetryPath`:
+
+      - ```json
+        {
+          "Status":true,
+          "Message":"The writing in blockchain has been done, it will be confirmed in 10 min.",
+          "Data":
+          {
+            "Hash":"0xa613582498eb03ca0438c8e499594d03be70db2329c96b92d57faa3350658205",
+            "Level":0,
+            "Skills":[]
+          }
+        }
+        ```
 
 - `/get-diploma`  vérifie si un diplôme existe en blockchain.
 
@@ -72,8 +114,8 @@ L'API contains à ce jour 3 routes différentes:
       {
         "first_name": "Louise",
         "last_name": "Pieri",
-        "birth_date": "1998-12-27T00:00:00Z",
-        "alumni_date": "2020-06-25T00:00:00Z"
+        "birth_date": "1998-12-27",
+        "alumni_date": "2020-06-25"
       }
       ```
 
@@ -81,8 +123,14 @@ L'API contains à ce jour 3 routes différentes:
 
     - ```json
       {
-        "Level": 21.00
-        "Skills": [14.09 10.96 9.95 9.92 9.02 7.31 7.06 6.54 5.77 5.62 3.92 2.56 2.54 2.5 2.19, ...]
+        "Status":true,
+        "Message":"",
+        "Data":
+        {
+          "Hash":"",
+          "Level":21,
+          "Skills":[21.57,21.42,21.2,21.42,6.61,4.16,9.02,9.02,9.02,3.6,2.22,5.5,1.45,4.34]
+        }
       }
       ```
 

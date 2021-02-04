@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/42School/blockchain-service/src/tools"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
 	"context"
@@ -19,6 +20,7 @@ func InitApi() error {
 	}
 	_, err := FtApi.Token(context.Background())
 	if err != nil {
+		tools.LogsError(err)
 		return err
 	}
 	return nil

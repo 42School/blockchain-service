@@ -139,6 +139,7 @@ func (_dp Diploma) EthWriting() (string, bool) {
 	tools.LogsDev("The hash of the diploma is " + newHash.String())
 	tools.LogsDev("The signature on the diploma is " + common.Bytes2Hex(sign))
 	if err != nil {
+		tools.LogsError(err)
 		return "", false
 	}
 	tx, success := contracts.CallCreateDiploma(_dp.convertDpToData(sign, newHash))
@@ -155,6 +156,7 @@ func (_dp Diploma) EthGetter() (float64, [30]float64, error) {
 	hash := crypgo.Keccak256Hash([]byte(dataToHash))
 	levelInt, skillsInt, err := contracts.CallGetDiploma(hash.Bytes())
 	if err != nil {
+		tools.LogsError(err)
 		return 0, [30]float64{}, err
 	}
 	level := float64(levelInt) / 100
@@ -166,6 +168,7 @@ func (_dp Diploma) EthGetter() (float64, [30]float64, error) {
 func EthAllGetter() []contracts.FtDiplomaDiploma {
 	diplomas, err := contracts.CallGetAllDiploma()
 	if err != nil {
+		tools.LogsError(err)
 		return nil
 	}
 	return diplomas

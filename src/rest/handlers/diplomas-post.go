@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"github.com/42School/blockchain-service/src/dao/api"
 	"github.com/42School/blockchain-service/src/tools"
-	"log"
 	"net/http"
 )
 
@@ -15,12 +14,10 @@ func CreateDiploma(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	newDiploma, err := api.WebhookToDiploma(r.Body)
-	//err := json.NewDecoder(r.Body).Decode(&newDiploma)
 	if err != nil {
 		http.Error(w, "Fail Unmarshalling json", http.StatusBadRequest)
 		return
 	}
-	log.Println("In post http: ", newDiploma.String())
 	if newDiploma.CheckDiploma() == false {
 		http.Error(w, "The data sent are not valid, to be written in blockchain please try again !", http.StatusBadRequest)
 		return
