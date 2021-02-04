@@ -1,4 +1,4 @@
 node_modules/
 build/
 .idea/**
-#config/blockchain-service.env
+config/blockchain-service.env
