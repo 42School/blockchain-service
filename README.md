@@ -25,7 +25,6 @@ Une nouvelle version du smart-contract à été redéployé sur Ropsten et est a
 - [Installation](#installation)
 - [Route de l'api](#route-de-lapi)
 - [Makefile](#makefile)
-- [Nouvelle Feature](#nouvelle-feature)
 - [Configuration](#configuration)
 
 ## Installation
@@ -187,14 +186,6 @@ docker-rm: Supprime les images docker des dockerfiles
 docker-remake: Lance docker-stop & docker-rm & run
 re: Lance docker-stop & docker-rm & all
 ```
-
-## Nouvelle Feature
-
-Voici les nouvelles features pour la v2.3:
-
-- Lis la `Webhook d'alumnisation`
-- Récupère les données manquantes sur l'api de 42 (Birthdate, Level & Skills)
-- Update des modules Golang
 
 ## Configuration
 
