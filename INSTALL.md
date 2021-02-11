@@ -62,7 +62,7 @@ A Keystore is a file containing an encrypted eth account.
 
 We need at least 4 keystore files, 1 to certify diplomas and 3 others to write in the blockchain.
 
-⚠️   **Be careful, you must never lose the file that allows you to sign the diplomas. **  ⚠️
+⚠️  **Be careful, you must never lose the file that allows you to sign the diplomas.**  ⚠️
 
 ### Creation of a Keystore file
 
