@@ -4,12 +4,12 @@
 
 ## Sommaire
 
-- [Requirement](https://github.com/42School/blockchain-service/blob/f23156fafcfa64d074ad0bd41d17e1db5f9d0dd5/INSTALL.md#requirement)
-- [Keystore](https://github.com/42School/blockchain-service/blob/f23156fafcfa64d074ad0bd41d17e1db5f9d0dd5/INSTALL.md#keystore)
-- [Purchase of Ethereum](https://github.com/42School/blockchain-service/blob/f23156fafcfa64d074ad0bd41d17e1db5f9d0dd5/INSTALL.md#purchase-of-ethereum)
-- [Deployment on Ethereum](https://github.com/42School/blockchain-service/blob/f23156fafcfa64d074ad0bd41d17e1db5f9d0dd5/INSTALL.md#deploye-on-ethereum)
-- [Environment](https://github.com/42School/blockchain-service/blob/f23156fafcfa64d074ad0bd41d17e1db5f9d0dd5/INSTALL.md#environment)
-- [Run](https://github.com/42School/blockchain-service/blob/f23156fafcfa64d074ad0bd41d17e1db5f9d0dd5/INSTALL.md#run)
+- [Requirement](#requirement)
+- [Keystore](#keystore)
+- [Purchase of Ethereum](#purchase-of-ethereum)
+- [Deployment on Ethereum](#deploye-on-ethereum)
+- [Environment](#environment)
+- [Run](#run)
 
 ## Requirement
 
