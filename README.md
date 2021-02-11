@@ -33,8 +33,8 @@ La branche dev en cours est [dev/go/eth](https://github.com/42School/blockchain-
 ### [Configurer l'env](INSTALL.md#environment)
 
 ```sh
-RUN_ENV="prod" or "dev"
-COMPOSE_PROFILE="prod" or "dev"
+RUN_ENV="prod" # or "dev"
+COMPOSE_PROFILE="prod" # or "dev"
 make install
 make run
 ```
