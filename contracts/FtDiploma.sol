@@ -10,7 +10,7 @@ contract	FtDiploma {
 	string public constant name = "42 Alumni";
 	string public constant symbol = "42A";
 	string public constant linkOfRepo = "github.com/42School/blockchain-service";
-	address public constant ftPubAddress = 0x7e12234E994384A757E2689aDdB2A463ccD3B47d;
+	address public constant ftPubAddress = ;
 
 	event Publish42Diploma(address ftPubAddress, string _link);
 	event CreateDiploma(bytes32 student);
