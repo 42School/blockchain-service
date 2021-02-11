@@ -1,5 +1,5 @@
 
-#  Blockchain-Service
+#  Blockchain-Service - Readme
 
 <p align="center">
   <a href="https://github.com/42School/blockchain-service/releases"><img alt="GitHub release" src="https://img.shields.io/github/v/release/42School/blockchain-service" /></a>
