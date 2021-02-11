@@ -2,7 +2,14 @@
 
 ---
 
-[TOC]
+## Sommaire
+
+- [Requirement](https://github.com/42School/blockchain-service/blob/f23156fafcfa64d074ad0bd41d17e1db5f9d0dd5/INSTALL.md#requirement)
+- [Keystore](https://github.com/42School/blockchain-service/blob/f23156fafcfa64d074ad0bd41d17e1db5f9d0dd5/INSTALL.md#keystore)
+- [Purchase of Ethereum](https://github.com/42School/blockchain-service/blob/f23156fafcfa64d074ad0bd41d17e1db5f9d0dd5/INSTALL.md#purchase-of-ethereum)
+- [Deployment on Ethereum](https://github.com/42School/blockchain-service/blob/f23156fafcfa64d074ad0bd41d17e1db5f9d0dd5/INSTALL.md#deploye-on-ethereum)
+- [Environment](https://github.com/42School/blockchain-service/blob/f23156fafcfa64d074ad0bd41d17e1db5f9d0dd5/INSTALL.md#environment)
+- [Run](https://github.com/42School/blockchain-service/blob/f23156fafcfa64d074ad0bd41d17e1db5f9d0dd5/INSTALL.md#run)
 
 ## Requirement
 
@@ -209,10 +216,43 @@ Enter the transaction hash in [Etherscan](https://etherscan.io) and check the st
 
 ```shell
 ~ vi blockchain-service/config/blockchain-service.env
-CONTRACT_ADDRESS="0x29A5C09219A5c71A81d26922D708E472677F4548"
+CONTRACT_ADDRESS="[contract-address]"
 ```
 
 ## Environment
 
+Change the last environment variables.
+
+```shell
+~ vi blockchain-service/config/blockchain-service.env
+# Endpoint of 42 intra
+FT_END_POINT="http://127.0.0.1:8080"
+RETRY_PATH="/check-request"
+VALIDATION_PATH="/check-request"
+TOKEN="token"
+APP_CLIENT_ID=""
+APP_CLIENT_SECRET=""
+
+# Email Variable
+SENDER_EMAIL="emailSender"
+PASSWD_EMAIL="password"
+EMAIL_HOST="smtp.gmail.com"
+TO_EMAIL="bocal@42.fr"
+
+# Mongo Variable
+MONGO_IP="mongo"
+MONGO_PORT="27017"
+MONGO_USER="root"
+MONGO_PASSWD="example"
+```
+
 ## Run
+
+```shell
+~ vi blockchain-service/.env
+RUN_ENV="prod" # or "dev"
+COMPOSE_PROFILE="prod" # or "dev"
+~ make install
+~ make run
+```
 
