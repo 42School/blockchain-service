@@ -18,7 +18,7 @@ La branche dev en cours est [dev/go/eth](https://github.com/42School/blockchain-
 
 Si vous trouvez des bugs sur cette version n'hésitez pas à faire une `issue`
 
-Une nouvelle version du smart-contract à été redéployé sur Ropsten et est accessible à cette [adresse](https://ropsten.etherscan.io/address/0x29a5c09219a5c71a81d26922d708e472677f4548) `0x29a5c09219a5c71a81d26922d708e472677f4548`, l'ancienne version de test se trouve à l'adresse suivante `0x7dd6b2e41C3F07f16785c943B1eF6ad6eB2e34D1`
+Une nouvelle version du smart-contract à été redéployé sur Ropsten et est accessible à cette [adresse](https://ropsten.etherscan.io/address/0x29a5c09219a5c71a81d26922d708e472677f4548) `0x29a5c09219a5c71a81d26922d708e472677f4548`
 
 ## Sommaire
 
@@ -28,7 +28,7 @@ Une nouvelle version du smart-contract à été redéployé sur Ropsten et est a
 
 ## Installation
 
-## [Guide d'installation](INSTALL.md)
+### [Guide d'installation](INSTALL.md)
 
 **Petite modification importante** - Modifier le fichier `blockchain-service.env` plusieurs variables son à modifier dont la variable `FTENDPOINT` et l'url du service d'alumnisation:
 

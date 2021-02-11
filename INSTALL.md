@@ -2,14 +2,7 @@
 
 ---
 
-## Sommaire
-
-- [Requirement](#requirement)
-- [Keystore](#keystore)
-- [Purchase of Ethereum](#purchase-of-ethereum)
-- [Deployment on Ethereum](#deploye-on-ethereum)
-- [Environment](#environment)
-- [Run](#run)
+[TOC]
 
 ## Requirement
 
@@ -174,6 +167,50 @@ Enter the transaction hash in `etherscan` and check the status of the transactio
 - [Etherscan](https://etherscan.io)
 
 ## Deployment on Ethereum
+
+### Requirement
+
+- [Remix](https://remix.ethereum.org/)
+- [MetaMask](https://metamask.io/)
+
+### Step 1 - Copy the smart-contract in Remix
+
+<h3 align="center">
+<img src="assets/contract-in-remix.png" alt="Screen of smart-contract in remix"/>
+</h3>
+
+### Step 2 - Compile the smart-contract in Remix
+
+<h3 align="center">
+<img src="assets/compile-in-remix.png" alt="Screen of compilation in remix"/>
+</h3>
+
+### Step 3 - Import 1 Keystore in Metamask
+
+<h3 align="center">
+<img src="assets/import-metamask-0.png" alt="Screen of steps of import keystore in metamask 1"  width="300"/>
+<img src="assets/import-metamask-1.png" alt="Screen of steps of import keystore in metamask 2"  width="300"/>
+<img src="assets/import-metamask-2.png" alt="Screen of steps of import keystore in metamask 3"  width="300"/>
+</h3>
+
+### Step 4 -  Deploy the smart-contract
+
+<h3 align="center">
+<img src="assets/deploy-in-remix-0.png" alt="Screen of deployement with remix 1"  width="300"/>
+<img src="assets/deploy-in-remix-1.png" alt="Screen of deployement with remix 2"  width="300"/>
+<img src="assets/deploy-in-remix-2.png" alt="Screen of deployement with remix 3"  width="300"/>
+</h3>
+
+### Step 5 - Verify with EtherScan
+
+Enter the transaction hash in [Etherscan](https://etherscan.io) and check the status of the transaction.
+
+### Step 6 - Adding address of contract in env
+
+```shell
+~ vi blockchain-service/config/blockchain-service.env
+CONTRACT_ADDRESS="0x29A5C09219A5c71A81d26922D708E472677F4548"
+```
 
 ## Environment
 
