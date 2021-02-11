@@ -46,7 +46,110 @@ go version go1.15.8 linux/amd64
 0.8.0+commit.c7dfd78e.Emscripten.clang
 ```
 
+### MacOS
+
+```shell
+~ brew tap ethereum/ethereum
+~ brew install ethereum
+~ brew install golang
+~ brew install nodejs
+~ npm intall -g solc
+```
+
 ## Keystore
+
+A Keystore is a file containing an encrypted eth account.
+
+We need at least 4 keystore files, 1 to certify diplomas and 3 others to write in the blockchain.
+
+⚠️   **Be careful, you must never lose the file that allows you to sign the diplomas. **  ⚠️
+
+### Creation of a Keystore file
+
+```shell
+~ geth account new
+INFO [07-16|15:51:50.836] Maximum peer count                       ETH=50 LES=0 total=50
+Your new account is locked with a password. Please give a password. Do not forget this password.
+Password: [password]
+Repeat password: [password]
+
+Your new key was generated
+
+Public address of the key:   [public address]
+Path of the secret key file: ~/Library/Ethereum/keystore/[Nom du fichier]
+
+- You can share your public address with anyone. Others need it to interact with you.
+- You must NEVER share the secret key with anyone! The key controls access to your funds!
+- You must BACKUP your key file! Without the key, it's impossible to access account funds!
+- You must REMEMBER your password! Without the password, it's impossible to decrypt the key!
+```
+
+### Keystore to certify diplomas
+
+#### Step 1 - Creates a keystore file
+
+#### Step 2 - Retrieve the `public address` of the created account.
+
+#### Step 3 - Modify the variable `ftPubAddress` in the smart contract.
+
+```js
+pragma solidity >=0.8.0;
+
+contract	FtDiploma {
+
+	string public constant name = "42 Alumni";
+	string public constant symbol = "42A";
+	string public constant linkOfRepo = "github.com/42School/blockchain-service";
+	address public constant ftPubAddress = [public address]
+
+  [...]
+}
+```
+
+#### Step 4 - Compile the contract.
+
+```shell
+~ make update-contract
+```
+
+#### Step 5 - Adding the file in the repo and the env
+
+```shell
+~ mdkir blockchain-service/config/keystore-sign
+~ mv [filename] blockchain-service/config/keystore-sign
+~ vi blockchain-service/config/blockchain-service.env
+KEY_PASSWD="[password of keystore]"
+KEYSTORE_PATH_SIGN="/blockchain-service/config/keystore-sign"
+```
+
+### Keystore to write in Ethereum
+
+#### Step 1 - Creates a keystores files (minimum 3)
+
+#### Step 2 - Creation of the `accounts.csv` file
+
+```shell
+~ touch blockchain-service/config/accounts.csv
+```
+
+```csv
+# file name, password
+[filename], [password of keystore]
+[filename], [password of keystore]
+[filename], [password of keystore]
+```
+
+#### Step 3 - Adding the file in the repo and the env
+
+```shell
+~ mkdir blockchain-service/config/keystore
+~ mv [filename] blockchain-service/config/keystore
+~ mv [filename] blockchain-service/config/keystore
+~ mv [filename] blockchain-service/config/keystore
+~ vi blockchain-service/config/blockchain-service.env
+KEYSTORE_PATH="blockchain-service/config/keystore"
+ACCOUNTS_FILE="blockchain-service/config/accounts.csv"
+```
 
 ## Purchase of Ethereum
 

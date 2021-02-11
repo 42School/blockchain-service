@@ -25,9 +25,10 @@ Une nouvelle version du smart-contract à été redéployé sur Ropsten et est a
 - [Installation](#installation)
 - [Route de l'api](#route-de-lapi)
 - [Makefile](#makefile)
-- [Configuration](#configuration)
 
 ## Installation
+
+## [Guide d'installation](INSTALL.md)
 
 **Petite modification importante** - Modifier le fichier `blockchain-service.env` plusieurs variables son à modifier dont la variable `FTENDPOINT` et l'url du service d'alumnisation:
 
@@ -187,81 +188,4 @@ docker-remake: Lance docker-stop & docker-rm & run
 re: Lance docker-stop & docker-rm & all
 ```
 
-## Configuration
 
-### Roulement de compte ETH
-
-Pour configurer le roulement des comptes Ethereum qui vont écrire sur la blockchain, vous devez créer un fichier csv tel quel:
-
-```csv
-#file name, password
-UTC--2020-07-24T08-19-17.983576000Z--cac03bac6965e6d8ca96537a0344cc506b32c2c7, password
-UTC--2020-07-24T08-24-31.985849000Z--fe5ac6a7bb66da6916becb74a4a3e00074cd2599, password
-UTC--2020-07-24T08-25-31.194883000Z--aec7bdfb241e56c04acf5e1a2a49f147867b85b7, password
-```
-
-Puis ajouté dans l'env le path du dossier contenant les fichiers keystore:
-
-```dockerfile
-ENV KEYSTOREPATH="/blockchain-service/keystore"
-```
-
-Pour les tests un fichier est fournis `accounts.csv` ainsi qu'un dossier `./keystore`.
-
-### Compte Officiel de 42 
-
-Pour configurer le compte qui va signer les diplômes vous devez créer un fichier `keystore` qui sera stocker un dossier à part du dossier pour le roulement, puis enregistrer son `path` dans l`env:
-
-```dockerfile
-ENV KEYSTOREPATHSIGN="/blockchain-service/keystore-sign"
-```
-
-Pour les tests un dossier ainsi qu'un fichier keystore sont fournis
-
-### Création d'un fichier Keystore
-
-Le fichier keystore est un fichier contenant votre compte eth chiffré.
-
-Ce fichier est utilisé dans le code pour signer les diplômes. Il a pour but à terme d'être l'adresse officielle avec laquelle 42 signe les diplômes.
-
-Pour créer un fichier keystore, il faut exécuter la commande `geth account new`
-
-```sh
-~ geth account new
-INFO [07-16|15:51:50.836] Maximum peer count                       ETH=50 LES=0 total=50
-Your new account is locked with a password. Please give a password. Do not forget this password.
-Password: [password]
-Repeat password: [password]
-
-Your new key was generated
-
-Public address of the key:   [public address]
-Path of the secret key file: ~/Library/Ethereum/keystore/[Nom du fichier]
-
-- You can share your public address with anyone. Others need it to interact with you.
-- You must NEVER share the secret key with anyone! The key controls access to your funds!
-- You must BACKUP your key file! Without the key, it's impossible to access account funds!
-- You must REMEMBER your password! Without the password, it's impossible to decrypt the key!
-```
-
-#### Exemple
-
-L'adresse publique renvoyée par la commande **doit être impérativement écrite dans le smart-contract** sinon des erreurs auronts lieu.
-
-Par exemple l'adresse publique renvoyée par `geth account new` est `0x7e12234E994384A757E2689aDdB2A463ccD3B47d`, elle devra être assigné à la variable `ftPubAddress` du contract, comme ici:
-
-```js
-pragma solidity >=0.8.0;
-
-contract	FtDiploma {
-
-	string public constant name = "42 Alumni";
-	string public constant symbol = "42A";
-	string public constant linkOfRepo = "github.com/42School/blockchain-service";
-	address public constant ftPubAddress = 0x7e12234E994384A757E2689aDdB2A463ccD3B47d;
-
-  [...]
-}
-```
-
-Un fichier keystore est fournie par défaut `UTC--2020-07-16T13-52-10.535505000Z--7e12234e994384a757e2689addb2a463ccd3b47d` dont le mot de passe est `password` il sert **uniquement** à faire des tests et n'as pas vocation à aller en production.
