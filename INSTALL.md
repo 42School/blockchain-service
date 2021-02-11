@@ -153,6 +153,26 @@ ACCOUNTS_FILE="blockchain-service/config/accounts.csv"
 
 ## Purchase of Ethereum
 
+### Step 1 - Buy Ethereum
+
+#### Website
+
+- [Coinbase](https://www.coinbase.com/)
+- [Binance](https://www.binance.com)
+
+#### Application
+
+- [Ledger Live](https://www.ledger.com/ledger-live)
+- [MetaMask](https://metamask.io/)
+
+### Step 2 - Transfer the Eth on the keystores
+
+#### How to verify ?
+
+Enter the transaction hash in `etherscan` and check the status of the transaction.
+
+- [Etherscan](https://etherscan.io)
+
 ## Deployment on Ethereum
 
 ## Environment
