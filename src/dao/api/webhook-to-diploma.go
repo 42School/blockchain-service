@@ -12,6 +12,7 @@ type WebhookData struct {
 	Login				string	`json:"login"`
 	FirstName			string	`json:"first_name"`
 	LastName			string	`json:"last_name"`
+	BirthDate			string	`json:"birth_date"`
 	AlumnizedCursusUser	int		`json:"alumnized_cursus_user"`
 }
 
@@ -28,17 +29,13 @@ func WebhookToDiploma(body io.ReadCloser) (diplomas.Diploma, error) {
 		tools.LogsError(err)
 		return newDiploma, err
 	}
-	birthDate, err := GetBirthdate(webhookData.Login)
-	if err != nil {
-		tools.LogsError(err)
-		return newDiploma, err
-	}
 	newDiploma.FirstName = webhookData.FirstName
 	newDiploma.LastName = webhookData.LastName
-	newDiploma.BirthDate = birthDate
+	newDiploma.BirthDate = webhookData.BirthDate
 	newDiploma.AlumniDate = time.Now().Format("2006-01-02")
 	newDiploma.Level = level
 	newDiploma.Skills = skills
+	tools.LogsDev(newDiploma.String())
 	tools.LogsDev("Webhook -> Diploma: ok")
 	return newDiploma, nil
 }
