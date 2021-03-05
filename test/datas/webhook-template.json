@@ -16,8 +16,11 @@
 		"pool_year": "2016",
 		"location": null,
 		"wallet": 460,
-		"candidature_email": "email@gmail.com",
-		"alumnized_cursus_user": 96437
+		"created_at": "2016-07-19T15:43:15.282Z",
+		"updated_at": "2021-02-26T13:12:20.501Z",
+		"candidature_email": "labourier.charles@gmail.com",
+		"alumnized_cursus_user": 96437,
+		"birth_date": "1999-10-24"
 	},
 	{
 		"id": 27035,
@@ -29,7 +32,6 @@
 		"url": "https://api.intra.42.fr/v2/users/cpieri",
 		"phone": "hidden",
 		"displayname": "Louise Pieri",
-		"usual_full_name": "Louise Pieri",
 		"image_url": "https://cdn.intra.42.fr/users/cpieri.jpg",
 		"staff?": false,
 		"correction_point": 15,
@@ -37,7 +39,10 @@
 		"pool_year": "2017",
 		"location": null,
 		"wallet": 641,
+		"created_at": "2016-07-19T15:43:15.282Z",
+		"updated_at": "2021-02-26T13:12:20.501Z",
 		"candidature_email": "email@gmail.com",
-		"alumnized_cursus_user": 96446
+		"alumnized_cursus_user": 96446,
+		"birth_date": "1998-12-27"
 	}
 ]
