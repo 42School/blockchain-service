@@ -32,23 +32,37 @@ func connectEthGetInstance() (*Diploma, *ethclient.Client, error) {
 }
 
 func getAuth() (*bind.TransactOpts, error) {
+	//ethclient.NewClient(rpc.Dial(rpc.DialIPC()))
 	client, err := ethclient.Dial(tools.NetworkLink)
 	if err != nil {
+		tools.LogsMsg("Dial")
 		return nil, err
 	}
 	address, privateKey, err := account.GetWriterAccount()
 	if err != nil {
+		tools.LogsMsg("GetWriterAccount")
+		return nil, err
+	}
+	chainID, err := client.ChainID(context.Background())
+	if err != nil {
+		tools.LogsMsg("ChainID")
 		return nil, err
 	}
 	nonce, err := client.PendingNonceAt(context.Background(), address)
 	if err != nil  {
+		tools.LogsMsg("PendingNonceAt")
 		return nil, err
 	}
 	gasPrice, err := client.SuggestGasPrice(context.Background())
 	if err != nil {
+		tools.LogsMsg("SuggestGasPrice")
 		return nil, err
 	}
-	auth := bind.NewKeyedTransactor(privateKey)
+	auth, err := bind.NewKeyedTransactorWithChainID(privateKey, chainID)
+	if err != nil {
+		tools.LogsMsg("NewKeyedTransactorWithChainID")
+		return nil, err
+	}
 	auth.Nonce = big.NewInt(int64(nonce))
 	auth.Value = big.NewInt(0)
 	auth.GasLimit = uint64(604758)
@@ -131,16 +145,19 @@ func CheckSecurity(client *ethclient.Client, tx *types.Transaction, hash []byte)
 func CallCreateDiploma(level uint64, skills [30]uint64, v uint8, r [32]byte, s [32]byte, hash [32]byte) (*types.Transaction, bool) {
 	instance, _, err := connectEthGetInstance()
 	if err != nil {
+		tools.LogsMsg("Instance")
 		tools.LogsError(err)
 		return nil, false
 	}
 	auth, err := getAuth()
 	if err != nil {
+		tools.LogsMsg("Auth")
 		tools.LogsError(err)
 		return nil, false
 	}
 	tx, err := instance.CreateDiploma(auth, level, skills, v, r, s, hash)
 	if err != nil {
+		tools.LogsMsg("Write")
 		tools.LogsError(err)
 		if strings.Contains(err.Error(), "insufficient funds for gas * price + value") {
 			account.ChangeAccount()
