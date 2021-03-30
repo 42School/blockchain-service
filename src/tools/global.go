@@ -37,8 +37,6 @@ var MongoPasswd string = os.Getenv("MONGO_PASSWD")
 // Other Variable
 var Env string = os.Getenv("RUN_ENV")
 
-var SecuritySystem bool = false
-
 var RetryQueue *list.List = list.New()
 var ToCheckHash *list.List = list.New()
 

@@ -133,8 +133,6 @@ func CheckSecurity(client *ethclient.Client, tx *types.Transaction, hash []byte)
 			}
 			if common.Bytes2Hex(hash[:]) != common.Bytes2Hex(eventHash[:]) {
 				tools.LogsMsg("Error: The hash writing in blockchain is not the same of this student !")
-				tools.SendMail("Security Alert", "")
-				tools.SecuritySystem = true
 				return false
 			}
 		}

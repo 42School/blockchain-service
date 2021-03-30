@@ -22,11 +22,6 @@ func CreateDiploma(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "The data sent are not valid, to be written in blockchain please try again !", http.StatusBadRequest)
 		return
 	}
-	if tools.SecuritySystem {
-		newDiploma.AddToRetry()
-		http.Error(w, "The security system is activated, the request has just been queued.", http.StatusInternalServerError)
-		return
-	}
 	tools.LogsDev("Received request to write the " + newDiploma.FirstName + " " + newDiploma.LastName + " diploma.")
 	hash, bool := newDiploma.EthWriting()
 	if bool == false {
