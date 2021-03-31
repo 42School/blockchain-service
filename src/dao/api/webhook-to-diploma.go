@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/42School/blockchain-service/src/dao/diplomas"
 	"github.com/42School/blockchain-service/src/tools"
+	log "github.com/sirupsen/logrus"
 	"io"
 	"time"
 )
@@ -35,7 +36,6 @@ func WebhookToDiploma(body io.ReadCloser) (diplomas.Diploma, error) {
 	newDiploma.AlumniDate = time.Now().Format("2006-01-02")
 	newDiploma.Level = level
 	newDiploma.Skills = skills
-	tools.LogsDev(newDiploma.String())
-	tools.LogsDev("Webhook -> Diploma: ok")
+	log.WithFields(newDiploma.LogFields()).Debug("Webhook to Diploma success")
 	return newDiploma, nil
 }

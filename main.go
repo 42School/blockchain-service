@@ -10,9 +10,22 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
+	"os"
 )
+
+func init()  {
+	// Log as JSON instead of the default ASCII formatter.
+	log.SetFormatter(&log.TextFormatter{ForceColors: true, TimestampFormat : "2006-01-02 15:04:05", FullTimestamp:true, PadLevelText: true})
+
+	// Output to stdout instead of the default stderr
+	// Can be any io.Writer, see below for File example
+	log.SetOutput(os.Stdout)
+	if tools.Env == "dev" || tools.Env == "DEV" || tools.Env == "Dev" {
+		log.SetLevel(log.DebugLevel)
+	}
+}
 
 func MongoStart() error {
 	url := "mongodb://" + tools.MongoIp + ":" + tools.MongoPort
@@ -36,20 +49,24 @@ func MongoStart() error {
 func main() {
 	go async.ValideHash()
 	go async.RetryDiploma()
-	go async.ReadStdin()
 	err := MongoStart()
 	if err != nil {
-		tools.LogsError(err)
+		log.WithError(err).Fatal("Mongo Connection Failed.")
 		return
 	}
 	err = api.InitApi()
 	if err != nil {
-		tools.LogsError(err)
+		log.WithError(err).Fatal("Intra.42 API Connection Failed.")
 		return
 	}
 	async.RestoreQueue()
 	account.CreateAccountsManager()
 	router := rest.InitRouter()
-	tools.LogsMsg("Blockchain Service is running !")
-	log.Fatal(http.ListenAndServe(":8080", router))
+	log.Info("Blockchain Service is running !")
+	err = http.ListenAndServe(":8080", router)
+	if err != nil {
+		log.WithError(err).Fatal("HTTP Server doesn't running.")
+	}
+
+
 }

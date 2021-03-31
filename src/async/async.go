@@ -7,6 +7,7 @@ import (
 	"github.com/42School/blockchain-service/src/tools"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/ethclient"
+	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"net/http"
 	"strings"
@@ -67,7 +68,7 @@ func RetryDiploma () {
 		for e := copyList.Front(); e != nil; {
 			if e != nil {
 				diploma, _ := e.Value.(diplomas.Diploma)
-				tools.LogsDev("Retry the diploma: " + diploma.String())
+				log.WithFields(diploma.LogFields()).Debug("Try to retry a diploma")
 				hash, bool := diploma.EthWriting()
 				if bool == true {
 					data := "{'Status':true,'Message':'The writing in blockchain has been done, it will be confirmed in 10 min.','Data':{'Hash': " + hash + ",'Level':0,'Skills':[]}}"

@@ -11,7 +11,7 @@ import (
 	crypgo "github.com/ethereum/go-ethereum/crypto"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
-	"log"
+	log "github.com/sirupsen/logrus"
 )
 
 type Diploma struct {
@@ -59,7 +59,7 @@ func addToCheck(toAdd VerificationHash) {
 	result := tools.ToCheckDB.FindOne(context.TODO(), bson.M{"studenthash": toAdd.StudentHash})
 	err := result.Decode(&checkDB)
 	if hexutil.Encode(checkDB.StudentHash) == hexutil.Encode(toAdd.StudentHash) || err == nil {
-		tools.LogsDev("Verification Hash already in DB Queue: " + hexutil.Encode(toAdd.StudentHash))
+		log.WithFields(log.Fields{"hash": hexutil.Encode(toAdd.StudentHash)}).Debug("The verification hash already exist in the CheckDB")
 		return
 	}
 	tools.ToCheckHash.PushBack(toAdd)
@@ -93,15 +93,20 @@ func (_dp Diploma) String() string {
 	return str
 }
 
+func (_dp Diploma) LogFields() log.Fields {
+	return log.Fields{"first_name": _dp.FirstName, "last_name": _dp.LastName, "birth_date": _dp.BirthDate, "alumni_date": _dp.AlumniDate}
+}
+
 func (_dp Diploma) AddToRetry() {
 	copyList := tools.RetryQueue
 	for e := copyList.Front(); e != nil; e = e.Next() {
 		if e != nil {
 			diploma, _ := e.Value.(Diploma)
-			tools.LogsDev("Diploma in list: " + diploma.String())
-			tools.LogsDev("Diploma to find: " + _dp.String())
+
+			log.WithFields(diploma.LogFields()).Debug("Diploma in the retry queue")
+			log.WithFields(_dp.LogFields()).Debug("Diploma to find in the retry queue")
 			if diploma.String() == _dp.String() {
-				tools.LogsDev("Match diploma in list & to find")
+				log.Debug("Matching diploma in the queue & to find")
 				return
 			}
 		}
@@ -110,13 +115,13 @@ func (_dp Diploma) AddToRetry() {
 	result := tools.RetryDB.FindOne(context.TODO(), bson.M{"firstname": _dp.FirstName, "lastname": _dp.LastName, "birthdate": _dp.BirthDate, "alumnidate": _dp.AlumniDate})
 	err := result.Decode(&DpDB)
 	if DpDB.String() == _dp.String() || err == nil {
-		tools.LogsDev("Diploma already in DB Queue: " + _dp.String())
+		log.WithFields(_dp.LogFields()).Debug("Diploma already exist in Retry DB Queue")
 		return
 	}
-	tools.LogsDev("Adding diploma in Queue: " + _dp.String())
 	_dp.Id = uuid.New()
 	tools.RetryDB.InsertOne(context.TODO(), _dp)
 	tools.RetryQueue.PushBack(_dp)
+	log.WithFields(_dp.LogFields()).Debug("Adding diploma in the retry queue & retry db")
 }
 
 func (_dp Diploma) convertDpToData(_sign []byte, _hash common.Hash) (uint64, [30]uint64, uint8, [32]byte, [32]byte, [32]byte) {
@@ -136,8 +141,7 @@ func (_dp Diploma) EthWriting() (string, bool) {
 	dataToHash := _dp.FirstName + ", " + _dp.LastName + ", " + _dp.BirthDate + ", " + _dp.AlumniDate
 	newHash := crypgo.Keccak256Hash([]byte(dataToHash))
 	sign, err := account.KeyStore.SignHashWithPassphrase(account.GetSignAccount(), tools.PasswordAccount, newHash.Bytes())
-	tools.LogsDev("The hash of the diploma is " + newHash.String())
-	tools.LogsDev("The signature on the diploma is " + common.Bytes2Hex(sign))
+	log.WithFields(log.Fields{"hash": newHash.String(), "sign": common.Bytes2Hex(sign)}).Debug("The hash & signature of the diploma")
 	if err != nil {
 		tools.LogsError(err)
 		return "", false
@@ -147,6 +151,7 @@ func (_dp Diploma) EthWriting() (string, bool) {
 		_dp.AddToRetry()
 		return "", false
 	}
+	log.WithFields(log.Fields{"hash": newHash.String(), "tx": tx.Hash().String()}).Info("Diploma submit in transaction.")
 	addToCheck(VerificationHash{Tx: tx, StudentHash: newHash.Bytes()})
 	return newHash.Hex(), true
 }

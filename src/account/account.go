@@ -8,6 +8,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"strings"
 )
@@ -57,7 +58,7 @@ func GetWriterAccount() (common.Address, *ecdsa.PrivateKey, error) {
 	if errDecrypt != nil {
 		return common.Address{}, nil, errDecrypt
 	}
-	tools.LogsDev("private key writer: " + hexutil.Encode(crypto.FromECDSA(key.PrivateKey)))
+	log.WithFields(log.Fields{"private_key": hexutil.Encode(crypto.FromECDSA(key.PrivateKey))}).Debug("The private key of the wallet writer")
 	return key.Address, key.PrivateKey, nil
 }
 

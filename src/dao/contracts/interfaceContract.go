@@ -12,7 +12,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"strings"
 
 	"math/big"
@@ -35,32 +35,32 @@ func getAuth() (*bind.TransactOpts, error) {
 	//ethclient.NewClient(rpc.Dial(rpc.DialIPC()))
 	client, err := ethclient.Dial(tools.NetworkLink)
 	if err != nil {
-		tools.LogsMsg("Dial")
+		log.Debug("Dial")
 		return nil, err
 	}
 	address, privateKey, err := account.GetWriterAccount()
 	if err != nil {
-		tools.LogsMsg("GetWriterAccount")
+		log.Debug("GetWriterAccount")
 		return nil, err
 	}
 	chainID, err := client.ChainID(context.Background())
 	if err != nil {
-		tools.LogsMsg("ChainID")
+		log.Debug("ChainID")
 		return nil, err
 	}
 	nonce, err := client.PendingNonceAt(context.Background(), address)
 	if err != nil  {
-		tools.LogsMsg("PendingNonceAt")
+		log.Debug("PendingNonceAt")
 		return nil, err
 	}
 	gasPrice, err := client.SuggestGasPrice(context.Background())
 	if err != nil {
-		tools.LogsMsg("SuggestGasPrice")
+		log.Debug("SuggestGasPrice")
 		return nil, err
 	}
 	auth, err := bind.NewKeyedTransactorWithChainID(privateKey, chainID)
 	if err != nil {
-		tools.LogsMsg("NewKeyedTransactorWithChainID")
+		log.Debug("NewKeyedTransactorWithChainID")
 		return nil, err
 	}
 	auth.Nonce = big.NewInt(int64(nonce))
@@ -132,7 +132,7 @@ func CheckSecurity(client *ethclient.Client, tx *types.Transaction, hash []byte)
 				return true
 			}
 			if common.Bytes2Hex(hash[:]) != common.Bytes2Hex(eventHash[:]) {
-				tools.LogsMsg("Error: The hash writing in blockchain is not the same of this student !")
+				log.Panic("Error: The hash writing in blockchain is not the same of this student !")
 				return false
 			}
 		}
@@ -143,26 +143,26 @@ func CheckSecurity(client *ethclient.Client, tx *types.Transaction, hash []byte)
 func CallCreateDiploma(level uint64, skills [30]uint64, v uint8, r [32]byte, s [32]byte, hash [32]byte) (*types.Transaction, bool) {
 	instance, _, err := connectEthGetInstance()
 	if err != nil {
-		tools.LogsMsg("Instance")
+		log.Debug("Instance")
 		tools.LogsError(err)
 		return nil, false
 	}
 	auth, err := getAuth()
 	if err != nil {
-		tools.LogsMsg("Auth")
+		log.Debug("Auth")
 		tools.LogsError(err)
 		return nil, false
 	}
 	tx, err := instance.CreateDiploma(auth, level, skills, v, r, s, hash)
 	if err != nil {
-		tools.LogsMsg("Write")
+		log.Debug("Write")
 		tools.LogsError(err)
 		if strings.Contains(err.Error(), "insufficient funds for gas * price + value") {
 			account.ChangeAccount()
 		}
 		return nil, false
 	}
-	tools.LogsDev("Transation Hash: " + tx.Hash().Hex())
+	log.WithFields(log.Fields{"tx_hash": tx.Hash().Hex()}).Debug("Transaction Hash")
 	return tx, true
 }
 

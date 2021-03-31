@@ -1,7 +1,7 @@
 package tools
 
 import (
-	"log"
+	log "github.com/sirupsen/logrus"
 	"runtime"
 )
 
@@ -23,18 +23,8 @@ func getFrame(skipFrames int) runtime.Frame {
 	return frame
 }
 
-func LogsDev(msg string) {
-	if Env == "dev" || Env == "DEV" || Env == "Dev" {
-		log.Println("Developper mode:", msg)
-	}
-}
-
 func LogsError(_err error) {
 	caller := getFrame(2).Function[39:]
-	string := "Error - " + caller + ":"
-	log.Println(string, _err)
-}
-
-func LogsMsg(msg string) {
-	log.Println(msg)
+	string := "In the function: " + caller
+	log.WithError(_err).Error(string)
 }

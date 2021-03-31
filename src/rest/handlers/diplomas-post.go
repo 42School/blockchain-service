@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/42School/blockchain-service/src/dao/api"
 	"github.com/42School/blockchain-service/src/tools"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 )
 
@@ -22,7 +23,7 @@ func CreateDiploma(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "The data sent are not valid, to be written in blockchain please try again !", http.StatusBadRequest)
 		return
 	}
-	tools.LogsDev("Received request to write the " + newDiploma.FirstName + " " + newDiploma.LastName + " diploma.")
+	log.WithFields(newDiploma.LogFields()).Debug("Received new request to write diploma.")
 	hash, bool := newDiploma.EthWriting()
 	if bool == false {
 		http.Error(w, "Blockchain writing had a problem, the diploma is saved in the queue.", http.StatusBadRequest)
