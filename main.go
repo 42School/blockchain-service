@@ -5,12 +5,13 @@ import (
 	"github.com/42School/blockchain-service/src/account"
 	"github.com/42School/blockchain-service/src/async"
 	"github.com/42School/blockchain-service/src/dao/api"
+	"github.com/42School/blockchain-service/src/metrics"
 	"github.com/42School/blockchain-service/src/rest"
 	"github.com/42School/blockchain-service/src/tools"
+	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
-	log "github.com/sirupsen/logrus"
 	"net/http"
 	"os"
 )
@@ -47,7 +48,7 @@ func MongoStart() error {
 }
 
 func main() {
-	go async.ValideHash()
+	go async.CheckHash()
 	go async.RetryDiploma()
 	err := MongoStart()
 	if err != nil {
@@ -62,6 +63,7 @@ func main() {
 	async.RestoreQueue()
 	account.CreateAccountsManager()
 	router := rest.InitRouter()
+	metrics.RecordMetrics()
 	log.Info("Blockchain Service is running !")
 	err = http.ListenAndServe(":8080", router)
 	if err != nil {

@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"github.com/42School/blockchain-service/src/metrics"
 	handlers "github.com/42School/blockchain-service/src/rest/handlers"
 	"github.com/42School/blockchain-service/src/tools"
 	"github.com/gorilla/mux"
@@ -9,7 +10,7 @@ import (
 
 func InitRouter() *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
-	router.Use(tools.PrometheusMiddleware)
+	router.Use(metrics.PrometheusMiddleware)
 	router.Handle("/metrics", promhttp.Handler())
 	router.Methods("POST").Path("/create-diploma").Name("Create").HandlerFunc(handlers.CreateDiploma)
 	router.Methods("POST").Path("/get-diploma").Name("Get").HandlerFunc(handlers.GetDiploma)

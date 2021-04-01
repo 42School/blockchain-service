@@ -85,6 +85,18 @@ func getLogs(client *ethclient.Client) ([]types.Log, abi.ABI, error) {
 	return logs, contractAbi, nil
 }
 
+func GetBalance(address common.Address) (int64, error) {
+	client, err := ethclient.Dial(tools.NetworkLink)
+	if err != nil {
+		return 0, err
+	}
+	balance, err := client.PendingBalanceAt(context.Background(), address)
+	if err != nil {
+		return 0, err
+	}
+	return balance.Int64(), err
+}
+
 func GetRevert(client *ethclient.Client, tx *types.Transaction, receipt *types.Receipt) string {
 	address, _, _ := account.GetWriterAccount()
 	msg := ethereum.CallMsg{

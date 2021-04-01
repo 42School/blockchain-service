@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/42School/blockchain-service/src/dao/contracts"
 	"github.com/42School/blockchain-service/src/dao/diplomas"
+	"github.com/42School/blockchain-service/src/metrics"
 	"github.com/42School/blockchain-service/src/tools"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -14,7 +15,7 @@ import (
 	"time"
 )
 
-func ValideHash() {
+func CheckHash() {
 	url := tools.FtEndPoint + tools.ValidationPath
 	for {
 		time.Sleep(10 * time.Minute)
@@ -26,6 +27,7 @@ func ValideHash() {
 				data := "{'Status': true, 'Message': 'The " + strHash + " diploma is definitely inscribed on Ethereum.', 'Data': {" + strHash + "}}"
 				client, _ := ethclient.Dial(tools.NetworkLink)
 				receipt, err := client.TransactionReceipt(context.Background(), check.Tx.Hash())
+				metrics.PrometheusBlockDuration(receipt.BlockHash, check.SendTime)
 				if err == nil {
 					if receipt.Status == 1 {
 						contracts.CheckSecurity(client, check.Tx, check.StudentHash)
@@ -34,6 +36,8 @@ func ValideHash() {
 							tools.ToCheckHash.Remove(e)
 							txByte, _ := check.Tx.MarshalJSON()
 							tools.ToCheckDB.DeleteOne(context.TODO(), bson.M{"tx": txByte, "studenthash": check.StudentHash})
+							metrics.GaugeCheckQueue.Dec()
+							metrics.CounterDiplomaSuccess.Inc()
 							e = copyList.Front()
 							continue
 						}
@@ -48,6 +52,7 @@ func ValideHash() {
 								tools.ToCheckHash.Remove(e)
 								txByte, _ := check.Tx.MarshalJSON()
 								tools.ToCheckDB.DeleteOne(context.TODO(), bson.M{"tx": txByte, "studenthash": check.StudentHash})
+								metrics.GaugeCheckQueue.Dec()
 								e = copyList.Front()
 								continue
 							}
@@ -75,6 +80,7 @@ func RetryDiploma () {
 					http.Post(url, "Content-Type: application/json", strings.NewReader(data))
 					tools.RetryQueue.Remove(e)
 					tools.RetryDB.DeleteOne(context.TODO(), diploma)
+					metrics.GaugeRetryQueue.Dec()
 					e = copyList.Front()
 				} else {
 					e = e.Next()

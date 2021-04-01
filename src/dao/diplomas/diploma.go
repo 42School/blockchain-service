@@ -4,14 +4,16 @@ import (
 	"context"
 	account "github.com/42School/blockchain-service/src/account"
 	"github.com/42School/blockchain-service/src/dao/contracts"
+	"github.com/42School/blockchain-service/src/metrics"
 	"github.com/42School/blockchain-service/src/tools"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	crypgo "github.com/ethereum/go-ethereum/crypto"
 	"github.com/google/uuid"
-	"go.mongodb.org/mongo-driver/bson"
 	log "github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/bson"
+	"time"
 )
 
 type Diploma struct {
@@ -28,6 +30,7 @@ type VerificationHash struct {
 	Id	uuid.UUID   `bson:"_id"`
 	Tx *types.Transaction
 	StudentHash []byte
+	SendTime time.Time
 }
 
 func convertSkillToInt(skills []float64) [30]uint64 {
@@ -64,8 +67,8 @@ func addToCheck(toAdd VerificationHash) {
 	}
 	tools.ToCheckHash.PushBack(toAdd)
 	txJson, _ := toAdd.Tx.MarshalJSON()
-	tools.NmbOfCheckQueue.Inc()
-	tools.ToCheckDB.InsertOne(context.Background(), bson.M{"tx": txJson, "studenthash": toAdd.StudentHash})
+	metrics.GaugeCheckQueue.Inc()
+	tools.ToCheckDB.InsertOne(context.Background(), bson.M{"tx": txJson, "studenthash": toAdd.StudentHash, "time": toAdd.SendTime})
 }
 
 func (_dp Diploma) CheckDiploma() bool {
@@ -122,7 +125,7 @@ func (_dp Diploma) AddToRetry() {
 	_dp.Id = uuid.New()
 	tools.RetryDB.InsertOne(context.TODO(), _dp)
 	tools.RetryQueue.PushBack(_dp)
-	tools.NmbOfRetryQueue.Inc()
+	metrics.GaugeRetryQueue.Inc()
 	log.WithFields(_dp.LogFields()).Debug("Adding diploma in the retry queue & retry db")
 }
 
@@ -154,7 +157,7 @@ func (_dp Diploma) EthWriting() (string, bool) {
 		return "", false
 	}
 	log.WithFields(log.Fields{"hash": newHash.String(), "tx": tx.Hash().String()}).Info("Diploma submit in transaction.")
-	addToCheck(VerificationHash{Tx: tx, StudentHash: newHash.Bytes()})
+	addToCheck(VerificationHash{Tx: tx, StudentHash: newHash.Bytes(), SendTime: time.Now()})
 	return newHash.Hex(), true
 }
 
