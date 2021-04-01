@@ -64,6 +64,7 @@ func addToCheck(toAdd VerificationHash) {
 	}
 	tools.ToCheckHash.PushBack(toAdd)
 	txJson, _ := toAdd.Tx.MarshalJSON()
+	tools.NmbOfCheckQueue.Inc()
 	tools.ToCheckDB.InsertOne(context.Background(), bson.M{"tx": txJson, "studenthash": toAdd.StudentHash})
 }
 
@@ -121,6 +122,7 @@ func (_dp Diploma) AddToRetry() {
 	_dp.Id = uuid.New()
 	tools.RetryDB.InsertOne(context.TODO(), _dp)
 	tools.RetryQueue.PushBack(_dp)
+	tools.NmbOfRetryQueue.Inc()
 	log.WithFields(_dp.LogFields()).Debug("Adding diploma in the retry queue & retry db")
 }
 
