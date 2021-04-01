@@ -45,6 +45,8 @@ Le port par défaut de l'API est `8080`.
 
 L'API contains à ce jour 3 routes différentes:
 
+- `/metrics` permet de récupérer des metriques pour Prometheus.
+
 - `/create-diploma` permet de crée un nouveau diplôme dans la blockchain. ⚠️ Token requis
 
   - Méthode `POST`

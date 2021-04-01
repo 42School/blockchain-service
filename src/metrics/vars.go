@@ -27,6 +27,14 @@ var (
 		Help: "Duration of the validation block Ethereum (in minutes).",
 		Buckets: prometheus.LinearBuckets(1, 2, 15),
 	})
+
+	NumberOfRetryDiploma = promauto.NewHistogram(prometheus.HistogramOpts{
+		Namespace: "blockchain_service",
+		Name: "number_of_retry_per_diploma",
+		Help: "Histogram with number of retry per diploma.",
+		Buckets: prometheus.LinearBuckets(0, 1, 10),
+	})
+
 	/*
 	***	Gauge metrics
 	 */
