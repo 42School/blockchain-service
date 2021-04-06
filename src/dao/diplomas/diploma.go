@@ -49,6 +49,7 @@ func addToCheck(toAdd VerificationHash) {
 	tools.ToCheckHash.PushBack(toAdd)
 	txJson, _ := toAdd.Tx.MarshalJSON()
 	metrics.GaugeCheckQueue.Inc()
+	metrics.CounterCheckQueue.Inc()
 	tools.ToCheckDB.InsertOne(context.Background(), bson.M{"tx": txJson, "studenthash": toAdd.StudentHash, "time": toAdd.SendTime})
 }
 
@@ -98,6 +99,7 @@ func (_dp Diploma) AddToRetry() {
 	tools.RetryDB.InsertOne(context.TODO(), _dp)
 	tools.RetryQueue.PushBack(_dp)
 	metrics.GaugeRetryQueue.Inc()
+	metrics.CounterRetryQueue.Inc()
 	log.WithFields(_dp.LogFields()).Debug("Adding diploma in the retry queue & retry db")
 }
 

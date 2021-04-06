@@ -47,14 +47,14 @@ var (
 
 	GaugeRetryQueue = promauto.NewGauge(prometheus.GaugeOpts{
 		Namespace: "blockchain_service",
-		Name: "number_of_diploma_in_retry_queue",
-		Help: "The total number of diploma in the retry queue.",
+		Name: "gauge_of_retry_queue",
+		Help: "The level of the retry queue.",
 	})
 
 	GaugeCheckQueue = promauto.NewGauge(prometheus.GaugeOpts{
 		Namespace: "blockchain_service",
-		Name: "number_of_diploma_in_check_queue",
-		Help: "The total number of diploma in the check queue.",
+		Name: "gauge_of_check_queue",
+		Help: "The level of the check queue.",
 	})
 
 	/*
@@ -64,5 +64,17 @@ var (
 		Namespace: "blockchain_service",
 		Name: "number_of_diploma_success",
 		Help: "The total number of diploma completely written on Ethereum.",
+	})
+
+	CounterRetryQueue = promauto.NewCounter(prometheus.CounterOpts{
+		Namespace: "blockchain_service",
+		Name: "number_of_diploma_in_retry_queue",
+		Help: "The total number of diploma in the retry queue.",
+	})
+
+	CounterCheckQueue = promauto.NewCounter(prometheus.CounterOpts{
+		Namespace: "blockchain_service",
+		Name: "number_of_diploma_in_check_queue",
+		Help: "The total number of diploma in the check queue.",
 	})
 )
