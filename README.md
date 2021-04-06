@@ -16,7 +16,7 @@ La stack choisi pour ce projet est `go`, la blockchain `ethereum` et `solidity` 
 
 Si vous trouvez des bugs sur cette version n'hésitez pas à faire une `issue`
 
-Le smart-contract à été déployé sur Ropsten en test à cette [adresse](https://ropsten.etherscan.io/address/0x29a5c09219a5c71a81d26922d708e472677f4548) `0x29a5c09219a5c71a81d26922d708e472677f4548`
+Le smart-contract à été déployé sur Ropsten en test à cette [adresse](https://ropsten.etherscan.io/address/0x524e9d84B91889E5D5d8489c24E24A89e592A1e1) `0x524e9d84B91889E5D5d8489c24E24A89e592A1e1`
 
 La branche dev en cours est [dev/go/eth](https://github.com/42School/blockchain-service/tree/dev/go/eth).
 
@@ -122,8 +122,8 @@ L'API contains à ce jour 3 routes différentes:
         "Data":
         {
           "Hash":"",
-          "Level":21,
-          "Skills":[21.57,21.42,21.2,21.42,6.61,4.16,9.02,9.02,9.02,3.6,2.22,5.5,1.45,4.34]
+          "Level":21.00,
+          "Skills":[{"slug":"Security","level":16.42},{"slug":"Unix","level":13.87},{},{}]
         }
       }
       ```
@@ -138,7 +138,7 @@ L'API contains à ce jour 3 routes différentes:
       [
         {
           "Level": 2100,
-          "Skills": [857,542,620,942,661,416,902,902,902,360,222,550,145, ...],
+          "Skills": [{"Slug":"Security","Level":1642},{"Slug":"Unix","Level":1387},...],
           "Hash": [xxx,xx,xx,xx,xx,xxx,x,xx,xxx,xx,xxx,xx,xxx,xx,xx,xx,xxx,xx,xxx,xx, ...],
           "Signature":
           {
@@ -149,7 +149,7 @@ L'API contains à ce jour 3 routes différentes:
         },
        {
           "Level": 2100,
-          "Skills": [857,542,620,942,661,416,902,902,902,360,222,550,145, ...],
+          "Skills": [{"Slug":"Security","Level":1642},{"Slug":"Unix","Level":1387},...],
           "Hash": [xxx,xx,xx,xx,xx,xxx,x,xx,xxx,xx,xxx,xx,xxx,xx,xx,xx,xxx,xx,xxx,xx, ...],
           "Signature":
           {
