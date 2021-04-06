@@ -41,7 +41,7 @@ var (
 	GaugeBalanceWallet = promauto.NewGaugeVec(prometheus.GaugeOpts{
 		Namespace: "blockchain_service",
 		Name: "gauge_balance_of_wallet",
-		Help: "The gauge of wallets.",
+		Help: "The level of each wallets",
 	}, []string{"address"})
 
 	GaugeRetryQueue = promauto.NewGauge(prometheus.GaugeOpts{
