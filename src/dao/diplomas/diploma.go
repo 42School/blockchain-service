@@ -16,6 +16,11 @@ import (
 	"time"
 )
 
+type Skill struct {
+	Name	string	`json:"name"`
+	Level	float64	`json:"level"`
+}
+
 type Diploma struct {
 	Id			uuid.UUID   `bson:"_id"`
 	FirstName	string		`json:"first_name"`
@@ -23,7 +28,7 @@ type Diploma struct {
 	BirthDate	string		`json:"birth_date"`
 	AlumniDate	string		`json:"alumni_date"`
 	Level		float64		`json:"level"`
-	Skills		[]float64	`json:"skills"`
+	Skills		[]Skill		`json:"skills"`
 }
 
 type VerificationHash struct {
@@ -31,30 +36,6 @@ type VerificationHash struct {
 	Tx *types.Transaction
 	StudentHash []byte
 	SendTime time.Time
-}
-
-func convertSkillToInt(skills []float64) [30]uint64 {
-	newSkills := [30]uint64{}
-	for i := 0; i < 30; i++ {
-		if i > len(skills) - 1 {
-			newSkills[i] = uint64(0)
-		} else {
-			newSkills[i] = uint64(skills[i] * 100)
-		}
-	}
-	return newSkills
-}
-
-func convertSkillToFloat(skills [30]uint64) [30]float64 {
-	newSkills := [30]float64{}
-	for i := 0; i < 30; i++ {
-		if i > len(skills) - 1 {
-			newSkills[i] = float64(0)
-		} else {
-			newSkills[i] = float64(skills[i]) / 100
-		}
-	}
-	return newSkills
 }
 
 func addToCheck(toAdd VerificationHash) {
@@ -76,7 +57,7 @@ func (_dp Diploma) CheckDiploma() bool {
 		return false
 	}
 	for i := 0; i < len(_dp.Skills); i++ {
-		if _dp.Skills[i] <= 0.0 {
+		if _dp.Skills[i].Level <= 0.0 {
 			return false
 		}
 	}
@@ -129,9 +110,19 @@ func (_dp Diploma) AddToRetry() {
 	log.WithFields(_dp.LogFields()).Debug("Adding diploma in the retry queue & retry db")
 }
 
-func (_dp Diploma) convertDpToData(_sign []byte, _hash common.Hash) (uint64, [30]uint64, uint8, [32]byte, [32]byte, [32]byte) {
+func (_dp Diploma) convertDpToData(_sign []byte, _hash common.Hash) (uint64, [30]uint64, [30]string, uint8, [32]byte, [32]byte, [32]byte) {
 	level := uint64(_dp.Level * 100)
-	skills := convertSkillToInt(_dp.Skills)
+	skillsLevels := [30]uint64{}
+	skillsSlugs := [30]string{}
+	for i := 0; i < 30; i++ {
+		if i > len(_dp.Skills) - 1 {
+			skillsLevels[i] = uint64(0)
+			skillsSlugs[i] = "none"
+		} else {
+			skillsLevels[i] = uint64(_dp.Skills[i].Level * 100)
+			skillsSlugs[i] = _dp.Skills[i].Name
+		}
+	}
 	v := uint8(int(_sign[64])) + 27
 	r := [32]byte{}
 	s := [32]byte{}
@@ -139,7 +130,7 @@ func (_dp Diploma) convertDpToData(_sign []byte, _hash common.Hash) (uint64, [30
 	copy(r[:], _sign[:32])
 	copy(s[:], _sign[32:64])
 	copy(hash[:], _hash.Bytes())
-	return level, skills, v, r, s, hash
+	return level, skillsLevels, skillsSlugs, v, r, s, hash
 }
 
 func (_dp Diploma) EthWriting() (string, bool) {
@@ -161,21 +152,25 @@ func (_dp Diploma) EthWriting() (string, bool) {
 	return newHash.Hex(), true
 }
 
-func (_dp Diploma) EthGetter() (float64, [30]float64, error) {
+func (_dp Diploma) EthGetter() (float64, [30]Skill, error) {
 	dataToHash := _dp.FirstName + ", " + _dp.LastName + ", " + _dp.BirthDate + ", " + _dp.AlumniDate
 	hash := crypgo.Keccak256Hash([]byte(dataToHash))
-	levelInt, skillsInt, err := contracts.CallGetDiploma(hash.Bytes())
+	levelInt, skillsEth, err := contracts.CallGetDiploma(hash.Bytes())
 	if err != nil {
 		tools.LogsError(err)
-		return 0, [30]float64{}, err
+		return 0, [30]Skill{}, err
 	}
 	level := float64(levelInt) / 100
-	skills := convertSkillToFloat(skillsInt)
-	log.Print(levelInt, skillsInt)
+	skills := [30]Skill{}
+	for i := 0; i < 30; i++ {
+		skills[i].Level = float64(skillsEth[i].Level) / 100
+		skills[i].Name = skillsEth[i].Slug
+	}
+	log.Print(level, skills)
 	return level, skills, nil
 }
 
-func EthAllGetter() []contracts.FtDiplomaDiploma {
+func EthAllGetter() []contracts.FtDiplomaDiplomas {
 	diplomas, err := contracts.CallGetAllDiploma()
 	if err != nil {
 		tools.LogsError(err)

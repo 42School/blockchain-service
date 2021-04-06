@@ -65,7 +65,7 @@ func getAuth() (*bind.TransactOpts, error) {
 	}
 	auth.Nonce = big.NewInt(int64(nonce))
 	auth.Value = big.NewInt(0)
-	auth.GasLimit = uint64(604758)
+	auth.GasLimit = uint64(2424242)
 	auth.GasPrice = gasPrice
 	return auth, nil
 }
@@ -152,7 +152,7 @@ func CheckSecurity(client *ethclient.Client, tx *types.Transaction, hash []byte)
 	return true
 }
 
-func CallCreateDiploma(level uint64, skills [30]uint64, v uint8, r [32]byte, s [32]byte, hash [32]byte) (*types.Transaction, bool) {
+func CallCreateDiploma(level uint64, skills [30]uint64, skillsSlugs [30]string, v uint8, r [32]byte, s [32]byte, hash [32]byte) (*types.Transaction, bool) {
 	instance, _, err := connectEthGetInstance()
 	if err != nil {
 		log.Debug("Instance")
@@ -165,7 +165,7 @@ func CallCreateDiploma(level uint64, skills [30]uint64, v uint8, r [32]byte, s [
 		tools.LogsError(err)
 		return nil, false
 	}
-	tx, err := instance.CreateDiploma(auth, level, skills, v, r, s, hash)
+	tx, err := instance.CreateDiploma(auth, level, skills, skillsSlugs, v, r, s, hash)
 	if err != nil {
 		log.Debug("Write")
 		tools.LogsError(err)
@@ -178,24 +178,24 @@ func CallCreateDiploma(level uint64, skills [30]uint64, v uint8, r [32]byte, s [
 	return tx, true
 }
 
-func CallGetDiploma(hash []byte) (uint64, [30]uint64, error) {
+func CallGetDiploma(hash []byte) (uint64, []FtDiplomaSkill, error) {
 	instance, _, err := connectEthGetInstance()
 	if err != nil {
-		return 0, [30]uint64{}, err
+		return 0, []FtDiplomaSkill{}, err
 	}
 	hash32 := [32]byte{}
 	copy(hash32[:], hash)
-	result, err := instance.GetDiploma(&bind.CallOpts{}, hash32)
+	level, skills, err := instance.GetDiploma(&bind.CallOpts{}, hash32)
 	if err != nil {
-		return 0, [30]uint64{}, err
+		return 0, []FtDiplomaSkill{}, err
 	}
-	if result.Level == 0 {
-		return 0, [30]uint64{}, fmt.Errorf("the diploma doesnt exist")
+	if level == 0 {
+		return 0, []FtDiplomaSkill{}, fmt.Errorf("the diploma doesnt exist")
 	}
-	return result.Level, result.Skills, nil
+	return level, skills, nil
 }
 
-func CallGetAllDiploma() ([]FtDiplomaDiploma, error) {
+func CallGetAllDiploma() ([]FtDiplomaDiplomas, error) {
 	instance, _, err := connectEthGetInstance()
 	if err != nil {
 		return nil, err
