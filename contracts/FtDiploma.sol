@@ -77,7 +77,7 @@ contract	FtDiploma {
 		for (uint256 i = 0; i < intToHash.length; i++) {
 			Diploma storage dp = hashToDiploma[intToHash[i]];
 			diplomas[i].level = dp.level;
-			for (uint64 y = 0; i < 30; i++) {
+			for (uint64 y = 0; y < 30; y++) {
 				diplomas[i].skills[y] = dp.skills[y];
 			}
 			diplomas[i].hash = dp.hash;

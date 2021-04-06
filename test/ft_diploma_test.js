@@ -79,7 +79,6 @@ contract("FtDiploma", async (accounts) => {
 	it("Testing the gets all data", async () => {
 		let instance = await FtDiploma.deployed();
 		let datas = await instance.getAllDiploma({from: account.address})
-		console.log(datas);
 		assert.isNotEmpty(datas);
 	})
 })
