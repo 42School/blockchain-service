@@ -64,15 +64,6 @@ func (_dp Diploma) CheckDiploma() bool {
 	return true
 }
 
-func (_dp Diploma) PrintDiploma() {
-	log.Println("First Name:", _dp.FirstName)
-	log.Println("Last Name:", _dp.LastName)
-	log.Println("Birth Date:", _dp.BirthDate)
-	log.Println("Alumni Date:", _dp.AlumniDate)
-	log.Println("Level:", _dp.Level)
-	log.Println("Skills:", _dp.Skills)
-}
-
 func (_dp Diploma) String() string {
 	str := _dp.FirstName + ", " + _dp.LastName + ", " + _dp.BirthDate + ", " + _dp.AlumniDate
 	return str
@@ -117,7 +108,7 @@ func (_dp Diploma) convertDpToData(_sign []byte, _hash common.Hash) (uint64, [30
 	for i := 0; i < 30; i++ {
 		if i > len(_dp.Skills) - 1 {
 			skillsLevels[i] = uint64(0)
-			skillsSlugs[i] = "none"
+			skillsSlugs[i] = ""
 		} else {
 			skillsLevels[i] = uint64(_dp.Skills[i].Level * 100)
 			skillsSlugs[i] = _dp.Skills[i].Name

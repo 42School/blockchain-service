@@ -19,13 +19,14 @@ var (
 		Namespace: "blockchain_service",
 		Name: "http_duration_seconds",
 		Help: "Duration of HTTP requests.",
-	}, []string{"url", "code"})
+		Buckets: prometheus.ExponentialBuckets(1, 2, 10),
+	}, []string{"url", "methods", "code"})
 
 	validationBlockDuration = promauto.NewHistogram(prometheus.HistogramOpts{
 		Namespace: "blockchain_service",
 		Name: "block_eth_duration_validation_minutes",
 		Help: "Duration of the validation block Ethereum (in minutes).",
-		Buckets: prometheus.LinearBuckets(1, 2, 15),
+		Buckets: prometheus.ExponentialBuckets(1, 2, 7),
 	})
 
 	NumberOfRetryDiploma = promauto.NewHistogram(prometheus.HistogramOpts{

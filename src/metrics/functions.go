@@ -32,7 +32,7 @@ func PrometheusMiddleware(next http.Handler) http.Handler {
 		path, _ := route.GetPathTemplate()
 		rw := NewResponseWriter(w)
 		next.ServeHTTP(rw, r)
-		timer := prometheus.NewTimer(httpDuration.WithLabelValues(path, strconv.Itoa(rw.statusCode)))
+		timer := prometheus.NewTimer(httpDuration.WithLabelValues(path, r.Method, strconv.Itoa(rw.statusCode)))
 		timer.ObserveDuration()
 	})
 }
