@@ -8,6 +8,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/prometheus/client_golang v1.10.0
 	github.com/sirupsen/logrus v1.8.1
+	github.com/stretchr/testify v1.7.0
 	go.mongodb.org/mongo-driver v1.4.5
 	golang.org/x/oauth2 v0.0.0-20210126194326-f9ce19ea3013
 )

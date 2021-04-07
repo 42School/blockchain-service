@@ -54,7 +54,7 @@ func addToCheck(toAdd VerificationHash) {
 }
 
 func (_dp Diploma) CheckDiploma() bool {
-	if _dp.FirstName == "" || _dp.LastName == "" || _dp.Level <= 6 || _dp.AlumniDate == "" || _dp.BirthDate == "" {
+	if _dp.FirstName == "" || _dp.LastName == "" || _dp.Level <= 6 || _dp.AlumniDate == "" || _dp.BirthDate == "" || len(_dp.Skills) == 0 {
 		return false
 	}
 	for i := 0; i < len(_dp.Skills); i++ {
