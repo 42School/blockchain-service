@@ -10,11 +10,11 @@ import (
 )
 
 type WebhookData struct {
-	Login				string	`json:"login"`
-	FirstName			string	`json:"first_name"`
-	LastName			string	`json:"last_name"`
-	BirthDate			string	`json:"birth_date"`
-	AlumnizedCursusUser	int		`json:"alumnized_cursus_user"`
+	Login               string `json:"login"`
+	FirstName           string `json:"first_name"`
+	LastName            string `json:"last_name"`
+	BirthDate           string `json:"birth_date"`
+	AlumnizedCursusUser int    `json:"alumnized_cursus_user"`
 }
 
 func WebhookToDiploma(body io.ReadCloser) (diplomas.Diploma, error) {

@@ -12,13 +12,13 @@ import (
 )
 
 type verifHashDB struct {
-	Id uuid.UUID
-	Tx []byte
+	Id          uuid.UUID
+	Tx          []byte
 	StudentHash []byte
-	SendTime time.Time
+	SendTime    time.Time
 }
 
-func RestoreQueue() {
+func restoreRetryQueue() {
 	cursor, err := tools.RetryDB.Find(context.TODO(), bson.M{})
 	if err != nil {
 		tools.LogsError(err)
@@ -33,7 +33,10 @@ func RestoreQueue() {
 		tools.RetryQueue.PushBack(dp)
 	}
 	metrics.GaugeRetryQueue.Set(float64(tools.RetryQueue.Len()))
-	cursor, err = tools.ToCheckDB.Find(context.TODO(), bson.M{})
+}
+
+func restoreCheckQueue() {
+	cursor, err := tools.ToCheckDB.Find(context.TODO(), bson.M{})
 	if err != nil {
 		tools.LogsError(err)
 		return
@@ -56,4 +59,9 @@ func RestoreQueue() {
 		tools.ToCheckHash.PushBack(toCheck)
 	}
 	metrics.GaugeCheckQueue.Set(float64(tools.ToCheckHash.Len()))
+}
+
+func RestoreQueue() {
+	restoreRetryQueue()
+	restoreCheckQueue()
 }

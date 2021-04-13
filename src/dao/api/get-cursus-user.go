@@ -10,8 +10,8 @@ import (
 )
 
 type cursusUser struct {
-	Level	float64				`json:"level"`
-	Skills	[]diplomas.Skill	`json:"skills"`
+	Level  float64          `json:"level"`
+	Skills []diplomas.Skill `json:"skills"`
 }
 
 func GetCursusUser(cursusId int) (float64, []diplomas.Skill, error) {

@@ -65,7 +65,7 @@ func CheckHash() {
 	}
 }
 
-func RetryDiploma () {
+func RetryDiploma() {
 	url := tools.FtEndPoint + tools.RetryPath
 	for {
 		time.Sleep(30 * time.Minute)

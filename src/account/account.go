@@ -14,12 +14,12 @@ import (
 )
 
 type Account struct {
-	KeyStoreFile	string
-	Password		string
+	KeyStoreFile string
+	Password     string
 }
 
 var KeyStore *keystore.KeyStore
-var CurrentAccount int = 0
+var CurrentAccount = 0
 var Accounts []Account
 
 func ParseAccounts() {
@@ -66,7 +66,7 @@ func ChangeAccount() {
 	// Send Mail of Current Account
 	address, _, _ := GetWriterAccount()
 	tools.SendMail("Empty Account", address.Hex())
-	if CurrentAccount + 1 == len(Accounts) {
+	if CurrentAccount+1 == len(Accounts) {
 		CurrentAccount = 0
 	} else {
 		CurrentAccount = CurrentAccount + 1

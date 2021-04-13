@@ -2,7 +2,7 @@ package rest
 
 import (
 	"github.com/42School/blockchain-service/src/metrics"
-	handlers "github.com/42School/blockchain-service/src/rest/handlers"
+	"github.com/42School/blockchain-service/src/rest/handlers"
 	"github.com/42School/blockchain-service/src/tools"
 	"github.com/gorilla/mux"
 	"github.com/prometheus/client_golang/prometheus/promhttp"

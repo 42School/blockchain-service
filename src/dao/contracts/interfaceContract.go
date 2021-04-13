@@ -18,6 +18,7 @@ import (
 	"math/big"
 )
 
+// connectEthGetInstance connect the client Ethereum and get the instance of the smart-contract.
 func connectEthGetInstance() (*Diploma, *ethclient.Client, error) {
 	client, err := ethclient.Dial(tools.NetworkLink)
 	if err != nil {
@@ -49,7 +50,7 @@ func getAuth() (*bind.TransactOpts, error) {
 		return nil, err
 	}
 	nonce, err := client.PendingNonceAt(context.Background(), address)
-	if err != nil  {
+	if err != nil {
 		log.Debug("PendingNonceAt")
 		return nil, err
 	}
@@ -113,8 +114,8 @@ func GetRevert(client *ethclient.Client, tx *types.Transaction, receipt *types.R
 		return ""
 	}
 	var (
-		errorSig            = []byte{0x08, 0xc3, 0x79, 0xa0}
-		abiString, _        = abi.NewType("string", "", nil)
+		errorSig     = []byte{0x08, 0xc3, 0x79, 0xa0}
+		abiString, _ = abi.NewType("string", "", nil)
 	)
 	if len(res) < 4 || !bytes.Equal(res[:4], errorSig) {
 		tools.LogsError(err)

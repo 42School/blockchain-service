@@ -8,21 +8,21 @@ import (
 )
 
 var diploma = Diploma{uuid.UUID{0}, "Louise", "Pieri", "27-12-1998", "01-01-2021", 21.42, []Skill{
-	{"Security",16.42},
-	{"Unix",13.87},
-	{"Adaptation & creativity",12.7},
-	{"Company experience",11.22},
-	{"Algorithms & AI",10.38},
-	{"Group & interpersonal",10.13},
-	{"Graphics",7.49},
-	{"Rigor",6.6},
-	{"Imperative programming",5.34},
-	{"Technology integration",5.26},
-	{"Web",5.2},
-	{"Organization",5.04},
-	{"Network & system administration",4.5},
-	{"DB & Data",4.28},
-	{"Object-oriented programming",4.2}}}
+	{"Security", 16.42},
+	{"Unix", 13.87},
+	{"Adaptation & creativity", 12.7},
+	{"Company experience", 11.22},
+	{"Algorithms & AI", 10.38},
+	{"Group & interpersonal", 10.13},
+	{"Graphics", 7.49},
+	{"Rigor", 6.6},
+	{"Imperative programming", 5.34},
+	{"Technology integration", 5.26},
+	{"Web", 5.2},
+	{"Organization", 5.04},
+	{"Network & system administration", 4.5},
+	{"DB & Data", 4.28},
+	{"Object-oriented programming", 4.2}}}
 
 func TestDiploma_String(t *testing.T) {
 	a := assert.New(t)
@@ -59,7 +59,7 @@ func TestDiploma_CheckDiploma(t *testing.T) {
 	diplomaNotValid.Skills = []Skill{}
 	a.Equal(false, diplomaNotValid.CheckDiploma(), "Function Diploma.CheckDiploma are not valid with not valid diploma (no skills).")
 	// Check a invalid diploma ([1]skills{level = 0.0})
-	diplomaNotValid.Skills = []Skill{{"Web",0.0}}
+	diplomaNotValid.Skills = []Skill{{"Web", 0.0}}
 	a.Equal(false, diplomaNotValid.CheckDiploma(), "Function Diploma.CheckDiploma are not valid with not valid diploma (no skills).")
 }
 
