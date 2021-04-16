@@ -36,6 +36,7 @@ func WebhookToDiploma(body io.ReadCloser) (diplomas.Diploma, error) {
 	newDiploma.AlumniDate = time.Now().Format("2006-01-02")
 	newDiploma.Level = level
 	newDiploma.Skills = skills
+	newDiploma.Counter = 0
 	log.WithFields(newDiploma.LogFields()).Debug("Webhook to Diploma success")
 	return newDiploma, nil
 }

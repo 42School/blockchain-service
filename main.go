@@ -28,6 +28,7 @@ func init()  {
 	}
 }
 
+// MongoStart connect the blockchain-service with a MongoDB and create 1 database 'queue' with 2 table 'retry' & 'check'
 func MongoStart() error {
 	url := "mongodb://" + tools.MongoIp + ":" + tools.MongoPort
 	credential := options.Credential{
@@ -43,7 +44,7 @@ func MongoStart() error {
 		return err
 	}
 	tools.RetryDB = client.Database("queue").Collection("retry")
-	tools.ToCheckDB = client.Database("queue").Collection("valide")
+	tools.ToCheckDB = client.Database("queue").Collection("check")
 	return nil
 }
 

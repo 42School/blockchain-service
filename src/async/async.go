@@ -83,6 +83,10 @@ func RetryDiploma() {
 					metrics.GaugeRetryQueue.Dec()
 					e = copyList.Front()
 				} else {
+					diploma.Counter += 1
+					log.Info(diploma.Counter)
+					tools.RetryQueue.InsertBefore(diploma, e)
+					tools.RetryQueue.Remove(e)
 					e = e.Next()
 				}
 			}

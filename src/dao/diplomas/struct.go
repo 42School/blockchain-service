@@ -19,6 +19,7 @@ type Diploma struct {
 	AlumniDate string    `json:"alumni_date"`
 	Level      float64   `json:"level"`
 	Skills     []Skill   `json:"skills"`
+	Counter    int       `json:"counter"`
 }
 
 type VerificationHash struct {

@@ -29,10 +29,17 @@ var (
 		Buckets:   prometheus.ExponentialBuckets(1, 2, 7),
 	})
 
-	NumberOfRetryDiploma = promauto.NewHistogram(prometheus.HistogramOpts{
+	NumberOfRetryPerDiploma = promauto.NewHistogramVec(prometheus.HistogramOpts{
 		Namespace: "blockchain_service",
 		Name:      "number_of_retry_per_diploma",
-		Help:      "Histogram with number of retry per diploma.",
+		Help:      "Histogram with number of retry diploma.",
+		Buckets:   prometheus.LinearBuckets(0, 1, 10),
+	}, []string{"diploma"})
+
+	NumberOfRetryDiploma = promauto.NewHistogram(prometheus.HistogramOpts{
+		Namespace: "blockchain_service",
+		Name:      "number_of_retry_diploma",
+		Help:      "Histogram with number of retry diploma.",
 		Buckets:   prometheus.LinearBuckets(0, 1, 10),
 	})
 

@@ -3,6 +3,7 @@ package diplomas
 import (
 	"github.com/42School/blockchain-service/src/account"
 	"github.com/42School/blockchain-service/src/dao/contracts"
+	"github.com/42School/blockchain-service/src/metrics"
 	"github.com/42School/blockchain-service/src/tools"
 	"github.com/ethereum/go-ethereum/common"
 	crypgo "github.com/ethereum/go-ethereum/crypto"
@@ -47,6 +48,8 @@ func (_dp Diploma) EthWriting() (string, bool) {
 		_dp.AddToRetry()
 		return "", false
 	}
+	metrics.NumberOfRetryDiploma.Observe(float64(_dp.Counter))
+	metrics.NumberOfRetryPerDiploma.WithLabelValues(_dp.String()).Observe(float64(_dp.Counter))
 	log.WithFields(log.Fields{"hash": newHash.String(), "tx": tx.Hash().String()}).Info("Diploma submit in transaction.")
 	addToCheck(VerificationHash{Tx: tx, StudentHash: newHash.Bytes(), SendTime: time.Now()})
 	return newHash.Hex(), true

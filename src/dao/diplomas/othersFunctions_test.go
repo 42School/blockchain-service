@@ -7,8 +7,8 @@ import (
 	"testing"
 )
 
-var diploma = Diploma{uuid.UUID{0}, "Louise", "Pieri", "27-12-1998", "01-01-2021", 21.42, []Skill{
-	{"Security", 16.42},
+var diploma = Diploma{uuid.UUID{0}, "Louise", "Pieri", "27-12-1998", "01-01-2021", 21.42,
+	[]Skill{{"Security", 16.42},
 	{"Unix", 13.87},
 	{"Adaptation & creativity", 12.7},
 	{"Company experience", 11.22},
@@ -22,7 +22,8 @@ var diploma = Diploma{uuid.UUID{0}, "Louise", "Pieri", "27-12-1998", "01-01-2021
 	{"Organization", 5.04},
 	{"Network & system administration", 4.5},
 	{"DB & Data", 4.28},
-	{"Object-oriented programming", 4.2}}}
+	{"Object-oriented programming", 4.2}},
+0}
 
 func TestDiploma_String(t *testing.T) {
 	a := assert.New(t)

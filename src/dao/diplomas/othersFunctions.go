@@ -51,7 +51,6 @@ func (_dp Diploma) AddToRetry() {
 	for e := copyList.Front(); e != nil; e = e.Next() {
 		if e != nil {
 			diploma, _ := e.Value.(Diploma)
-
 			log.WithFields(diploma.LogFields()).Debug("Diploma in the retry queue")
 			log.WithFields(_dp.LogFields()).Debug("Diploma to find in the retry queue")
 			if diploma.String() == _dp.String() {
@@ -68,6 +67,9 @@ func (_dp Diploma) AddToRetry() {
 		return
 	}
 	_dp.Id = uuid.New()
+	if _dp.Counter == 0 {
+		_dp.Counter = 1
+	}
 	tools.RetryDB.InsertOne(context.TODO(), _dp)
 	tools.RetryQueue.PushBack(_dp)
 	metrics.GaugeRetryQueue.Inc()
