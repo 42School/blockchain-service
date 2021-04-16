@@ -21,6 +21,36 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
 
+#  eth-client:
+#    image: ethereum/client-go:latest
+#    hostname: geth
+#    ports:
+#      - "30303:30303"
+#    expose:
+#      - "8545"
+#      - "8546"
+#      - "6060"
+#      - "8080"
+#    networks:
+#      - back
+#    volumes:
+#      - ~/Library/Ethereum:/root/.ethereum/
+#    command:
+#      - --ropsten
+##      - --light.serve=20
+#      - --syncmode
+#      - "fast"
+##      - --rpc
+#      - --ws
+#      - --ws.port=8546
+#      - --ws.addr=0.0.0.0
+#      - --ws.api
+#      - admin,debug,web3,eth,txpool,personal,ethash,net
+#      - --ws.origins="*"
+#      - --metrics
+#      - --metrics.addr=0.0.0.0
+#      - --metrics.port=6060
+
   app:
     image: blockchain-service
     ports:
@@ -28,7 +58,7 @@ services:
     networks:
       - back
     env_file:
-      - config/blockchain-service.env
+      - config-dev/blockchain-service.env
     environment:
       RUN_ENV: "${RUN_ENV}"
     depends_on:
@@ -46,5 +76,4 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: example
     depends_on:
       - mongo
-    profiles:
-      - dev
+    profiles: ["dev"]

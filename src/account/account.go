@@ -8,17 +8,18 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"strings"
 )
 
 type Account struct {
-	KeyStoreFile	string
-	Password		string
+	KeyStoreFile string
+	Password     string
 }
 
 var KeyStore *keystore.KeyStore
-var CurrentAccount int = 0
+var CurrentAccount = 0
 var Accounts []Account
 
 func ParseAccounts() {
@@ -57,7 +58,7 @@ func GetWriterAccount() (common.Address, *ecdsa.PrivateKey, error) {
 	if errDecrypt != nil {
 		return common.Address{}, nil, errDecrypt
 	}
-	tools.LogsDev("private key writer: " + hexutil.Encode(crypto.FromECDSA(key.PrivateKey)))
+	log.WithFields(log.Fields{"private_key": hexutil.Encode(crypto.FromECDSA(key.PrivateKey))}).Debug("The private key of the wallet writer")
 	return key.Address, key.PrivateKey, nil
 }
 
@@ -65,7 +66,7 @@ func ChangeAccount() {
 	// Send Mail of Current Account
 	address, _, _ := GetWriterAccount()
 	tools.SendMail("Empty Account", address.Hex())
-	if CurrentAccount + 1 == len(Accounts) {
+	if CurrentAccount+1 == len(Accounts) {
 		CurrentAccount = 0
 	} else {
 		CurrentAccount = CurrentAccount + 1

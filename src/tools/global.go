@@ -7,40 +7,38 @@ import (
 )
 
 // Keystore File
-var PathKeyStoreSign string = os.Getenv("KEYSTORE_PATH_SIGN")
-var PasswordAccount string = os.Getenv("KEY_PASSWD")
-var PathKeyStore string = os.Getenv("KEYSTORE_PATH")
-var AccountsFile string = os.Getenv("ACCOUNTS_FILE")
+var PathKeyStoreSign = os.Getenv("KEYSTORE_PATH_SIGN")
+var PasswordAccount = os.Getenv("KEY_PASSWD")
+var PathKeyStore = os.Getenv("KEYSTORE_PATH")
+var AccountsFile = os.Getenv("ACCOUNTS_FILE")
 
 // Blockchain Variable
-var NetworkLink string = os.Getenv("NETWORK_LINK")
-var AddressOfContract string = os.Getenv("CONTRACT_ADDRESS")
+var NetworkLink = os.Getenv("NETWORK_LINK")
+var AddressOfContract = os.Getenv("CONTRACT_ADDRESS")
 
 // Endpoint of 42 intra
-var FtEndPoint string = os.Getenv("FT_END_POINT")
-var RetryPath string = os.Getenv("RETRY_PATH")
-var ValidationPath string = os.Getenv("VALIDATION_PATH")
-var Token string = os.Getenv("TOKEN")
+var FtEndPoint = os.Getenv("FT_END_POINT")
+var RetryPath = os.Getenv("RETRY_PATH")
+var ValidationPath = os.Getenv("VALIDATION_PATH")
+var Token = os.Getenv("TOKEN")
 
 // Mailer Variable
-var EmailSender string = os.Getenv("SENDER_EMAIL")
-var PasswordEmail string = os.Getenv("PASSWD_EMAIL")
-var EmailHost string = os.Getenv("EMAIL_HOST")
-var ToEmail string = os.Getenv("TO_EMAIL")
+var EmailSender = os.Getenv("SENDER_EMAIL")
+var PasswordEmail = os.Getenv("PASSWD_EMAIL")
+var EmailHost = os.Getenv("EMAIL_HOST")
+var ToEmail = os.Getenv("TO_EMAIL")
 
 // Mongo Variable
-var MongoIp string = os.Getenv("MONGO_IP")
-var MongoPort string = os.Getenv("MONGO_PORT")
-var MongoUser string = os.Getenv("MONGO_USER")
-var MongoPasswd string = os.Getenv("MONGO_PASSWD")
+var MongoIp = os.Getenv("MONGO_IP")
+var MongoPort = os.Getenv("MONGO_PORT")
+var MongoUser = os.Getenv("MONGO_USER")
+var MongoPasswd = os.Getenv("MONGO_PASSWD")
 
 // Other Variable
-var Env string = os.Getenv("RUN_ENV")
+var Env = os.Getenv("RUN_ENV")
 
-var SecuritySystem bool = false
+var RetryQueue = list.New()
+var ToCheckHash = list.New()
 
-var RetryQueue *list.List = list.New()
-var ToCheckHash *list.List = list.New()
-
-var RetryDB		*mongo.Collection
-var ToCheckDB	*mongo.Collection
+var RetryDB *mongo.Collection
+var ToCheckDB *mongo.Collection
