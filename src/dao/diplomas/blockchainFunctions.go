@@ -49,7 +49,7 @@ func (_dp Diploma) EthWriting() (string, bool) {
 		return "", false
 	}
 	metrics.NumberOfRetryDiploma.Observe(float64(_dp.Counter))
-	metrics.NumberOfRetryPerDiploma.WithLabelValues(_dp.String()).Observe(float64(_dp.Counter))
+	metrics.NumberOfRetryPerDiploma.WithLabelValues(_dp.String()).Add(float64(_dp.Counter))
 	log.WithFields(log.Fields{"hash": newHash.String(), "tx": tx.Hash().String()}).Info("Diploma submit in transaction.")
 	addToCheck(VerificationHash{Tx: tx, StudentHash: newHash.Bytes(), SendTime: time.Now()})
 	return newHash.Hex(), true
@@ -67,7 +67,7 @@ func (_dp Diploma) EthGetter() (float64, [30]Skill, error) {
 	skills := [30]Skill{}
 	for i := 0; i < 30; i++ {
 		skills[i].Level = float64(skillsEth[i].Level) / 100
-		skills[i].Name = skillsEth[i].Slug
+		skills[i].Name = skillsEth[i].Name
 	}
 	log.Print(level, skills)
 	return level, skills, nil
