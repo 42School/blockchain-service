@@ -22,7 +22,7 @@ contract	FtDiploma {
 	}
 
 	struct	Skill {
-		string		slug;
+		string		name;
 		uint64		level;
 	}
 
