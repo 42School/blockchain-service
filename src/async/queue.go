@@ -25,7 +25,7 @@ func restoreRetryQueue() {
 		return
 	}
 	for cursor.Next(context.TODO()) {
-		var dp diplomas.Diploma
+		var dp diplomas.DiplomaImpl
 		err = cursor.Decode(&dp)
 		if err != nil {
 			continue

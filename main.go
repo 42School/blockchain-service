@@ -12,7 +12,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
-	"net/http"
 	"os"
 )
 
@@ -63,13 +62,10 @@ func main() {
 	}
 	async.RestoreQueue()
 	account.CreateAccountsManager()
-	router := rest.InitRouter()
 	metrics.RecordMetrics()
-	log.Info("Blockchain Service is running !")
-	err = http.ListenAndServe(":8080", router)
+	server := rest.NewServer()
+	err = server.ListenAndServe()
 	if err != nil {
 		log.WithError(err).Fatal("HTTP Server doesn't running.")
 	}
-
-
 }

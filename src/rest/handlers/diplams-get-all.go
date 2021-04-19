@@ -2,12 +2,22 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/42School/blockchain-service/src/dao/diplomas"
 	"github.com/42School/blockchain-service/src/tools"
 	"net/http"
 )
 
-func GetAllDiplomas(w http.ResponseWriter, r *http.Request) {
+type GetAllDiplomaHandler struct {
+	err error
+}
+
+func NewGetAllDiplomaHandler() *GetAllDiplomaHandler {
+	var u = GetAllDiplomaHandler{ errors.New("")}
+	return &u
+}
+
+func (uHandler *GetAllDiplomaHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type", "application/json;charset=UTF-8")
 	if r.Header.Get("Token") != tools.Token {
 		http.Error(w, "You are not authorized !", http.StatusUnauthorized)
@@ -18,8 +28,8 @@ func GetAllDiplomas(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "A problem occurred during data recovery.", http.StatusInternalServerError)
 		return
 	}
-	err := json.NewEncoder(w).Encode(diplomas)
-	if err != nil {
+	uHandler.err = json.NewEncoder(w).Encode(diplomas)
+	if uHandler.err != nil {
 		http.Error(w, "Fail Encode json.", http.StatusInternalServerError)
 		return
 	}

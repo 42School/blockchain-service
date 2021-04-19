@@ -72,7 +72,7 @@ func RetryDiploma() {
 		copyList := tools.RetryQueue
 		for e := copyList.Front(); e != nil; {
 			if e != nil {
-				diploma, _ := e.Value.(diplomas.Diploma)
+				diploma, _ := e.Value.(diplomas.DiplomaImpl)
 				log.WithFields(diploma.LogFields()).Debug("Try to retry a diploma")
 				hash, bool := diploma.EthWriting()
 				if bool == true {
