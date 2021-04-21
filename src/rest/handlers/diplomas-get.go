@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"errors"
-	"github.com/42School/blockchain-service/src/dao/diplomas"
 	"github.com/42School/blockchain-service/src/dao/interfaces"
 	"net/http"
 )
@@ -19,16 +18,14 @@ func NewGetDiplomaHandler() *GetDiplomaHandler {
 }
 
 func (uHandler *GetDiplomaHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	var diplomaData diplomas.DiplomaImpl
 	w.Header().Set("Content-type", "application/json;charset=UTF-8")
-	err := json.NewDecoder(r.Body).Decode(&diplomaData)
-	uHandler.diploma = diplomaData
-	if err != nil {
+	uHandler.diploma, uHandler.err = uHandler.diploma.ReadJson(r.Body)
+	if uHandler.err != nil {
 		http.Error(w, "Fail Unmarshalling json", http.StatusBadRequest)
 		return
 	}
-	level, skills, errGet := uHandler.diploma.EthGetter()
-	if errGet != nil {
+	level, skills, err := uHandler.diploma.EthGetter()
+	if err != nil {
 		http.Error(w, "The request is fail, please retry & check the data.", http.StatusBadRequest)
 		return
 	} else {

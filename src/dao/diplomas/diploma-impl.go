@@ -2,7 +2,9 @@ package diplomas
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/42School/blockchain-service/src/account"
+	"github.com/42School/blockchain-service/src/dao/api"
 	"github.com/42School/blockchain-service/src/dao/contracts"
 	"github.com/42School/blockchain-service/src/metrics"
 	"github.com/42School/blockchain-service/src/tools"
@@ -12,12 +14,16 @@ import (
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
+	"io"
 	"time"
 )
 
-type Skill struct {
-	Name  string  `json:"name"`
-	Level float64 `json:"level"`
+type WebhookData struct {
+	Login               string `json:"login"`
+	FirstName           string `json:"first_name"`
+	LastName            string `json:"last_name"`
+	BirthDate           string `json:"birth_date"`
+	AlumnizedCursusUser int    `json:"alumnized_cursus_user"`
 }
 
 type DiplomaImpl struct {
@@ -27,7 +33,7 @@ type DiplomaImpl struct {
 	BirthDate  string    `json:"birth_date"`
 	AlumniDate string    `json:"alumni_date"`
 	Level      float64   `json:"level"`
-	Skills     []Skill   `json:"skills"`
+	Skills     []api.Skill   `json:"skills"`
 	Counter    int       `json:"counter"`
 }
 
@@ -44,6 +50,37 @@ func addToCheck(toAdd VerificationHash) {
 	metrics.GaugeCheckQueue.Inc()
 	metrics.CounterCheckQueue.Inc()
 	tools.ToCheckDB.InsertOne(context.Background(), bson.M{"tx": txJson, "studenthash": toAdd.StudentHash, "time": toAdd.SendTime})
+}
+
+func (_dp DiplomaImpl) ReadWebhook(body io.ReadCloser) (DiplomaImpl, error) {
+	var webhookData WebhookData
+	err := json.NewDecoder(body).Decode(&webhookData)
+	if err != nil {
+		tools.LogsError(err)
+		return _dp, err
+	}
+	level, skills, err := api.GetCursusUser(webhookData.AlumnizedCursusUser)
+	if err != nil {
+		tools.LogsError(err)
+		return _dp, err
+	}
+	_dp.FirstName = webhookData.FirstName
+	_dp.LastName = webhookData.LastName
+	_dp.BirthDate = webhookData.BirthDate
+	_dp.AlumniDate = time.Now().Format("2006-01-02")
+	_dp.Level = level
+	_dp.Skills = skills
+	_dp.Counter = 0
+	log.WithFields(_dp.LogFields()).Debug("Webhook to Diploma success")
+	return _dp, nil
+}
+
+func (_dp DiplomaImpl) ReadJson(body io.ReadCloser) (DiplomaImpl, error) {
+	err := json.NewDecoder(body).Decode(&_dp)
+	if err != nil {
+		return _dp, err
+	}
+	return _dp, nil
 }
 
 func (_dp DiplomaImpl) AddToRetry() {
@@ -142,29 +179,20 @@ func (_dp DiplomaImpl) EthWriting() (string, bool) {
 	return newHash.Hex(), true
 }
 
-func (_dp DiplomaImpl) EthGetter() (float64, [30]Skill, error) {
+func (_dp DiplomaImpl) EthGetter() (float64, [30]api.Skill, error) {
 	dataToHash := _dp.FirstName + ", " + _dp.LastName + ", " + _dp.BirthDate + ", " + _dp.AlumniDate
 	hash := crypgo.Keccak256Hash([]byte(dataToHash))
 	levelInt, skillsEth, err := contracts.CallGetDiploma(hash.Bytes())
 	if err != nil {
 		tools.LogsError(err)
-		return 0, [30]Skill{}, err
+		return 0, [30]api.Skill{}, err
 	}
 	level := float64(levelInt) / 100
-	skills := [30]Skill{}
+	skills := [30]api.Skill{}
 	for i := 0; i < 30; i++ {
 		skills[i].Level = float64(skillsEth[i].Level) / 100
 		skills[i].Name = skillsEth[i].Name
 	}
 	log.Print(level, skills)
 	return level, skills, nil
-}
-
-func EthAllGetter() []contracts.FtDiplomaDiplomas {
-	diplomas, err := contracts.CallGetAllDiploma()
-	if err != nil {
-		tools.LogsError(err)
-		return nil
-	}
-	return diplomas
 }

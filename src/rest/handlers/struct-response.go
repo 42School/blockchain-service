@@ -1,11 +1,13 @@
 package handlers
 
-import "github.com/42School/blockchain-service/src/dao/diplomas"
+import (
+	"github.com/42School/blockchain-service/src/dao/api"
+)
 
 type ResponseData struct {
 	Hash   string
 	Level  float64
-	Skills []diplomas.Skill
+	Skills []api.Skill
 }
 
 type ResponseJson struct {

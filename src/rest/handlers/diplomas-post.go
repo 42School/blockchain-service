@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/42School/blockchain-service/src/dao/api"
-	"github.com/42School/blockchain-service/src/dao/diplomas"
 	"github.com/42School/blockchain-service/src/dao/interfaces"
 	"github.com/42School/blockchain-service/src/tools"
 	log "github.com/sirupsen/logrus"
@@ -27,7 +26,7 @@ func (uHandler *CreateDiplomaHandler) ServeHTTP(w http.ResponseWriter, r *http.R
 		http.Error(w, "You are not authorized !", http.StatusUnauthorized)
 		return
 	}
-	uHandler.diploma, uHandler.err = api.WebhookToDiploma(r.Body)
+	uHandler.diploma, uHandler.err = uHandler.diploma.ReadWebhook(r.Body)
 	if uHandler.err != nil {
 		http.Error(w, "Fail Unmarshalling json", http.StatusBadRequest)
 		return
@@ -42,7 +41,7 @@ func (uHandler *CreateDiplomaHandler) ServeHTTP(w http.ResponseWriter, r *http.R
 		http.Error(w, "Blockchain writing had a problem, the diploma is saved in the queue.", http.StatusBadRequest)
 		return
 	} else {
-		res, _ := json.Marshal(ResponseJson{true, "The writing in blockchain has been done, it will be confirmed in 10 min.", ResponseData{hash, 0, []diplomas.Skill{}}})
+		res, _ := json.Marshal(ResponseJson{true, "The writing in blockchain has been done, it will be confirmed in 10 min.", ResponseData{hash, 0, []api.Skill{}}})
 		w.WriteHeader(http.StatusOK)
 		w.Write(res)
 	}
