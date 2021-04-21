@@ -10,9 +10,9 @@ import (
 
 func TestCreateDiplomaHandler_ServeHTTP(t *testing.T) {
 	mockDiploma := mocks.MockDiplomaImpl{}
-	mockDiploma.On("ReadWebhook").Return(mockDiploma, nil)
 	mockDiploma.On("CheckDiploma").Return(false)
 	mockDiploma.On("EthWriting").Return("0x9eeef4248948f749c71af80a097716decbb59d73d05666eed7642a7491107115", true)
+	mockDiploma.On("ReadWebhook").Return(mockDiploma, nil)
 	u := &CreateDiplomaHandler{mockDiploma, errors.New("")}
 	r := httptest.NewRequest(http.MethodPost, "/create-diploma", nil)
 	w := httptest.NewRecorder()

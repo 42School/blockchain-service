@@ -75,5 +75,5 @@ func (dp MockDiplomaImpl) EthWriting() (string, bool) {
 
 func (dp MockDiplomaImpl) EthGetter() (float64, [30]api.Skill, error) {
 	args := dp.Called()
- 	return 0.0, [30]api.Skill{}, args.Error(0)
+ 	return float64(args.Int(0)), args.Get(1).([30]api.Skill), args.Error(2)
 }
