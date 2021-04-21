@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-type verifHashDB struct {
+type checkHashDB struct {
 	Id          uuid.UUID
 	Tx          []byte
 	StudentHash []byte
@@ -42,7 +42,7 @@ func restoreCheckQueue() {
 		return
 	}
 	for cursor.Next(context.TODO()) {
-		var toGet verifHashDB
+		var toGet checkHashDB
 		var toCheck diplomas.VerificationHash
 		var tx types.Transaction
 		err = cursor.Decode(&toGet)
