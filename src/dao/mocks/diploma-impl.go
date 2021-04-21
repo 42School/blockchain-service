@@ -1,14 +1,16 @@
-package diplomas
+package mocks
 
 import (
-	"errors"
 	"github.com/42School/blockchain-service/src/dao/api"
+	"github.com/42School/blockchain-service/src/dao/diplomas"
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
+	"github.com/stretchr/testify/mock"
 	"io"
 )
 
 type MockDiplomaImpl struct {
+	mock.Mock
 	Id         uuid.UUID `bson:"_id"`
 	FirstName  string    `json:"first_name"`
 	LastName   string    `json:"last_name"`
@@ -19,7 +21,8 @@ type MockDiplomaImpl struct {
 	Counter    int       `json:"counter"`
 }
 
-func (dp MockDiplomaImpl) ReadWebhook(body io.ReadCloser) (MockDiplomaImpl, error) {
+func (dp MockDiplomaImpl) ReadWebhook(body io.ReadCloser) (diplomas.Diploma, error) {
+	args := dp.Called()
 	dp.FirstName = "Louise"
 	dp.LastName = "Pieri"
 	dp.BirthDate = "1998-12-27"
@@ -35,28 +38,30 @@ func (dp MockDiplomaImpl) ReadWebhook(body io.ReadCloser) (MockDiplomaImpl, erro
 		{"Web",5.2}, {"Organization",5.04},
 		{"Network & system administration",4.5},
 		{"DB & Data",4.28}, {"Object-oriented programming",4.2}}
-	return dp, nil
+	return args.Get(0).(diplomas.Diploma), args.Error(1)
 }
 
-func (dp MockDiplomaImpl) ReadJson(body io.ReadCloser) (MockDiplomaImpl, error) {
+func (dp MockDiplomaImpl) ReadJson(body io.ReadCloser) (diplomas.Diploma, error) {
+	args := dp.Called()
 	dp.FirstName = "Louise"
 	dp.LastName = "Pieri"
 	dp.BirthDate = "1998-12-27"
 	dp.AlumniDate = "2021-01-01"
-	return dp, nil
+	return args.Get(0).(diplomas.Diploma), args.Error(1)
 }
 
 func (dp MockDiplomaImpl) CheckDiploma() bool {
-	return true
+	args := dp.Called()
+	return args.Bool(0)
 }
 
 func (dp MockDiplomaImpl) LogFields() log.Fields {
-	return log.Fields{"first_name": dp.FirstName, "last_name": dp.LastName, "birth_date": dp.BirthDate, "alumni_date": dp.AlumniDate}
+	return log.Fields{"first_name": "Louise", "last_name": "Pieri", "birth_date": "1998-12-27", "alumni_date": "2021-01-01"}
 }
 
 func (dp MockDiplomaImpl) String() string {
-	str := dp.FirstName + ", " + dp.LastName + ", " + dp.BirthDate + ", " + dp.AlumniDate
-	return str
+	args := dp.Called()
+	return args.String(0)
 }
 
 func (dp MockDiplomaImpl) AddToRetry() {
@@ -64,9 +69,11 @@ func (dp MockDiplomaImpl) AddToRetry() {
 }
 
 func (dp MockDiplomaImpl) EthWriting() (string, bool) {
-	return "", true
+	args := dp.Called()
+	return args.String(0), args.Bool(1)
 }
 
 func (dp MockDiplomaImpl) EthGetter() (float64, [30]api.Skill, error) {
- 	return 0, [30]api.Skill{}, errors.New("")
+	args := dp.Called()
+ 	return 0.0, [30]api.Skill{}, args.Error(0)
 }

@@ -3,17 +3,17 @@ package handlers
 import (
 	"encoding/json"
 	"errors"
-	"github.com/42School/blockchain-service/src/dao/interfaces"
+	"github.com/42School/blockchain-service/src/dao/diplomas"
 	"net/http"
 )
 
 type GetDiplomaHandler struct {
-	diploma  interfaces.Diploma
-	err      error
+	diploma diplomas.Diploma
+	err     error
 }
 
 func NewGetDiplomaHandler() *GetDiplomaHandler {
-	var u = GetDiplomaHandler{interfaces.NewDiploma(), errors.New("")}
+	var u = GetDiplomaHandler{diplomas.NewDiploma(), errors.New("")}
 	return &u
 }
 

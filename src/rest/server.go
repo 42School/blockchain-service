@@ -12,7 +12,6 @@ import (
 
 type Server struct {
 	server                *http.Server
-
 	handlerCreateDiploma  *handlers.CreateDiplomaHandler
 	handlerGetDiploma     *handlers.GetDiplomaHandler
 	handlerGetAllDiplomas *handlers.GetAllDiplomaHandler
@@ -24,8 +23,8 @@ func NewServer() *Server {
 	s.handlerGetDiploma = handlers.NewGetDiplomaHandler()
 	s.handlerGetAllDiplomas = handlers.NewGetAllDiplomaHandler()
 	s.server = &http.Server{
-		Addr:              ":8080",
-		Handler:           s.router(),
+		Addr:    ":8080",
+		Handler: s.router(),
 	}
 	return s
 }

@@ -1,8 +1,7 @@
-package interfaces
+package diplomas
 
 import (
 	"github.com/42School/blockchain-service/src/dao/api"
-	"github.com/42School/blockchain-service/src/dao/diplomas"
 	log "github.com/sirupsen/logrus"
 	"io"
 )
@@ -14,12 +13,12 @@ type Diploma interface {
 	String() string
 	EthWriting() (string, bool)
 	EthGetter() (float64, [30]api.Skill, error)
-	ReadWebhook(body io.ReadCloser) (diplomas.DiplomaImpl, error)
-	ReadJson(body io.ReadCloser) (diplomas.DiplomaImpl, error)
+	ReadWebhook(body io.ReadCloser) (Diploma, error)
+	ReadJson(body io.ReadCloser) (Diploma, error)
 }
 
 func NewDiploma() Diploma {
 	var i Diploma
-	i = &diplomas.DiplomaImpl{}
+	i = &DiplomaImpl{}
 	return i
 }

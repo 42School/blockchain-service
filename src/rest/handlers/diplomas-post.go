@@ -4,19 +4,19 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/42School/blockchain-service/src/dao/api"
-	"github.com/42School/blockchain-service/src/dao/interfaces"
+	"github.com/42School/blockchain-service/src/dao/diplomas"
 	"github.com/42School/blockchain-service/src/tools"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 )
 
 type CreateDiplomaHandler struct {
-	diploma  interfaces.Diploma
-	err      error
+	diploma diplomas.Diploma
+	err     error
 }
 
 func NewCreateDiplomaHandler() *CreateDiplomaHandler {
-	var u = CreateDiplomaHandler{interfaces.NewDiploma(), errors.New("")}
+	var u = CreateDiplomaHandler{diplomas.NewDiploma(), errors.New("")}
 	return &u
 }
 

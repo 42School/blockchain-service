@@ -52,7 +52,7 @@ func addToCheck(toAdd VerificationHash) {
 	tools.ToCheckDB.InsertOne(context.Background(), bson.M{"tx": txJson, "studenthash": toAdd.StudentHash, "time": toAdd.SendTime})
 }
 
-func (_dp DiplomaImpl) ReadWebhook(body io.ReadCloser) (DiplomaImpl, error) {
+func (_dp DiplomaImpl) ReadWebhook(body io.ReadCloser) (Diploma, error) {
 	var webhookData WebhookData
 	err := json.NewDecoder(body).Decode(&webhookData)
 	if err != nil {
@@ -75,7 +75,7 @@ func (_dp DiplomaImpl) ReadWebhook(body io.ReadCloser) (DiplomaImpl, error) {
 	return _dp, nil
 }
 
-func (_dp DiplomaImpl) ReadJson(body io.ReadCloser) (DiplomaImpl, error) {
+func (_dp DiplomaImpl) ReadJson(body io.ReadCloser) (Diploma, error) {
 	err := json.NewDecoder(body).Decode(&_dp)
 	if err != nil {
 		return _dp, err
