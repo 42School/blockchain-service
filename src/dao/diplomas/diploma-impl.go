@@ -27,14 +27,16 @@ type WebhookData struct {
 }
 
 type DiplomaImpl struct {
-	Id         uuid.UUID `bson:"_id"`
-	FirstName  string    `json:"first_name"`
-	LastName   string    `json:"last_name"`
-	BirthDate  string    `json:"birth_date"`
-	AlumniDate string    `json:"alumni_date"`
-	Level      float64   `json:"level"`
-	Skills     []api.Skill   `json:"skills"`
-	Counter    int       `json:"counter"`
+	blockchain contracts.BlockchainFunc
+
+	Id         uuid.UUID   `bson:"_id"`
+	FirstName  string      `json:"first_name"`
+	LastName   string      `json:"last_name"`
+	BirthDate  string      `json:"birth_date"`
+	AlumniDate string      `json:"alumni_date"`
+	Level      float64     `json:"level"`
+	Skills     []api.Skill `json:"skills"`
+	Counter    int         `json:"counter"`
 }
 
 func addToCheck(toAdd VerificationHash) {
@@ -64,6 +66,7 @@ func (_dp DiplomaImpl) ReadWebhook(body io.ReadCloser) (Diploma, error) {
 		tools.LogsError(err)
 		return _dp, err
 	}
+	_dp.blockchain = contracts.NewBlockchainFunc()
 	_dp.FirstName = webhookData.FirstName
 	_dp.LastName = webhookData.LastName
 	_dp.BirthDate = webhookData.BirthDate
@@ -167,7 +170,7 @@ func (_dp DiplomaImpl) EthWriting() (string, bool) {
 		tools.LogsError(err)
 		return "", false
 	}
-	tx, success := contracts.CallCreateDiploma(_dp.convertDpToData(sign, newHash))
+	tx, success := _dp.blockchain.CallCreateDiploma(_dp.convertDpToData(sign, newHash))
 	if success == false {
 		_dp.AddToRetry()
 		return "", false
@@ -182,7 +185,7 @@ func (_dp DiplomaImpl) EthWriting() (string, bool) {
 func (_dp DiplomaImpl) EthGetter() (float64, [30]api.Skill, error) {
 	dataToHash := _dp.FirstName + ", " + _dp.LastName + ", " + _dp.BirthDate + ", " + _dp.AlumniDate
 	hash := crypgo.Keccak256Hash([]byte(dataToHash))
-	levelInt, skillsEth, err := contracts.CallGetDiploma(hash.Bytes())
+	levelInt, skillsEth, err := _dp.blockchain.CallGetDiploma(hash.Bytes())
 	if err != nil {
 		tools.LogsError(err)
 		return 0, [30]api.Skill{}, err
