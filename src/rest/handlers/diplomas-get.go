@@ -26,7 +26,7 @@ func (uHandler *GetDiplomaHandler) ServeHTTP(w http.ResponseWriter, r *http.Requ
 	}
 	level, skills, err := uHandler.diploma.EthGetter()
 	if err != nil {
-		http.Error(w, "The request is fail, please retry & check the data.", http.StatusBadRequest)
+		http.Error(w, "The request is fail, please retry or check the data.", http.StatusBadRequest)
 		return
 	} else {
 		res, _ := json.Marshal(ResponseJson{true, "", ResponseData{"", level, skills[:]}})
