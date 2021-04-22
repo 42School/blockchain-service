@@ -1,8 +1,7 @@
-package mocks
+package diplomas
 
 import (
 	"github.com/42School/blockchain-service/src/dao/api"
-	"github.com/42School/blockchain-service/src/dao/diplomas"
 	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/mock"
 	"io"
@@ -12,14 +11,14 @@ type MockDiplomaImpl struct {
 	mock.Mock
 }
 
-func (dp MockDiplomaImpl) ReadWebhook(body io.ReadCloser) (diplomas.Diploma, error) {
+func (dp MockDiplomaImpl) ReadWebhook(body io.ReadCloser) (Diploma, error) {
 	args := dp.Called()
-	return args.Get(0).(diplomas.Diploma), args.Error(1)
+	return args.Get(0).(Diploma), args.Error(1)
 }
 
-func (dp MockDiplomaImpl) ReadJson(body io.ReadCloser) (diplomas.Diploma, error) {
+func (dp MockDiplomaImpl) ReadJson(body io.ReadCloser) (Diploma, error) {
 	args := dp.Called()
-	return args.Get(0).(diplomas.Diploma), args.Error(1)
+	return args.Get(0).(Diploma), args.Error(1)
 }
 
 func (dp MockDiplomaImpl) CheckDiploma() bool {

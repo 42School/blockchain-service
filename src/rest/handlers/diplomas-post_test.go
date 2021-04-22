@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"errors"
-	"github.com/42School/blockchain-service/src/dao/mocks"
+	"github.com/42School/blockchain-service/src/dao/diplomas"
 	"github.com/stretchr/testify/suite"
 	"net/http"
 	"net/http/httptest"
@@ -24,7 +24,7 @@ func TestCreateDiplomaHandler_ServeHTTP(t *testing.T) {
 
 func (s *SuiteCreateDpHandler) Test_Error_JSON() {
 	expectedString := "Fail Unmarshalling json\n"
-	diploma := mocks.MockDiplomaImpl{}
+	diploma := diplomas.MockDiplomaImpl{}
 	diploma.On("CheckDiploma").Return(true)
 	diploma.On("EthWriting").Return(s.hash, true)
 	diploma.On("ReadWebhook").Return(diploma, errors.New("Error"))
@@ -37,7 +37,7 @@ func (s *SuiteCreateDpHandler) Test_Error_JSON() {
 
 func (s *SuiteCreateDpHandler) Test_Error_CheckDiploma() {
 	expectedString := "The data sent are not valid, to be written in blockchain please try again !\n"
-	diploma := mocks.MockDiplomaImpl{}
+	diploma := diplomas.MockDiplomaImpl{}
 	diploma.On("CheckDiploma").Return(false)
 	diploma.On("EthWriting").Return(s.hash, true)
 	diploma.On("ReadWebhook").Return(diploma, nil)
@@ -50,7 +50,7 @@ func (s *SuiteCreateDpHandler) Test_Error_CheckDiploma() {
 
 func (s *SuiteCreateDpHandler) Test_Error_Write_Diplomas() {
 	expectedString := "Blockchain writing had a problem, the diploma is saved in the queue.\n"
-	diploma := mocks.MockDiplomaImpl{}
+	diploma := diplomas.MockDiplomaImpl{}
 	diploma.On("CheckDiploma").Return(true)
 	diploma.On("EthWriting").Return("", false)
 	diploma.On("ReadWebhook").Return(diploma, nil)
@@ -63,7 +63,7 @@ func (s *SuiteCreateDpHandler) Test_Error_Write_Diplomas() {
 
 func (s *SuiteCreateDpHandler) Test_No_Error() {
 	expectedString := "{\"Status\":true,\"Message\":\"The writing in blockchain has been done, it will be confirmed in 10 min.\",\"Data\":{\"Hash\":\"" + s.hash + "\",\"Level\":0,\"Skills\":[]}}"
-	diploma := mocks.MockDiplomaImpl{}
+	diploma := diplomas.MockDiplomaImpl{}
 	diploma.On("CheckDiploma").Return(true)
 	diploma.On("EthWriting").Return(s.hash, true)
 	diploma.On("ReadWebhook").Return(diploma, nil)

@@ -38,6 +38,7 @@ func PrometheusMiddleware(next http.Handler) http.Handler {
 }
 
 func prometheusGaugeWallets() {
+	bc := contracts.NewBlockchainFunc()
 	for {
 		for i := 0; i < len(account.Accounts); i++ {
 			keyjson, err := ioutil.ReadFile(tools.PathKeyStore + "/" + account.Accounts[i].KeyStoreFile)
@@ -50,7 +51,7 @@ func prometheusGaugeWallets() {
 				log.WithFields(log.Fields{"error": err}).Error("Metrics Records failed - prometheusGaugeWallets.DecryptKey")
 				continue
 			}
-			balance, err := contracts.GetBalance(key.Address)
+			balance, err := bc.GetBalance(key.Address)
 			if err != nil {
 				log.WithFields(log.Fields{"address": key.Address.String(), "error": err}).Error("Metrics Records failed - prometheusGaugeWallets.getBalance")
 				continue

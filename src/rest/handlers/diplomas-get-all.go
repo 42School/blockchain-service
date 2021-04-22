@@ -9,11 +9,12 @@ import (
 )
 
 type GetAllDiplomaHandler struct {
+	blockchain contracts.BlockchainFunc
 	err error
 }
 
 func NewGetAllDiplomaHandler() *GetAllDiplomaHandler {
-	var u = GetAllDiplomaHandler{ errors.New("")}
+	var u = GetAllDiplomaHandler{contracts.NewBlockchainFunc(), errors.New("")}
 	return &u
 }
 
@@ -23,7 +24,7 @@ func (uHandler *GetAllDiplomaHandler) ServeHTTP(w http.ResponseWriter, r *http.R
 		http.Error(w, "You are not authorized !", http.StatusUnauthorized)
 		return
 	}
-	diplomas, err := contracts.CallGetAllDiploma()
+	diplomas, err := uHandler.blockchain.CallGetAllDiploma()
 	if err != nil {
 		tools.LogsError(err)
 		http.Error(w, "A problem occurred during data recovery.", http.StatusInternalServerError)

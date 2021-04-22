@@ -16,6 +16,7 @@ import (
 )
 
 func CheckHash() {
+	bc := contracts.NewBlockchainFunc()
 	url := tools.FtEndPoint + tools.ValidationPath
 	for {
 		time.Sleep(10 * time.Minute)
@@ -30,7 +31,7 @@ func CheckHash() {
 				metrics.PrometheusBlockDuration(receipt.BlockHash, check.SendTime)
 				if err == nil {
 					if receipt.Status == 1 {
-						contracts.CheckSecurity(client, check.Tx, check.StudentHash)
+						bc.CheckSecurity(client, check.Tx, check.StudentHash)
 						_, err = http.Post(url, "Content-Type: application/json", strings.NewReader(data))
 						if err == nil {
 							tools.ToCheckHash.Remove(e)
@@ -42,7 +43,7 @@ func CheckHash() {
 							continue
 						}
 					} else {
-						revertMsg := contracts.GetRevert(client, check.Tx, receipt)
+						revertMsg := bc.GetRevert(client, check.Tx, receipt)
 						if revertMsg != "" {
 							if strings.Contains(revertMsg, "FtDiploma: Is not 42 sign this diploma") {
 								data = "{'Status': false, 'Message': 'The " + strHash + " diploma wasn't signed by 42, so it's not in the blockchain.', 'Data': {" + strHash + "}}"

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/42School/blockchain-service/src/dao/api"
-	"github.com/42School/blockchain-service/src/dao/mocks"
+	"github.com/42School/blockchain-service/src/dao/diplomas"
 	"github.com/stretchr/testify/suite"
 	"net/http"
 	"net/http/httptest"
@@ -23,7 +23,7 @@ func TestGetDiplomaHandler_ServeHTTP(t *testing.T) {
 
 func (s *SuiteGetDpHandler) Test_Error_JSON() {
 	expectedString := "Fail Unmarshalling json\n"
-	diploma := mocks.MockDiplomaImpl{}
+	diploma := diplomas.MockDiplomaImpl{}
 	diploma.On("EthGetter").Return(0, [30]api.Skill{}, nil)
 	diploma.On("ReadJson").Return(diploma, errors.New("Error"))
 	u := &GetDiplomaHandler{diploma, errors.New("")}
@@ -35,7 +35,7 @@ func (s *SuiteGetDpHandler) Test_Error_JSON() {
 
 func (s *SuiteGetDpHandler) Test_Error_Read_BC() {
 	expectedString := "The request is fail, please retry or check the data.\n"
-	diploma := mocks.MockDiplomaImpl{}
+	diploma := diplomas.MockDiplomaImpl{}
 	diploma.On("EthGetter").Return(0, [30]api.Skill{}, errors.New("Error"))
 	diploma.On("ReadJson").Return(diploma, nil)
 	u := &GetDiplomaHandler{diploma, errors.New("")}
@@ -56,7 +56,7 @@ func (s *SuiteGetDpHandler) Test_No_Error() {
 	}
 	expectedData := ResponseJson{true, "", ResponseData{"", 21, skills[:]}}
 	expectedString, _ := json.Marshal(expectedData)
-	diploma := mocks.MockDiplomaImpl{}
+	diploma := diplomas.MockDiplomaImpl{}
 	diploma.On("EthGetter").Return(21, skills, nil)
 	diploma.On("ReadJson").Return(diploma, nil)
 	u := &GetDiplomaHandler{diploma, errors.New("")}

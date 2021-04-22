@@ -185,6 +185,7 @@ func (_dp DiplomaImpl) EthWriting() (string, bool) {
 func (_dp DiplomaImpl) EthGetter() (float64, [30]api.Skill, error) {
 	dataToHash := _dp.FirstName + ", " + _dp.LastName + ", " + _dp.BirthDate + ", " + _dp.AlumniDate
 	hash := crypgo.Keccak256Hash([]byte(dataToHash))
+	log.Info(hash.String())
 	levelInt, skillsEth, err := _dp.blockchain.CallGetDiploma(hash.Bytes())
 	if err != nil {
 		tools.LogsError(err)
