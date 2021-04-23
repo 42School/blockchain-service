@@ -70,7 +70,8 @@ func (_dp DiplomaImpl) ReadWebhook(body io.ReadCloser) (Diploma, error) {
 	_dp.FirstName = webhookData.FirstName
 	_dp.LastName = webhookData.LastName
 	_dp.BirthDate = webhookData.BirthDate
-	_dp.AlumniDate = time.Now().Format("2006-01-02")
+	_dp.AlumniDate = "2021-01-01"
+	//_dp.AlumniDate = time.Now().Format("2006-01-02")
 	_dp.Level = level
 	_dp.Skills = skills
 	_dp.Counter = 0
@@ -185,7 +186,7 @@ func (_dp DiplomaImpl) EthWriting() (string, bool) {
 func (_dp DiplomaImpl) EthGetter() (float64, [30]api.Skill, error) {
 	dataToHash := _dp.FirstName + ", " + _dp.LastName + ", " + _dp.BirthDate + ", " + _dp.AlumniDate
 	hash := crypgo.Keccak256Hash([]byte(dataToHash))
-	log.Info(hash.String())
+	log.Debug(hash.String())
 	levelInt, skillsEth, err := _dp.blockchain.CallGetDiploma(hash.Bytes())
 	if err != nil {
 		tools.LogsError(err)
@@ -197,6 +198,6 @@ func (_dp DiplomaImpl) EthGetter() (float64, [30]api.Skill, error) {
 		skills[i].Level = float64(skillsEth[i].Level) / 100
 		skills[i].Name = skillsEth[i].Name
 	}
-	log.Print(level, skills)
+	log.Debug(level, skills)
 	return level, skills, nil
 }
