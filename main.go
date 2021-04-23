@@ -57,7 +57,7 @@ func main() {
 		return
 	}
 	async.RestoreQueue()
-	account.CreateAccountsManager()
+	account.Accounts = account.NewAccountsManager()
 	metrics.RecordMetrics()
 	server := rest.NewServer()
 	err = server.ListenAndServe()

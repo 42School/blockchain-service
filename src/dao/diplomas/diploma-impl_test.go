@@ -3,8 +3,10 @@ package diplomas
 import (
 	"errors"
 	"fmt"
+	"github.com/42School/blockchain-service/src/account"
 	"github.com/42School/blockchain-service/src/dao/api"
 	"github.com/42School/blockchain-service/src/dao/contracts"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/google/uuid"
@@ -21,6 +23,7 @@ type SuiteEthGetter struct {
 
 type SuiteEthWriting struct {
 	suite.Suite
+	sign        []byte
 	hash        [32]byte
 	v           uint8
 	s           [32]byte
@@ -87,22 +90,48 @@ func TestDiplomaImpl_EthWriting(t *testing.T) {
 
 func (s *SuiteEthWriting) SetupSuite() {
 	hashByte, _ := hexutil.Decode("0xa41eeebbe22e2235a8ef94074c79c92ef6448baca12625ed6e26a61ddb60b55b")
+	s.sign = []byte{40, 105, 34, 26, 74, 99, 82, 167, 136, 220, 171, 65, 147, 1, 129, 48, 213, 0, 138, 83, 165, 153, 50, 85, 235, 246, 224, 216, 122, 22, 167, 112, 77, 78, 1, 26, 74, 10, 174, 110, 141, 138, 218, 169, 46, 212, 158, 209, 58, 226, 20, 160, 185, 22, 86, 159, 144, 164, 160, 85, 161, 152, 72, 127, 0}
 	s.v = 27
 	s.r = [32]byte{40, 105, 34, 26, 74, 99, 82, 167, 136, 220, 171, 65, 147, 1, 129, 48, 213, 0, 138, 83, 165, 153, 50, 85, 235, 246, 224, 216, 122, 22, 167, 112}
 	s.s = [32]byte{77, 78, 1, 26, 74, 10, 174, 110, 141, 138, 218, 169, 46, 212, 158, 209, 58, 226, 20, 160, 185, 22, 86, 159, 144, 164, 160, 85, 161, 152, 72, 127}
 	copy(s.hash[:], hashByte)
 	s.level = 2142
-	s.skills = [30]uint64{1642, 1387, 127, 1122, 1038, 1013, 749, 66, 534, 526, 52, 504, 45, 428, 42, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+	s.skills = [30]uint64{1642, 1387, 1270, 1122, 1038, 1013, 749, 660, 534, 526, 520, 504, 450, 428, 420, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 	s.skillsSlugs = [30]string{
 		"Security", "Unix", "Adaptation & creativity", "Company experience", "Algorithms & AI", "Group & interpersonal", "Graphics", "Rigor", "Imperative programming",
 		"Technology integration", "Web", "Organization", "Network & system administration", "DB & Data", "Object-oriented programming", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
 	}
 }
 
+func (s *SuiteEthWriting) Test_Error_Sign() {
+	mockBc := &contracts.MockBlockchainImpl{}
+	mockBc.On("CallCreateDiploma", s.level, s.skills, s.skillsSlugs, s.v, s.r, s.s, s.hash).Return(&types.Transaction{}, true)
+	diploma.blockchain = mockBc
+	mockAccount := &account.MockAccountsImpl{}
+	mockAccount.On("SignHash", common.BytesToHash(s.hash[:])).Return([]byte{}, errors.New("Error"))
+	diploma.accounts = mockAccount
+	_, val := diploma.EthWriting()
+	s.Equal(false, val)
+}
+
+func (s *SuiteEthWriting) Test_Error_Transaction() {
+	mockBc := &contracts.MockBlockchainImpl{}
+	mockBc.On("CallCreateDiploma", s.level, s.skills, s.skillsSlugs, s.v, s.r, s.s, s.hash).Return(&types.Transaction{}, false)
+	diploma.blockchain = mockBc
+	mockAccount := &account.MockAccountsImpl{}
+	mockAccount.On("SignHash", common.BytesToHash(s.hash[:])).Return(s.sign, nil)
+	diploma.accounts = mockAccount
+	_, val := diploma.EthWriting()
+	s.Equal(false, val)
+}
+
 func (s *SuiteEthWriting) Test_No_Error() {
 	mockBc := &contracts.MockBlockchainImpl{}
-	mockBc.On("CallCreateDiploma", s.level, s.skills, s.skillsSlugs, s.v, s.r, s.s, s.hash).Return(&types.Transactions{}, true)
+	mockBc.On("CallCreateDiploma", s.level, s.skills, s.skillsSlugs, s.v, s.r, s.s, s.hash).Return(&types.Transaction{}, true)
 	diploma.blockchain = mockBc
+	mockAccount := &account.MockAccountsImpl{}
+	mockAccount.On("SignHash", common.BytesToHash(s.hash[:])).Return(s.sign, nil)
+	diploma.accounts = mockAccount
 	_, val := diploma.EthWriting()
 	s.Equal(true, val)
 }

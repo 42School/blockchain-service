@@ -41,7 +41,7 @@ func (bc BlockchainImpl) getAuth() (*bind.TransactOpts, error) {
 		log.Debug("Dial")
 		return nil, err
 	}
-	address, privateKey, err := account.GetWriterAccount()
+	address, privateKey, err := account.Accounts.GetWriter()
 	if err != nil {
 		log.Debug("GetWriterAccount")
 		return nil, err
@@ -101,7 +101,7 @@ func (bc BlockchainImpl) GetBalance(address common.Address) (int64, error) {
 }
 
 func (bc BlockchainImpl) GetRevert(client *ethclient.Client, tx *types.Transaction, receipt *types.Receipt) string {
-	address, _, _ := account.GetWriterAccount()
+	address, _, _ := account.Accounts.GetWriter()
 	msg := ethereum.CallMsg{
 		From:     address,
 		To:       tx.To(),
@@ -173,7 +173,7 @@ func (bc BlockchainImpl) CallCreateDiploma(level uint64, skills [30]uint64, skil
 		log.Debug("Write")
 		tools.LogsError(err)
 		if strings.Contains(err.Error(), "insufficient funds for gas * price + value") {
-			account.ChangeAccount()
+			account.Accounts.ChangeWriter()
 		}
 		return nil, false
 	}
@@ -203,7 +203,7 @@ func (bc BlockchainImpl) CallGetAllDiploma() ([]FtDiplomaDiplomas, error) {
 	if err != nil {
 		return nil, err
 	}
-	result, err := instance.GetAllDiploma(&bind.CallOpts{From: account.GetSignAccount().Address})
+	result, err := instance.GetAllDiploma(&bind.CallOpts{From: account.Accounts.GetSign().Address})
 	if err != nil {
 		return nil, err
 	}

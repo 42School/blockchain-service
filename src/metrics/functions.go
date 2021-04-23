@@ -5,13 +5,11 @@ import (
 	"github.com/42School/blockchain-service/src/account"
 	"github.com/42School/blockchain-service/src/dao/contracts"
 	"github.com/42School/blockchain-service/src/tools"
-	"github.com/ethereum/go-ethereum/accounts/keystore"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/gorilla/mux"
 	"github.com/prometheus/client_golang/prometheus"
 	log "github.com/sirupsen/logrus"
-	"io/ioutil"
 	"net/http"
 	"strconv"
 	"time"
@@ -40,23 +38,14 @@ func PrometheusMiddleware(next http.Handler) http.Handler {
 func prometheusGaugeWallets() {
 	bc := contracts.NewBlockchainFunc()
 	for {
-		for i := 0; i < len(account.Accounts); i++ {
-			keyjson, err := ioutil.ReadFile(tools.PathKeyStore + "/" + account.Accounts[i].KeyStoreFile)
+		for i := 0; i < account.Accounts.GetLenAccounts(); i++ {
+			address, _, err := account.Accounts.GetWriterByI(i)
+			balance, err := bc.GetBalance(address)
 			if err != nil {
-				log.WithFields(log.Fields{"error": err}).Error("Metrics Records failed - prometheusGaugeWallets.ReadFile (keystore)")
+				log.WithFields(log.Fields{"address": address.String(), "error": err}).Error("Metrics Records failed - prometheusGaugeWallets.getBalance")
 				continue
 			}
-			key, err := keystore.DecryptKey(keyjson, account.Accounts[i].Password)
-			if err != nil {
-				log.WithFields(log.Fields{"error": err}).Error("Metrics Records failed - prometheusGaugeWallets.DecryptKey")
-				continue
-			}
-			balance, err := bc.GetBalance(key.Address)
-			if err != nil {
-				log.WithFields(log.Fields{"address": key.Address.String(), "error": err}).Error("Metrics Records failed - prometheusGaugeWallets.getBalance")
-				continue
-			}
-			GaugeBalanceWallet.WithLabelValues(key.Address.String()).Set(float64(balance))
+			GaugeBalanceWallet.WithLabelValues(address.String()).Set(float64(balance))
 		}
 		time.Sleep(10 * time.Minute)
 	}

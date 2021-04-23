@@ -28,6 +28,7 @@ type WebhookData struct {
 
 type DiplomaImpl struct {
 	blockchain contracts.BlockchainFunc
+	accounts   account.AccountsManager
 
 	Id         uuid.UUID   `bson:"_id"`
 	FirstName  string      `json:"first_name"`
@@ -67,6 +68,7 @@ func (_dp DiplomaImpl) ReadWebhook(body io.ReadCloser) (Diploma, error) {
 		return _dp, err
 	}
 	_dp.blockchain = contracts.NewBlockchainFunc()
+	_dp.accounts = account.Accounts
 	_dp.FirstName = webhookData.FirstName
 	_dp.LastName = webhookData.LastName
 	_dp.BirthDate = webhookData.BirthDate
@@ -165,7 +167,9 @@ func (_dp DiplomaImpl) convertDpToData(_sign []byte, _hash common.Hash) (uint64,
 func (_dp DiplomaImpl) EthWriting() (string, bool) {
 	dataToHash := _dp.FirstName + ", " + _dp.LastName + ", " + _dp.BirthDate + ", " + _dp.AlumniDate
 	newHash := crypgo.Keccak256Hash([]byte(dataToHash))
-	sign, err := account.KeyStore.SignHashWithPassphrase(account.GetSignAccount(), tools.PasswordAccount, newHash.Bytes())
+	sign, err := _dp.accounts.SignHash(newHash)
+	log.Info(sign)
+	//sign, err := account.KeyStore.SignHashWithPassphrase(account.GetSignAccount(), tools.PasswordAccount, newHash.Bytes())
 	log.WithFields(log.Fields{"hash": newHash.String(), "sign": common.Bytes2Hex(sign)}).Debug("The hash & signature of the diploma")
 	if err != nil {
 		tools.LogsError(err)
