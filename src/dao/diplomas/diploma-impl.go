@@ -15,7 +15,6 @@ import (
 	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"io"
-	"time"
 )
 
 type WebhookData struct {
@@ -168,8 +167,6 @@ func (_dp DiplomaImpl) EthWriting() (string, bool) {
 	dataToHash := _dp.FirstName + ", " + _dp.LastName + ", " + _dp.BirthDate + ", " + _dp.AlumniDate
 	newHash := crypgo.Keccak256Hash([]byte(dataToHash))
 	sign, err := _dp.accounts.SignHash(newHash)
-	log.Info(sign)
-	//sign, err := account.KeyStore.SignHashWithPassphrase(account.GetSignAccount(), tools.PasswordAccount, newHash.Bytes())
 	log.WithFields(log.Fields{"hash": newHash.String(), "sign": common.Bytes2Hex(sign)}).Debug("The hash & signature of the diploma")
 	if err != nil {
 		tools.LogsError(err)
@@ -177,13 +174,13 @@ func (_dp DiplomaImpl) EthWriting() (string, bool) {
 	}
 	tx, success := _dp.blockchain.CallCreateDiploma(_dp.convertDpToData(sign, newHash))
 	if success == false {
-		_dp.AddToRetry()
+		//_dp.AddToRetry()
 		return "", false
 	}
 	metrics.NumberOfRetryDiploma.Observe(float64(_dp.Counter))
 	metrics.NumberOfRetryPerDiploma.WithLabelValues(_dp.String()).Add(float64(_dp.Counter))
 	log.WithFields(log.Fields{"hash": newHash.String(), "tx": tx.Hash().String()}).Info("Diploma submit in transaction.")
-	addToCheck(VerificationHash{Tx: tx, StudentHash: newHash.Bytes(), SendTime: time.Now()})
+	//addToCheck(VerificationHash{Tx: tx, StudentHash: newHash.Bytes(), SendTime: time.Now()})
 	return newHash.Hex(), true
 }
 
