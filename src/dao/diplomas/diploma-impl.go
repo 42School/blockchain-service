@@ -15,6 +15,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"io"
+	"time"
 )
 
 type WebhookData struct {
@@ -37,21 +38,6 @@ type DiplomaImpl struct {
 	Level      float64     `json:"level"`
 	Skills     []api.Skill `json:"skills"`
 	Counter    int         `json:"counter"`
-}
-
-func addToCheck(toAdd VerificationHash) {
-	var checkDB VerificationHash
-	result := tools.ToCheckDB.FindOne(context.TODO(), bson.M{"studenthash": toAdd.StudentHash})
-	err := result.Decode(&checkDB)
-	if hexutil.Encode(checkDB.StudentHash) == hexutil.Encode(toAdd.StudentHash) || err == nil {
-		log.WithFields(log.Fields{"hash": hexutil.Encode(toAdd.StudentHash)}).Debug("The verification hash already exist in the CheckDB")
-		return
-	}
-	tools.ToCheckHash.PushBack(toAdd)
-	txJson, _ := toAdd.Tx.MarshalJSON()
-	metrics.GaugeCheckQueue.Inc()
-	metrics.CounterCheckQueue.Inc()
-	tools.ToCheckDB.InsertOne(context.Background(), bson.M{"tx": txJson, "studenthash": toAdd.StudentHash, "time": toAdd.SendTime})
 }
 
 func (_dp DiplomaImpl) ReadWebhook(body io.ReadCloser) (Diploma, error) {
@@ -85,7 +71,24 @@ func (_dp DiplomaImpl) ReadJson(body io.ReadCloser) (Diploma, error) {
 	if err != nil {
 		return _dp, err
 	}
+	_dp.blockchain = contracts.NewBlockchainFunc()
+	_dp.accounts = account.Accounts
 	return _dp, nil
+}
+
+func addToCheck(toAdd VerificationHash) {
+	var checkDB VerificationHash
+	result := tools.ToCheckDB.FindOne(context.TODO(), bson.M{"studenthash": toAdd.StudentHash})
+	err := result.Decode(&checkDB)
+	if hexutil.Encode(checkDB.StudentHash) == hexutil.Encode(toAdd.StudentHash) || err == nil {
+		log.WithFields(log.Fields{"hash": hexutil.Encode(toAdd.StudentHash)}).Debug("The verification hash already exist in the CheckDB")
+		return
+	}
+	tools.ToCheckHash.PushBack(toAdd)
+	txJson, _ := toAdd.Tx.MarshalJSON()
+	metrics.GaugeCheckQueue.Inc()
+	metrics.CounterCheckQueue.Inc()
+	tools.ToCheckDB.InsertOne(context.Background(), bson.M{"tx": txJson, "studenthash": toAdd.StudentHash, "time": toAdd.SendTime})
 }
 
 func (_dp DiplomaImpl) AddToRetry() {
@@ -164,29 +167,27 @@ func (_dp DiplomaImpl) convertDpToData(_sign []byte, _hash common.Hash) (uint64,
 }
 
 func (_dp DiplomaImpl) EthWriting() (string, bool) {
-	dataToHash := _dp.FirstName + ", " + _dp.LastName + ", " + _dp.BirthDate + ", " + _dp.AlumniDate
-	newHash := crypgo.Keccak256Hash([]byte(dataToHash))
-	sign, err := _dp.accounts.SignHash(newHash)
-	log.WithFields(log.Fields{"hash": newHash.String(), "sign": common.Bytes2Hex(sign)}).Debug("The hash & signature of the diploma")
+	hash := crypgo.Keccak256Hash([]byte(_dp.String()))
+	sign, err := _dp.accounts.SignHash(hash)
+	log.WithFields(log.Fields{"hash": hash.String(), "sign": common.Bytes2Hex(sign)}).Debug("The hash & signature of the diploma")
 	if err != nil {
 		tools.LogsError(err)
 		return "", false
 	}
-	tx, success := _dp.blockchain.CallCreateDiploma(_dp.convertDpToData(sign, newHash))
+	tx, success := _dp.blockchain.CallCreateDiploma(_dp.convertDpToData(sign, hash))
 	if success == false {
-		//_dp.AddToRetry()
+		_dp.AddToRetry()
 		return "", false
 	}
 	metrics.NumberOfRetryDiploma.Observe(float64(_dp.Counter))
 	metrics.NumberOfRetryPerDiploma.WithLabelValues(_dp.String()).Add(float64(_dp.Counter))
-	log.WithFields(log.Fields{"hash": newHash.String(), "tx": tx.Hash().String()}).Info("Diploma submit in transaction.")
-	//addToCheck(VerificationHash{Tx: tx, StudentHash: newHash.Bytes(), SendTime: time.Now()})
-	return newHash.Hex(), true
+	log.WithFields(log.Fields{"hash": hash.String(), "tx": tx.Hash().String()}).Info("Diploma submit in transaction.")
+	addToCheck(VerificationHash{Tx: tx, StudentHash: hash.Bytes(), SendTime: time.Now()})
+	return hash.Hex(), true
 }
 
 func (_dp DiplomaImpl) EthGetter() (float64, [30]api.Skill, error) {
-	dataToHash := _dp.FirstName + ", " + _dp.LastName + ", " + _dp.BirthDate + ", " + _dp.AlumniDate
-	hash := crypgo.Keccak256Hash([]byte(dataToHash))
+	hash := crypgo.Keccak256Hash([]byte(_dp.String()))
 	log.Debug(hash.String())
 	levelInt, skillsEth, err := _dp.blockchain.CallGetDiploma(hash.Bytes())
 	if err != nil {
