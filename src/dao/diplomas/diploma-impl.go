@@ -1,7 +1,6 @@
 package diplomas
 
 import (
-	"context"
 	"encoding/json"
 	"github.com/42School/blockchain-service/src/account"
 	"github.com/42School/blockchain-service/src/dao/api"
@@ -78,7 +77,7 @@ func (_dp DiplomaImpl) ReadJson(body io.ReadCloser) (Diploma, error) {
 
 func addToCheck(toAdd VerificationHash) {
 	var checkDB VerificationHash
-	result := tools.ToCheckDB.FindOne(context.TODO(), bson.M{"studenthash": toAdd.StudentHash})
+	result := tools.Db.FindOneCheck(bson.M{"studenthash": toAdd.StudentHash})
 	err := result.Decode(&checkDB)
 	if hexutil.Encode(checkDB.StudentHash) == hexutil.Encode(toAdd.StudentHash) || err == nil {
 		log.WithFields(log.Fields{"hash": hexutil.Encode(toAdd.StudentHash)}).Debug("The verification hash already exist in the CheckDB")
@@ -88,7 +87,7 @@ func addToCheck(toAdd VerificationHash) {
 	txJson, _ := toAdd.Tx.MarshalJSON()
 	metrics.GaugeCheckQueue.Inc()
 	metrics.CounterCheckQueue.Inc()
-	tools.ToCheckDB.InsertOne(context.Background(), bson.M{"tx": txJson, "studenthash": toAdd.StudentHash, "time": toAdd.SendTime})
+	tools.Db.InsertOneCheck(bson.M{"tx": txJson, "studenthash": toAdd.StudentHash, "time": toAdd.SendTime})
 }
 
 func (_dp DiplomaImpl) AddToRetry() {
@@ -105,7 +104,7 @@ func (_dp DiplomaImpl) AddToRetry() {
 		}
 	}
 	var DpDB DiplomaImpl
-	result := tools.RetryDB.FindOne(context.TODO(), bson.M{"firstname": _dp.FirstName, "lastname": _dp.LastName, "birthdate": _dp.BirthDate, "alumnidate": _dp.AlumniDate})
+	result := tools.Db.FindOneRetry(bson.M{"firstname": _dp.FirstName, "lastname": _dp.LastName, "birthdate": _dp.BirthDate, "alumnidate": _dp.AlumniDate})
 	err := result.Decode(&DpDB)
 	if DpDB.String() == _dp.String() || err == nil {
 		log.WithFields(_dp.LogFields()).Debug("Diploma already exist in Retry DB Queue")
@@ -115,7 +114,7 @@ func (_dp DiplomaImpl) AddToRetry() {
 	if _dp.Counter == 0 {
 		_dp.Counter = 1
 	}
-	tools.RetryDB.InsertOne(context.TODO(), _dp)
+	tools.Db.InsertOneRetry(_dp)
 	tools.RetryQueue.PushBack(_dp)
 	metrics.GaugeRetryQueue.Inc()
 	metrics.CounterRetryQueue.Inc()

@@ -1,17 +1,14 @@
 package main
 
 import (
-	"context"
 	"github.com/42School/blockchain-service/src/account"
 	"github.com/42School/blockchain-service/src/async"
 	"github.com/42School/blockchain-service/src/dao/api"
+	"github.com/42School/blockchain-service/src/db"
 	"github.com/42School/blockchain-service/src/metrics"
 	"github.com/42School/blockchain-service/src/rest"
 	"github.com/42School/blockchain-service/src/tools"
 	log "github.com/sirupsen/logrus"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"os"
 )
 
@@ -23,35 +20,13 @@ func init()  {
 	}
 }
 
-// MongoStart connect the blockchain-service with a MongoDB and create 1 database 'queue' with 2 table 'retry' & 'check'
-func MongoStart() error {
-	url := "mongodb://" + tools.MongoIp + ":" + tools.MongoPort
-	credential := options.Credential{
-		Username: tools.MongoUser,
-		Password: tools.MongoPasswd,
-	}
-	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(url).SetAuth(credential))
-	if err != err {
-		return err
-	}
-	err = client.Ping(context.Background(), readpref.Primary())
-	if err != nil {
-		return err
-	}
-	tools.RetryDB = client.Database("queue").Collection("retry")
-	tools.ToCheckDB = client.Database("queue").Collection("check")
-	return nil
-}
-
 func main() {
-	go async.CheckHash()
-	go async.RetryDiploma()
-	err := MongoStart()
-	if err != nil {
-		log.WithError(err).Fatal("Mongo Connection Failed.")
+	tools.Db = db.NewDatabase()
+	if tools.Db == nil {
+		log.Fatal("Mongo Connection Failed.")
 		return
 	}
-	err = api.InitApi()
+	err := api.InitApi()
 	if err != nil {
 		log.WithError(err).Fatal("Intra.42 API Connection Failed.")
 		return
@@ -59,6 +34,8 @@ func main() {
 	async.RestoreQueue()
 	account.Accounts = account.NewAccountsManager()
 	metrics.RecordMetrics()
+	go async.CheckHash()
+	go async.RetryDiploma()
 	server := rest.NewServer()
 	err = server.ListenAndServe()
 	if err != nil {

@@ -6,6 +6,8 @@ import (
 	"github.com/42School/blockchain-service/src/account"
 	"github.com/42School/blockchain-service/src/dao/api"
 	"github.com/42School/blockchain-service/src/dao/contracts"
+	"github.com/42School/blockchain-service/src/db"
+	"github.com/42School/blockchain-service/src/tools"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -13,6 +15,8 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"testing"
 )
 
@@ -31,6 +35,7 @@ type SuiteEthWriting struct {
 	level       uint64
 	skills      [30]uint64
 	skillsSlugs [30]string
+	tx          []uint8
 }
 
 var diploma = DiplomaImpl{Id: uuid.UUID{0}, FirstName: "Louise", LastName: "Pieri", BirthDate: "1998-12-27", AlumniDate: "2021-01-01", Level: 21.42,
@@ -101,6 +106,14 @@ func (s *SuiteEthWriting) SetupSuite() {
 		"Security", "Unix", "Adaptation & creativity", "Company experience", "Algorithms & AI", "Group & interpersonal", "Graphics", "Rigor", "Imperative programming",
 		"Technology integration", "Web", "Organization", "Network & system administration", "DB & Data", "Object-oriented programming", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
 	}
+	s.tx = []uint8{123, 34, 110, 111, 110, 99, 101, 34, 58, 34, 48, 120, 48, 34, 44, 34, 103, 97, 115, 80, 114, 105, 99, 101, 34, 58, 110, 117, 108, 108, 44, 34, 103, 97, 115, 34, 58, 34, 48, 120, 48, 34, 44, 34, 116, 111, 34, 58, 110, 117, 108, 108, 44, 34, 118, 97, 108, 117, 101, 34, 58, 110, 117, 108, 108, 44, 34, 105, 110, 112, 117, 116, 34, 58, 34, 48, 120, 34, 44, 34, 118, 34, 58, 110, 117, 108, 108, 44, 34, 114, 34, 58, 110, 117, 108, 108, 44, 34, 115, 34, 58, 110, 117, 108, 108, 44, 34, 104, 97, 115, 104, 34, 58, 34, 48, 120, 99, 53, 98, 50, 99, 54, 53, 56, 102, 53, 102, 97, 50, 51, 54, 99, 53, 57, 56, 97, 54, 101, 55, 102, 98, 102, 55, 102, 50, 49, 52, 49, 51, 100, 99, 52, 50, 101, 50, 97, 52, 49, 100, 100, 57, 56, 50, 101, 98, 55, 55, 50, 98, 51, 48, 55, 48, 55, 99, 98, 97, 50, 101, 98, 34, 125}
+	db := &db.MockDatabaseImpl{}
+	bsonData := bson.M{"firstname": diploma.FirstName, "lastname": diploma.LastName, "birthdate": diploma.BirthDate, "alumnidate": diploma.AlumniDate}
+	db.On("FindOneRetry", bsonData).Return(&mongo.SingleResult{})
+	db.On("FindOneCheck", bson.M{"studenthash": s.hash[:]}).Return(&mongo.SingleResult{})
+	db.On("InsertOneCheck")
+	db.On("InsertOneRetry")
+	tools.Db = db
 }
 
 func (s *SuiteEthWriting) Test_Error_Sign() {

@@ -7,7 +7,6 @@ import (
 	"github.com/42School/blockchain-service/src/tools"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/google/uuid"
-	"go.mongodb.org/mongo-driver/bson"
 	"time"
 )
 
@@ -19,7 +18,7 @@ type checkHashDB struct {
 }
 
 func restoreRetryQueue() {
-	cursor, err := tools.RetryDB.Find(context.TODO(), bson.M{})
+	cursor, err := tools.Db.FindRetry()
 	if err != nil {
 		tools.LogsError(err)
 		return
@@ -36,7 +35,7 @@ func restoreRetryQueue() {
 }
 
 func restoreCheckQueue() {
-	cursor, err := tools.ToCheckDB.Find(context.TODO(), bson.M{})
+	cursor, err := tools.Db.FindCheck()
 	if err != nil {
 		tools.LogsError(err)
 		return

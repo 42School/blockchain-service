@@ -36,7 +36,7 @@ func CheckHash() {
 						if err == nil {
 							tools.ToCheckHash.Remove(e)
 							txByte, _ := check.Tx.MarshalJSON()
-							tools.ToCheckDB.DeleteOne(context.TODO(), bson.M{"tx": txByte, "studenthash": check.StudentHash})
+							tools.Db.DeleteOneCheck(bson.M{"tx": txByte, "studenthash": check.StudentHash})
 							metrics.GaugeCheckQueue.Dec()
 							metrics.CounterDiplomaSuccess.Inc()
 							e = copyList.Front()
@@ -52,7 +52,7 @@ func CheckHash() {
 							if err == nil {
 								tools.ToCheckHash.Remove(e)
 								txByte, _ := check.Tx.MarshalJSON()
-								tools.ToCheckDB.DeleteOne(context.TODO(), bson.M{"tx": txByte, "studenthash": check.StudentHash})
+								tools.Db.DeleteOneCheck(bson.M{"tx": txByte, "studenthash": check.StudentHash})
 								metrics.GaugeCheckQueue.Dec()
 								e = copyList.Front()
 								continue
@@ -69,7 +69,8 @@ func CheckHash() {
 func RetryDiploma() {
 	url := tools.FtEndPoint + tools.RetryPath
 	for {
-		time.Sleep(30 * time.Minute)
+		time.Sleep(1 * time.Minute)
+		//time.Sleep(30 * time.Minute)
 		copyList := tools.RetryQueue
 		for e := copyList.Front(); e != nil; {
 			if e != nil {
@@ -80,7 +81,7 @@ func RetryDiploma() {
 					data := "{'Status':true,'Message':'The writing in blockchain has been done, it will be confirmed in 10 min.','Data':{'Hash': " + hash + ",'Level':0,'Skills':[]}}"
 					http.Post(url, "Content-Type: application/json", strings.NewReader(data))
 					tools.RetryQueue.Remove(e)
-					tools.RetryDB.DeleteOne(context.TODO(), diploma)
+					tools.Db.DeleteOneRetry(diploma)
 					metrics.GaugeRetryQueue.Dec()
 					e = copyList.Front()
 				} else {
