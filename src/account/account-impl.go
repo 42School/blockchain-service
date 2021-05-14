@@ -58,7 +58,6 @@ func (ac *AccountsImpl) ChangeWriter() {
 	}
 }
 
-
 func (ac *AccountsImpl) GetSign() accounts.Account {
 	return ac.KeyStore.Accounts()[0]
 }
