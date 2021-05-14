@@ -27,7 +27,6 @@ type WebhookData struct {
 
 type DiplomaImpl struct {
 	blockchain contracts.BlockchainFunc
-	accounts   account.AccountsManager
 
 	Id         uuid.UUID   `bson:"_id"`
 	FirstName  string      `json:"first_name"`
@@ -52,7 +51,6 @@ func (_dp DiplomaImpl) ReadWebhook(body io.ReadCloser) (Diploma, error) {
 		return _dp, err
 	}
 	_dp.blockchain = contracts.NewBlockchainFunc()
-	_dp.accounts = account.Accounts
 	_dp.FirstName = webhookData.FirstName
 	_dp.LastName = webhookData.LastName
 	_dp.BirthDate = webhookData.BirthDate
@@ -71,7 +69,6 @@ func (_dp DiplomaImpl) ReadJson(body io.ReadCloser) (Diploma, error) {
 		return _dp, err
 	}
 	_dp.blockchain = contracts.NewBlockchainFunc()
-	_dp.accounts = account.Accounts
 	return _dp, nil
 }
 
@@ -167,7 +164,7 @@ func (_dp DiplomaImpl) convertDpToData(_sign []byte, _hash common.Hash) (uint64,
 
 func (_dp DiplomaImpl) EthWriting() (string, bool) {
 	hash := crypgo.Keccak256Hash([]byte(_dp.String()))
-	sign, err := _dp.accounts.SignHash(hash)
+	sign, err := account.Accounts.SignHash(hash)
 	log.WithFields(log.Fields{"hash": hash.String(), "sign": common.Bytes2Hex(sign)}).Debug("The hash & signature of the diploma")
 	if err != nil {
 		tools.LogsError(err)
@@ -187,7 +184,7 @@ func (_dp DiplomaImpl) EthWriting() (string, bool) {
 
 func (_dp DiplomaImpl) EthGetter() (float64, [30]api.Skill, error) {
 	hash := crypgo.Keccak256Hash([]byte(_dp.String()))
-	log.Debug(hash.String())
+	//log.Debug(hash.String())
 	levelInt, skillsEth, err := _dp.blockchain.CallGetDiploma(hash.Bytes())
 	if err != nil {
 		tools.LogsError(err)

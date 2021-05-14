@@ -122,7 +122,7 @@ func (s *SuiteEthWriting) Test_Error_Sign() {
 	diploma.blockchain = mockBc
 	mockAccount := &account.MockAccountsImpl{}
 	mockAccount.On("SignHash", common.BytesToHash(s.hash[:])).Return([]byte{}, errors.New("Error"))
-	diploma.accounts = mockAccount
+	account.Accounts = mockAccount
 	hash, val := diploma.EthWriting()
 	s.Equal(false, val)
 	s.Equal("", hash)
@@ -134,7 +134,7 @@ func (s *SuiteEthWriting) Test_Error_Transaction() {
 	diploma.blockchain = mockBc
 	mockAccount := &account.MockAccountsImpl{}
 	mockAccount.On("SignHash", common.BytesToHash(s.hash[:])).Return(s.sign, nil)
-	diploma.accounts = mockAccount
+	account.Accounts = mockAccount
 	hash, val := diploma.EthWriting()
 	s.Equal(false, val)
 	s.Equal("", hash)
@@ -146,7 +146,7 @@ func (s *SuiteEthWriting) Test_No_Error() {
 	diploma.blockchain = mockBc
 	mockAccount := &account.MockAccountsImpl{}
 	mockAccount.On("SignHash", common.BytesToHash(s.hash[:])).Return(s.sign, nil)
-	diploma.accounts = mockAccount
+	account.Accounts = mockAccount
 	hash, val := diploma.EthWriting()
 	s.Equal(true, val)
 	s.Equal("0xa41eeebbe22e2235a8ef94074c79c92ef6448baca12625ed6e26a61ddb60b55b", hash)

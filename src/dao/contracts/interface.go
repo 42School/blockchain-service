@@ -7,9 +7,6 @@ import (
 )
 
 type BlockchainFunc interface {
-	//connectEthGetInstance() (*Diploma, *ethclient.Client, error)
-	//getAuth() (*bind.TransactOpts, error)
-	//getLogs(client *ethclient.Client) ([]types.Log, abi.ABI, error)
 	GetBalance(address common.Address) (int64, error)
 	GetRevert(client *ethclient.Client, tx *types.Transaction, receipt *types.Receipt) string
 	CheckSecurity(client *ethclient.Client, tx *types.Transaction, hash []byte) bool
