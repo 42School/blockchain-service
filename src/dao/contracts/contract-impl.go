@@ -18,6 +18,8 @@ import (
 	"math/big"
 )
 
+var Blockchain BlockchainFunc
+
 type BlockchainImpl struct {}
 
 // connectEthGetInstance connect the client Ethereum and get the instance of the smart-contract.

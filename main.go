@@ -4,6 +4,7 @@ import (
 	"github.com/42School/blockchain-service/src/account"
 	"github.com/42School/blockchain-service/src/async"
 	"github.com/42School/blockchain-service/src/dao/api"
+	"github.com/42School/blockchain-service/src/dao/contracts"
 	"github.com/42School/blockchain-service/src/db"
 	"github.com/42School/blockchain-service/src/metrics"
 	"github.com/42School/blockchain-service/src/rest"
@@ -33,6 +34,7 @@ func main() {
 	}
 	async.RestoreQueue()
 	account.Accounts = account.NewAccountsManager()
+	contracts.Blockchain = contracts.NewBlockchainFunc()
 	metrics.RecordMetrics()
 	go async.CheckHash()
 	go async.RetryDiploma()

@@ -119,7 +119,7 @@ func (s *SuiteEthWriting) SetupSuite() {
 func (s *SuiteEthWriting) Test_Error_Sign() {
 	mockBc := &contracts.MockBlockchainImpl{}
 	mockBc.On("CallCreateDiploma", s.level, s.skills, s.skillsSlugs, s.v, s.r, s.s, s.hash).Return(&types.Transaction{}, true)
-	diploma.blockchain = mockBc
+	contracts.Blockchain = mockBc
 	mockAccount := &account.MockAccountsImpl{}
 	mockAccount.On("SignHash", common.BytesToHash(s.hash[:])).Return([]byte{}, errors.New("Error"))
 	account.Accounts = mockAccount
@@ -131,7 +131,7 @@ func (s *SuiteEthWriting) Test_Error_Sign() {
 func (s *SuiteEthWriting) Test_Error_Transaction() {
 	mockBc := &contracts.MockBlockchainImpl{}
 	mockBc.On("CallCreateDiploma", s.level, s.skills, s.skillsSlugs, s.v, s.r, s.s, s.hash).Return(&types.Transaction{}, false)
-	diploma.blockchain = mockBc
+	contracts.Blockchain = mockBc
 	mockAccount := &account.MockAccountsImpl{}
 	mockAccount.On("SignHash", common.BytesToHash(s.hash[:])).Return(s.sign, nil)
 	account.Accounts = mockAccount
@@ -143,7 +143,7 @@ func (s *SuiteEthWriting) Test_Error_Transaction() {
 func (s *SuiteEthWriting) Test_No_Error() {
 	mockBc := &contracts.MockBlockchainImpl{}
 	mockBc.On("CallCreateDiploma", s.level, s.skills, s.skillsSlugs, s.v, s.r, s.s, s.hash).Return(&types.Transaction{}, true)
-	diploma.blockchain = mockBc
+	contracts.Blockchain = mockBc
 	mockAccount := &account.MockAccountsImpl{}
 	mockAccount.On("SignHash", common.BytesToHash(s.hash[:])).Return(s.sign, nil)
 	account.Accounts = mockAccount
@@ -164,7 +164,7 @@ func (s *SuiteEthGetter) Test_Error_Diploma_Doesnt_Exist() {
 	mockBc := &contracts.MockBlockchainImpl{}
 	hashByte, _ := hexutil.Decode(s.hash)
 	mockBc.On("CallGetDiploma", hashByte).Return(0, []contracts.FtDiplomaSkill{}, errors.New("the diploma doesnt exist"))
-	diploma.blockchain = mockBc
+	contracts.Blockchain = mockBc
 	level, _, err := diploma.EthGetter()
 	s.Equal(fmt.Errorf("the diploma doesnt exist"), err)
 	s.Equal(float64(0), level)
@@ -179,7 +179,7 @@ func (s *SuiteEthGetter) Test_No_Error() {
 	mockBc := &contracts.MockBlockchainImpl{}
 	hashByte, _ := hexutil.Decode(s.hash)
 	mockBc.On("CallGetDiploma", hashByte).Return(2121, skillsBC, nil)
-	diploma.blockchain = mockBc
+	contracts.Blockchain = mockBc
 	level, skills, _ := diploma.EthGetter()
 	s.Equal(21.21, level)
 	s.Equal(len(skillsBC), len(skills))

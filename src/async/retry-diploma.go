@@ -19,8 +19,9 @@ func RetryDiploma() {
 		for e := copyList.Front(); e != nil; {
 			if e != nil {
 				diploma, _ := e.Value.(diplomas.DiplomaImpl)
-				log.WithFields(diploma.LogFields()).Debug("Try to retry a diploma")
-				hash, bool := diploma.EthWriting()
+				var dp diplomas.Diploma = diploma
+				log.WithFields(dp.LogFields()).Debug("Try to retry a diploma")
+				hash, bool := dp.EthWriting()
 				if bool == true {
 					data := "{'Status':true,'Message':'The writing in blockchain has been done, it will be confirmed in 10 min.','Data':{'Hash': " + hash + ",'Level':0,'Skills':[]}}"
 					http.Post(url, "Content-Type: application/json", strings.NewReader(data))
