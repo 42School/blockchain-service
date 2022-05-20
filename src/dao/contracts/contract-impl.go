@@ -18,8 +18,12 @@ import (
 	"math/big"
 )
 
+var Blockchain BlockchainFunc
+
+type BlockchainImpl struct {}
+
 // connectEthGetInstance connect the client Ethereum and get the instance of the smart-contract.
-func connectEthGetInstance() (*Diploma, *ethclient.Client, error) {
+func (bc BlockchainImpl) connectEthGetInstance() (*Diploma, *ethclient.Client, error) {
 	client, err := ethclient.Dial(tools.NetworkLink)
 	if err != nil {
 		return nil, nil, err
@@ -32,14 +36,14 @@ func connectEthGetInstance() (*Diploma, *ethclient.Client, error) {
 	return instance, client, nil
 }
 
-func getAuth() (*bind.TransactOpts, error) {
+func (bc BlockchainImpl) getAuth() (*bind.TransactOpts, error) {
 	//ethclient.NewClient(rpc.Dial(rpc.DialIPC()))
 	client, err := ethclient.Dial(tools.NetworkLink)
 	if err != nil {
 		log.Debug("Dial")
 		return nil, err
 	}
-	address, privateKey, err := account.GetWriterAccount()
+	address, privateKey, err := account.Accounts.GetWriter()
 	if err != nil {
 		log.Debug("GetWriterAccount")
 		return nil, err
@@ -71,7 +75,7 @@ func getAuth() (*bind.TransactOpts, error) {
 	return auth, nil
 }
 
-func getLogs(client *ethclient.Client) ([]types.Log, abi.ABI, error) {
+func (bc BlockchainImpl) getLogs(client *ethclient.Client) ([]types.Log, abi.ABI, error) {
 	query := ethereum.FilterQuery{Addresses: []common.Address{common.HexToAddress(tools.AddressOfContract)}}
 	logs, err := client.FilterLogs(context.Background(), query)
 	if err != nil {
@@ -86,7 +90,7 @@ func getLogs(client *ethclient.Client) ([]types.Log, abi.ABI, error) {
 	return logs, contractAbi, nil
 }
 
-func GetBalance(address common.Address) (int64, error) {
+func (bc BlockchainImpl) GetBalance(address common.Address) (int64, error) {
 	client, err := ethclient.Dial(tools.NetworkLink)
 	if err != nil {
 		return 0, err
@@ -98,8 +102,8 @@ func GetBalance(address common.Address) (int64, error) {
 	return balance.Int64(), err
 }
 
-func GetRevert(client *ethclient.Client, tx *types.Transaction, receipt *types.Receipt) string {
-	address, _, _ := account.GetWriterAccount()
+func (bc BlockchainImpl) GetRevert(client *ethclient.Client, tx *types.Transaction, receipt *types.Receipt) string {
+	address, _, _ := account.Accounts.GetWriter()
 	msg := ethereum.CallMsg{
 		From:     address,
 		To:       tx.To(),
@@ -129,8 +133,8 @@ func GetRevert(client *ethclient.Client, tx *types.Transaction, receipt *types.R
 	return vs[0].(string)
 }
 
-func CheckSecurity(client *ethclient.Client, tx *types.Transaction, hash []byte) bool {
-	logs, contractAbi, err := getLogs(client)
+func (bc BlockchainImpl) CheckSecurity(client *ethclient.Client, tx *types.Transaction, hash []byte) bool {
+	logs, contractAbi, err := bc.getLogs(client)
 	if err != nil {
 		log.Println(err)
 		return true
@@ -153,14 +157,14 @@ func CheckSecurity(client *ethclient.Client, tx *types.Transaction, hash []byte)
 	return true
 }
 
-func CallCreateDiploma(level uint64, skills [30]uint64, skillsSlugs [30]string, v uint8, r [32]byte, s [32]byte, hash [32]byte) (*types.Transaction, bool) {
-	instance, _, err := connectEthGetInstance()
+func (bc BlockchainImpl) CallCreateDiploma(level uint64, skills [30]uint64, skillsSlugs [30]string, v uint8, r [32]byte, s [32]byte, hash [32]byte) (*types.Transaction, bool) {
+	instance, _, err := bc.connectEthGetInstance()
 	if err != nil {
 		log.Debug("Instance")
 		tools.LogsError(err)
 		return nil, false
 	}
-	auth, err := getAuth()
+	auth, err := bc.getAuth()
 	if err != nil {
 		log.Debug("Auth")
 		tools.LogsError(err)
@@ -171,7 +175,7 @@ func CallCreateDiploma(level uint64, skills [30]uint64, skillsSlugs [30]string, 
 		log.Debug("Write")
 		tools.LogsError(err)
 		if strings.Contains(err.Error(), "insufficient funds for gas * price + value") {
-			account.ChangeAccount()
+			account.Accounts.ChangeWriter()
 		}
 		return nil, false
 	}
@@ -179,8 +183,8 @@ func CallCreateDiploma(level uint64, skills [30]uint64, skillsSlugs [30]string, 
 	return tx, true
 }
 
-func CallGetDiploma(hash []byte) (uint64, []FtDiplomaSkill, error) {
-	instance, _, err := connectEthGetInstance()
+func (bc BlockchainImpl) CallGetDiploma(hash []byte) (uint64, []FtDiplomaSkill, error) {
+	instance, _, err := bc.connectEthGetInstance()
 	if err != nil {
 		return 0, []FtDiplomaSkill{}, err
 	}
@@ -196,12 +200,12 @@ func CallGetDiploma(hash []byte) (uint64, []FtDiplomaSkill, error) {
 	return level, skills, nil
 }
 
-func CallGetAllDiploma() ([]FtDiplomaDiplomas, error) {
-	instance, _, err := connectEthGetInstance()
+func (bc BlockchainImpl) CallGetAllDiploma() ([]FtDiplomaDiplomas, error) {
+	instance, _, err := bc.connectEthGetInstance()
 	if err != nil {
 		return nil, err
 	}
-	result, err := instance.GetAllDiploma(&bind.CallOpts{From: account.GetSignAccount().Address})
+	result, err := instance.GetAllDiploma(&bind.CallOpts{From: account.Accounts.GetSign().Address})
 	if err != nil {
 		return nil, err
 	}

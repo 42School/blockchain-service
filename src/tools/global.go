@@ -2,7 +2,7 @@ package tools
 
 import (
 	"container/list"
-	"go.mongodb.org/mongo-driver/mongo"
+	"github.com/42School/blockchain-service/src/db"
 	"os"
 )
 
@@ -22,23 +22,10 @@ var RetryPath = os.Getenv("RETRY_PATH")
 var ValidationPath = os.Getenv("VALIDATION_PATH")
 var Token = os.Getenv("TOKEN")
 
-// Mailer Variable
-var EmailSender = os.Getenv("SENDER_EMAIL")
-var PasswordEmail = os.Getenv("PASSWD_EMAIL")
-var EmailHost = os.Getenv("EMAIL_HOST")
-var ToEmail = os.Getenv("TO_EMAIL")
-
-// Mongo Variable
-var MongoIp = os.Getenv("MONGO_IP")
-var MongoPort = os.Getenv("MONGO_PORT")
-var MongoUser = os.Getenv("MONGO_USER")
-var MongoPasswd = os.Getenv("MONGO_PASSWD")
-
 // Other Variable
 var Env = os.Getenv("RUN_ENV")
 
 var RetryQueue = list.New()
 var ToCheckHash = list.New()
 
-var RetryDB *mongo.Collection
-var ToCheckDB *mongo.Collection
+var Db db.Database

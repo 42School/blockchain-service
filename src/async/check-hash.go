@@ -27,22 +27,27 @@ func CheckHash() {
 				data := "{'Status': true, 'Message': 'The " + strHash + " diploma is definitely inscribed on Ethereum.', 'Data': {" + strHash + "}}"
 				client, _ := ethclient.Dial(tools.NetworkLink)
 				receipt, err := client.TransactionReceipt(context.Background(), check.Tx.Hash())
+				if err != nil {
+					tools.LogsError(err)
+					continue
+				}
+				log.WithFields(log.Fields{"tx-hash": check.Tx.Hash(), "send-time": check.SendTime, "block-hash": receipt.BlockHash, "error": err}).Debug("Check pointer...")
 				metrics.PrometheusBlockDuration(receipt.BlockHash, check.SendTime)
 				if err == nil {
 					if receipt.Status == 1 {
-						contracts.CheckSecurity(client, check.Tx, check.StudentHash)
+						contracts.Blockchain.CheckSecurity(client, check.Tx, check.StudentHash)
 						_, err = http.Post(url, "Content-Type: application/json", strings.NewReader(data))
 						if err == nil {
 							tools.ToCheckHash.Remove(e)
 							txByte, _ := check.Tx.MarshalJSON()
-							tools.ToCheckDB.DeleteOne(context.TODO(), bson.M{"tx": txByte, "studenthash": check.StudentHash})
+							tools.Db.DeleteOneCheck(bson.M{"tx": txByte, "studenthash": check.StudentHash})
 							metrics.GaugeCheckQueue.Dec()
 							metrics.CounterDiplomaSuccess.Inc()
 							e = copyList.Front()
 							continue
 						}
 					} else {
-						revertMsg := contracts.GetRevert(client, check.Tx, receipt)
+						revertMsg := contracts.Blockchain.GetRevert(client, check.Tx, receipt)
 						if revertMsg != "" {
 							if strings.Contains(revertMsg, "FtDiploma: Is not 42 sign this diploma") {
 								data = "{'Status': false, 'Message': 'The " + strHash + " diploma wasn't signed by 42, so it's not in the blockchain.', 'Data': {" + strHash + "}}"
@@ -51,7 +56,7 @@ func CheckHash() {
 							if err == nil {
 								tools.ToCheckHash.Remove(e)
 								txByte, _ := check.Tx.MarshalJSON()
-								tools.ToCheckDB.DeleteOne(context.TODO(), bson.M{"tx": txByte, "studenthash": check.StudentHash})
+								tools.Db.DeleteOneCheck(bson.M{"tx": txByte, "studenthash": check.StudentHash})
 								metrics.GaugeCheckQueue.Dec()
 								e = copyList.Front()
 								continue
@@ -65,31 +70,3 @@ func CheckHash() {
 	}
 }
 
-func RetryDiploma() {
-	url := tools.FtEndPoint + tools.RetryPath
-	for {
-		time.Sleep(30 * time.Minute)
-		copyList := tools.RetryQueue
-		for e := copyList.Front(); e != nil; {
-			if e != nil {
-				diploma, _ := e.Value.(diplomas.Diploma)
-				log.WithFields(diploma.LogFields()).Debug("Try to retry a diploma")
-				hash, bool := diploma.EthWriting()
-				if bool == true {
-					data := "{'Status':true,'Message':'The writing in blockchain has been done, it will be confirmed in 10 min.','Data':{'Hash': " + hash + ",'Level':0,'Skills':[]}}"
-					http.Post(url, "Content-Type: application/json", strings.NewReader(data))
-					tools.RetryQueue.Remove(e)
-					tools.RetryDB.DeleteOne(context.TODO(), diploma)
-					metrics.GaugeRetryQueue.Dec()
-					e = copyList.Front()
-				} else {
-					diploma.Counter += 1
-					log.Info(diploma.Counter)
-					tools.RetryQueue.InsertBefore(diploma, e)
-					tools.RetryQueue.Remove(e)
-					e = e.Next()
-				}
-			}
-		}
-	}
-}

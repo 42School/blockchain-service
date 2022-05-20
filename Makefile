@@ -26,6 +26,7 @@ run:
 			docker-compose up
 
 testing:
+			go test -v ./src/rest/handlers ./src/dao/diplomas ./src/account/
 			docker build -f config/Dockerfile.server -t $(ETHSERV) .
 			docker run --add-host=$(ETHSERV):172.17.0.1 --name $(ETHSERV) -ti -p 9545:9545 -d $(ETHSERV)
 			$(shell sleep 10)

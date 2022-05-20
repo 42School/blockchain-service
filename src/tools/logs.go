@@ -24,6 +24,11 @@ func getFrame(skipFrames int) runtime.Frame {
 }
 
 func LogsError(_err error) {
+	if len(getFrame(2).Function) < 39 {
+		string := "In the function: " + getFrame(2).Function
+		log.WithError(_err).Error(string)
+		return
+	}
 	caller := getFrame(2).Function[39:]
 	string := "In the function: " + caller
 	log.WithError(_err).Error(string)
